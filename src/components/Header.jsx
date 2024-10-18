@@ -4,6 +4,7 @@ import UeceLogo from "../assets/images/logo-uece.png";
 import PpgccSymbol from "../assets/images/symbol-ppgcc.png";
 import { styled } from "styled-components";
 import { Link } from "react-router-dom";
+import Button from "./Button";
 
 const HeaderContainer = styled.header`
     background-color: #008442;
@@ -12,14 +13,31 @@ const HeaderContainer = styled.header`
     justify-content: space-between;
 `
 
-const Info = styled.div`
+const InfoContainer = styled.div`
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    gap: 0px;
+`    
+    
+const InfoAreaContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    gap: 0px;
+    margin: 2px 10px 20px 0;
+`    
+
+const InfoMessage = styled.p`
+    color: #fff;
+    margin: 0 0 0 20px;
 `    
 
 const UeceLogoImg = styled.img`
     width: 30vw;
     height: 18vh;
+    margin: 10px 0 0 20px;
 `
 
 const PpgccLogoImg = styled.img`
@@ -38,14 +56,17 @@ export default function Header() {
                     className="logo-img"
                 />
             </Link>
-            <Info>
+            <InfoContainer>
                 <PpgccLogoImg 
                     src={PpgccLogo} 
                     alt='logo' 
                     className="logo-img"
                 />
-                <p>XXXXXXXXXX</p>
-            </Info>
+                <InfoAreaContainer>
+                    <InfoMessage>BEM VINDO(A), XXXXX XXXXXXXXX</InfoMessage>
+                    <Button> SAIR </Button>
+                </InfoAreaContainer>
+            </InfoContainer>
         </HeaderContainer>
     )
 }
