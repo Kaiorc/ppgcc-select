@@ -1,7 +1,6 @@
 import React from "react";
 import PpgccLogo from "../assets/images/logo-ppgcc.png";
 import UeceLogo from "../assets/images/logo-uece.png";
-import PpgccSymbol from "../assets/images/symbol-ppgcc.png";
 import { styled } from "styled-components";
 import { Link } from "react-router-dom";
 import Button from "./Button";
@@ -25,24 +24,24 @@ const InfoAreaContainer = styled.div`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 0px;
-    margin: 2px 10px 20px 0;
+    gap: 20px;
+    margin: 2px 10px 10px 0;
 `    
 
 const InfoMessage = styled.p`
     color: #fff;
-    margin: 0 0 0 20px;
+    margin: 0 0 0 2px;
 `    
 
 const UeceLogoImg = styled.img`
-    width: 30vw;
-    height: 18vh;
+    width: 26vw;
+    height: 15vh;
     margin: 10px 0 0 20px;
 `
 
 const PpgccLogoImg = styled.img`
-    width: 30vw;
-    height: 15vh;
+    width: 28vw;
+    height: 14vh;
 `
 
 export default function Header() {
