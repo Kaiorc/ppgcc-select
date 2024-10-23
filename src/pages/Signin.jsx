@@ -1,7 +1,8 @@
 import React from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { styled } from "styled-components";
 import PpgccSymbol from "../assets/images/symbol-ppgcc.png";
+import { styled } from "styled-components";
+import Box from "../components/Box";
 import Input from "../components/Input";
 import Button from "../components/Button";
 
@@ -89,7 +90,7 @@ export default function Signin() {
 
     return (
         <SigninContainer>
-            <SigninBox>
+            <Box>
                 <SigninHeader>
                     <PpgccSymbolImg 
                         src={PpgccSymbol} 
@@ -131,7 +132,7 @@ export default function Signin() {
                             </Button>
                         </ButtonContainer>
                     </SigninFormContainer>
-            </SigninBox>
+            </Box>
         </SigninContainer>
     )
 }

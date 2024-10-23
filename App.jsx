@@ -5,6 +5,7 @@ import Layout from './src/components/Layout'
 import Home from './src/pages/Home'
 import Login from './src/pages/Login'
 import Signin from './src/pages/Signin'
+import ProcessDetail from './src/pages/ProcessDetail'
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -43,6 +44,7 @@ export default function App() {
           <Routes>
             <Route path="/" element={<Layout />}>
               <Route index element={<Home />} />
+              <Route path=':id' element={<ProcessDetail />} />
               <Route path="login" element={<Login />} />
               <Route path="signin" element={<Signin />} />
 

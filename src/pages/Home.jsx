@@ -1,23 +1,15 @@
 import React from "react"
 import { styled } from "styled-components";
+import Box from "../components/Box";
 import Button from "../components/Button";
-import { getProcesses } from "../../api";
+import { Link } from "react-router-dom";
+import { getProcess } from "../../api";
 
 const HomeContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
     
-`
-
-const HomeBox = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    margin: 2em 0 8em 0;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
 `
 
 const ListHeader = styled.div`
@@ -29,16 +21,16 @@ const ListHeader = styled.div`
 `
 
 const List = styled.ul`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+    // display: flex;
+    // flex-direction: column;
+    // justify-content: center;
+    // align-items: center;
     padding: 0;
     width: 100%;
     list-style: none;
     margin: 0;
-    
     width: 100%;
+
 `
 
 const ListItem = styled.li`
@@ -47,8 +39,21 @@ const ListItem = styled.li`
     justify-content: space-between;
     align-items: center;
     padding: 1em 2em;
-    border-bottom: 1px solid #ccc;
     width: 100%;
+    gap: 2em;
+    &:hover {
+        background-color: #E5E5E5;
+        transition-duration: 0.2s;
+        cursor: pointer;
+        border-radius: 8px;
+    };
+    &:active {
+        background-color: #D9D9D9;
+    };
+
+    p { margin: 0.5em 0; }
+
+    b{ color: grey; }
 `
 
 export default function Home() {
@@ -57,39 +62,40 @@ export default function Home() {
 
     React.useEffect(() => {
         async function loadProcesses() {
-            const data = await getProcesses()
+            const data = await getProcess()
             setSelectionProcesses(data)
         }
-
         loadProcesses()
     }, [])
 
     console.log(selectionProcesses)
 
-    const processesList = selectionProcesses.map((process) => {
+    const processesElements = selectionProcesses.map((process) => {
         return (
-            <ListItem key={process.id}>
-                <h3>{process.name}</h3>
-                <p>{process.description}</p>
-                <p>{process.startDate}</p>
-                <p>{process.endDate}</p>
-                <Button>EDITAR</Button>
-                <Button>EXCLUIR</Button>
-            </ListItem>
+            <Link to={`/${process.id}`}>
+                <ListItem key={process.id}>
+                    <h3>{process.name}</h3>
+                    <div>
+                        <b>{process.description}</b>
+                        <p><b>Data de início:</b> {process.startDate}</p>
+                        <p><b>Data limite:</b> {process.endDate}</p>
+                    </div>
+                </ListItem>
+            </Link>
         )
     })
 
     return (
         <HomeContainer>
-            <HomeBox>
+            <Box>
                 <ListHeader>
                     <h1>PROCESSOS SELETIVOS</h1>
                     <Button>ADICIONAR</Button>  
                 </ListHeader>
                 <List>
-                    {processesList}
+                    {processesElements}
                 </List>
-            </HomeBox>
+            </Box>
         </HomeContainer>
     )
 }

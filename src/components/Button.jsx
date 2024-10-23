@@ -1,4 +1,3 @@
-import React from "react";
 import { styled } from "styled-components";
 
 const StyledButton = styled.button`
@@ -13,7 +12,7 @@ const StyledButton = styled.button`
 
     &:hover {
         background-color: #F0852E;
-        transition-duration: 0.6s;
+        transition-duration: 0.2s;
     };
     &:active {
         background-color: #A45516;

@@ -1,7 +1,8 @@
 import React from "react"
 import { useLocation, useNavigate } from "react-router-dom"
-import { styled } from "styled-components";
 import PpgccSymbol from "../assets/images/symbol-ppgcc.png";
+import { styled } from "styled-components";
+import Box from "../components/Box";
 import Input from "../components/Input";
 import Button from "../components/Button";
 
@@ -9,15 +10,6 @@ const LoginContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-`
-
-const LoginBox = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    border-radius: 8px;
-    margin: 2em 8em 10em 8em;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
 `
 
 const LoginHeader = styled.div`
@@ -69,7 +61,7 @@ export default function Login() {
 
     return (
         <LoginContainer>
-            <LoginBox>
+            <Box>
                 <LoginHeader>
                     <PpgccSymbolImg 
                         src={PpgccSymbol} 
@@ -102,7 +94,7 @@ export default function Login() {
                             </Button>
                         </ButtonContainer>
                     </LoginFormContainer>
-            </LoginBox>
+            </Box>
         </LoginContainer>
     )
 }

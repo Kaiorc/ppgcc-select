@@ -1,4 +1,4 @@
-export async function getProcesses(id) {
+export async function getProcess(id) {
     const url = id ? `/api/processes/${id}` : "/api/processes"
     const res = await fetch(url)
     if (!res.ok) {
