@@ -2,10 +2,13 @@ import React from 'react'
 import { createGlobalStyle } from 'styled-components'
 import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
 import Layout from './src/components/Layout'
-import Home from './src/pages/Home'
+import AuthRequired from './src/components/AuthRequired'
+import Processes from './src/pages/Processes'
 import Login from './src/pages/Login'
 import Signin from './src/pages/Signin'
 import ProcessDetail from './src/pages/ProcessDetail'
+import NotFound from './src/pages/NotFound'
+import { AuthProvider } from './src/components/AuthContext'
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -38,19 +41,21 @@ const GlobalStyle = createGlobalStyle`
 export default function App() {
 
   return (
-    <>
+    <AuthProvider>
       <GlobalStyle />
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Layout />}>
-              <Route index element={<Home />} />
-              <Route path=':id' element={<ProcessDetail />} />
-              <Route path="login" element={<Login />} />
-              <Route path="signin" element={<Signin />} />
-
+            <Route path='/' element={<Layout />}>
+              <Route index element={<Login />} />
+              <Route path="/signin" element={<Signin />} />
+              <Route element={<AuthRequired />}>
+                <Route path="/processes" element={<Processes />}/>
+                <Route path="/processes/:id" element={<ProcessDetail />} />
+              </Route>
+              <Route path="*" element={<NotFound />} /> 
             </Route>
           </Routes>
         </BrowserRouter>
-    </>
+    </AuthProvider>
   )
 }

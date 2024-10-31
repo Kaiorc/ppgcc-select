@@ -56,7 +56,7 @@ const ListItem = styled.li`
     b{ color: grey; }
 `
 
-export default function Home() {
+export default function Processes() {
 
     const [selectionProcesses, setSelectionProcesses] = React.useState([])
 
@@ -72,11 +72,18 @@ export default function Home() {
 
     const processesElements = selectionProcesses.map((process) => {
         return (
-            <Link to={`/${process.id}`}>
-                <ListItem key={process.id}>
+            <Link 
+                to={`/processes/${process.id}`}
+                key={process.id}
+                aria-label={`Processo seletivo ${process.name}`}
+            >
+                <ListItem 
+                    key={process.id}
+                    role="listitem"
+                >
                     <h3>{process.name}</h3>
                     <div>
-                        <b>{process.description}</b>
+                        <b>{process.miniDescription}</b>
                         <p><b>Data de início:</b> {process.startDate}</p>
                         <p><b>Data limite:</b> {process.endDate}</p>
                     </div>
@@ -90,9 +97,11 @@ export default function Home() {
             <Box>
                 <ListHeader>
                     <h1>PROCESSOS SELETIVOS</h1>
-                    <Button>ADICIONAR</Button>  
+                    <Link to="">
+                        <Button>ADICIONAR</Button>  
+                    </Link>
                 </ListHeader>
-                <List>
+                <List role="list">
                     {processesElements}
                 </List>
             </Box>

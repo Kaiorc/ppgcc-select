@@ -65,7 +65,7 @@ export default function Login() {
                 <LoginHeader>
                     <PpgccSymbolImg 
                         src={PpgccSymbol} 
-                        alt='logo' 
+                        alt='Símbolo do PPGCC' 
                         className="logo-img"
                     />
                 </LoginHeader>
@@ -77,6 +77,8 @@ export default function Login() {
                             type="email"
                             placeholder="Email"
                             value={loginFormData.email}
+                            aria-label="Email"
+                            required
                             />
                         <Input
                             name="password"
@@ -84,6 +86,8 @@ export default function Login() {
                             type="password"
                             placeholder="Senha"
                             value={loginFormData.password}
+                            aria-label="Senha"
+                            required
                             />
                         <ButtonContainer>
                             <Button>

@@ -12,16 +12,6 @@ const SigninContainer = styled.div`
     align-items: center;
 `
 
-const SigninBox = styled.div`
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    border-radius: 8px;
-    margin: 2em 0 8em 0;
-    box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
-`
-
 const SigninHeader = styled.div`
     background-color: #008442;
     width: 100%;
@@ -94,7 +84,7 @@ export default function Signin() {
                 <SigninHeader>
                     <PpgccSymbolImg 
                         src={PpgccSymbol} 
-                        alt='logo' 
+                        alt='Simbolo do PPGCC' 
                         className="logo-img"
                     />
                 </SigninHeader>
@@ -107,6 +97,8 @@ export default function Signin() {
                                 type="email"
                                 placeholder="Email"
                                 value={signinFormData.email}
+                                aria-label="Email"
+                                required
                                 />
                             <Input
                                 name="password"
@@ -114,6 +106,8 @@ export default function Signin() {
                                 type="password"
                                 placeholder="Senha"
                                 value={signinFormData.password}
+                                aria-label="Senha"
+                                required
                                 />
                             <Input
                                 name="confirmPassword"
@@ -121,6 +115,8 @@ export default function Signin() {
                                 type="password"
                                 placeholder="Confirmar senha"
                                 value={signinFormData.confirmPassword}
+                                aria-label="Confirmar senha"
+                                required
                                 />
                         </InputContainer>
                         <ButtonContainer>

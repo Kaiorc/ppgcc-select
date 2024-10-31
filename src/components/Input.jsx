@@ -10,6 +10,9 @@ const StyledInput = styled.input`
     border-radius: 5px;
     outline: none;
     font-size: 1rem;
+    &:focus {
+        border: 1px solid #008442;
+    }
 `
 
 export default function Input({ name, onChange, type, placeholder, value }) {

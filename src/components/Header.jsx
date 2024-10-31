@@ -2,8 +2,9 @@ import React from "react";
 import PpgccLogo from "../assets/images/logo-ppgcc.png";
 import UeceLogo from "../assets/images/logo-uece.png";
 import { styled } from "styled-components";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import Button from "./Button";
+import useAuth from "../hooks/useAuth";
 
 const HeaderContainer = styled.header`
     background-color: #008442;
@@ -46,6 +47,11 @@ const PpgccLogoImg = styled.img`
 
 export default function Header() {
 
+    let location = useLocation();
+    console.log(location.pathname)
+
+    const { isLoggedIn } = useAuth();
+
     return(
         <HeaderContainer>
             <Link to="/">
@@ -61,10 +67,12 @@ export default function Header() {
                     alt='logo' 
                     className="logo-img"
                 />
-                <InfoAreaContainer>
-                    <InfoMessage>BEM VINDO(A), XXXXX XXXXXXXXX</InfoMessage>
-                    <Button> SAIR </Button>
-                </InfoAreaContainer>
+                { isLoggedIn && location.pathname !== "/" && location.pathname !== "/signin" && (
+                    <InfoAreaContainer>
+                        <InfoMessage>BEM VINDO(A), XXXXX XXXXXXXXX</InfoMessage>
+                        <Button> SAIR </Button>
+                    </InfoAreaContainer>
+                )}
             </InfoContainer>
         </HeaderContainer>
     )
