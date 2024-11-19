@@ -1,8 +1,10 @@
 import React from "react"
-import { Link, useParams, useLocation } from "react-router-dom"
+import DOMPurify from "dompurify";
+import { Link, useParams, useLocation, Outlet } from "react-router-dom"
 import { getProcess } from "../../api"
 import styled from "styled-components"
 import Box from "../components/Box"
+import Button from "../components/Button"
 
 const ProcessDetailContainer = styled.div`
     
@@ -36,10 +38,34 @@ const InfoContainer = styled.div`
     }
 `
 
+const TitleContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+`
+
+const TitleButtonContainer = styled.div`
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1em;
+`
+
+function formatText(text) {
+    if (!text) return "";
+    
+    const formattedText = text.replace(/\n/g, "<br>");
+    
+    const linkedText = formattedText.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
+    return linkedText;
+}
+
 export default function ProcessDetail() {
     const [selectionProcess, setSelectionProcess] = React.useState()
     // const [loading, setLoading] = React.useState(false)
     // const [error, setError] = React.useState(null)
+
     const { id } = useParams()
     const location = useLocation()
 
@@ -50,18 +76,31 @@ export default function ProcessDetail() {
         }
         loadProcesses()
     }, [id])
-
-    // const search = location.state?.search || "";
-    // const type = location.state?.type || "all";
     
     return (
         <>  
             {selectionProcess && (
                 <ProcessDetailBox>
-                    <h1>{selectionProcess.name}</h1>
+                    <TitleContainer>
+                        <h1>{selectionProcess.name}</h1>
+                        <TitleButtonContainer>
+                            <Link to="applications">
+                                <Button>INSCRIÇÕES</Button>
+                            </Link>
+                            <Button>EDITAR</Button>
+                        </TitleButtonContainer>
+                    </TitleContainer>
+                    <InfoContainer>
+                        <h3>Número de vagas:</h3>
+                        <p> {selectionProcess.places}</p>
+                    </InfoContainer>
                     <InfoContainer>
                         <h3>Descrição:</h3>
-                        <p> {selectionProcess.description}</p>
+                        <p 
+                            dangerouslySetInnerHTML={{ 
+                                __html: DOMPurify.sanitize(formatText(selectionProcess.description)) 
+                            }} 
+                        />
                     </InfoContainer>
                     <InfoContainer>
                         <h3>Data de início de inscrição:</h3>

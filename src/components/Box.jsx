@@ -9,10 +9,10 @@ const StyledBox = styled.div`
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
 `
 
-export default function Box({ children }) {
+export default function Box({ children, className }) {
 
     return(
-        <StyledBox>
+        <StyledBox className={className}>
             {children}
         </StyledBox>
     )

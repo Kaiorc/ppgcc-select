@@ -70,7 +70,7 @@ export default function Header() {
                 { isLoggedIn && location.pathname !== "/" && location.pathname !== "/signin" && (
                     <InfoAreaContainer>
                         <InfoMessage>BEM VINDO(A), XXXXX XXXXXXXXX</InfoMessage>
-                        <Button> SAIR </Button>
+                        <Button type="button"> SAIR </Button>
                     </InfoAreaContainer>
                 )}
             </InfoContainer>

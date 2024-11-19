@@ -8,7 +8,7 @@ const StyledButton = styled.button`
     padding: 10px 20px;
     font-size: 1rem;
     cursor: pointer;
-    flex: 1; /* Permite que o botão cresça para preencher o espaço disponível */
+    // flex: 1; /* Permite que o botão cresça para preencher o espaço disponível */
 
     &:hover {
         background-color: #F0852E;
@@ -19,10 +19,10 @@ const StyledButton = styled.button`
     };
 `
 
-export default function Button({ children, onClick, type }) {   
+export default function Button({ children, onClick, type, className }) {   
 
     return(
-        <StyledButton onClick={onClick} type={type}>
+        <StyledButton onClick={onClick} type={type} className={className}>
             {children}
         </StyledButton>
     )

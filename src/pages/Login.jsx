@@ -1,5 +1,5 @@
 import React from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import PpgccSymbol from "../assets/images/symbol-ppgcc.png";
 import { styled } from "styled-components";
 import Box from "../components/Box";
@@ -70,34 +70,36 @@ export default function Login() {
                     />
                 </LoginHeader>
                 <h1>Login</h1>
-                    <LoginFormContainer onSubmit={handleSubmit}>
-                        <Input
-                            name="email"
-                            onChange={handleChange}
-                            type="email"
-                            placeholder="Email"
-                            value={loginFormData.email}
-                            aria-label="Email"
-                            required
-                            />
-                        <Input
-                            name="password"
-                            onChange={handleChange}
-                            type="password"
-                            placeholder="Senha"
-                            value={loginFormData.password}
-                            aria-label="Senha"
-                            required
-                            />
-                        <ButtonContainer>
+                <LoginFormContainer onSubmit={handleSubmit}>
+                    <Input
+                        name="email"
+                        onChange={handleChange}
+                        type="email"
+                        placeholder="Email"
+                        value={loginFormData.email}
+                        aria-label="Email"
+                        required
+                    />
+                    <Input
+                        name="password"
+                        onChange={handleChange}
+                        type="password"
+                        placeholder="Senha"
+                        value={loginFormData.password}
+                        aria-label="Senha"
+                        required
+                    />
+                    <ButtonContainer>
+                        <Link to="/signin">
                             <Button>
                                 CRIAR CONTA
                             </Button>
-                            <Button>
-                                ENTRAR
-                            </Button>
-                        </ButtonContainer>
-                    </LoginFormContainer>
+                        </Link>
+                        <Button>
+                            ENTRAR
+                        </Button>
+                    </ButtonContainer>
+                </LoginFormContainer>
             </Box>
         </LoginContainer>
     )

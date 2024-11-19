@@ -1,5 +1,5 @@
 import React from "react"
-import { useLocation, useNavigate } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import PpgccSymbol from "../assets/images/symbol-ppgcc.png";
 import { styled } from "styled-components";
 import Box from "../components/Box";
@@ -89,45 +89,47 @@ export default function Signin() {
                     />
                 </SigninHeader>
                 <h1>Criar Conta</h1>
-                    <SigninFormContainer onSubmit={handleSubmit}>
-                        <InputContainer>
-                            <Input
-                                name="email"
-                                onChange={handleChange}
-                                type="email"
-                                placeholder="Email"
-                                value={signinFormData.email}
-                                aria-label="Email"
-                                required
-                                />
-                            <Input
-                                name="password"
-                                onChange={handleChange}
-                                type="password"
-                                placeholder="Senha"
-                                value={signinFormData.password}
-                                aria-label="Senha"
-                                required
-                                />
-                            <Input
-                                name="confirmPassword"
-                                onChange={handleChange}
-                                type="password"
-                                placeholder="Confirmar senha"
-                                value={signinFormData.confirmPassword}
-                                aria-label="Confirmar senha"
-                                required
-                                />
-                        </InputContainer>
-                        <ButtonContainer>
-                            <Button onClick={handleCancel}>
+                <SigninFormContainer onSubmit={handleSubmit}>
+                    <InputContainer>
+                        <Input
+                            name="email"
+                            onChange={handleChange}
+                            type="email"
+                            placeholder="Email"
+                            value={signinFormData.email}
+                            aria-label="Email"
+                            required
+                        />
+                        <Input
+                            name="password"
+                            onChange={handleChange}
+                            type="password"
+                            placeholder="Senha"
+                            value={signinFormData.password}
+                            aria-label="Senha"
+                            required
+                        />
+                        <Input
+                            name="confirmPassword"
+                            onChange={handleChange}
+                            type="password"
+                            placeholder="Confirmar senha"
+                            value={signinFormData.confirmPassword}
+                            aria-label="Confirmar senha"
+                            required
+                        />
+                    </InputContainer>
+                    <ButtonContainer>
+                        <Link to="..">
+                            <Button>
                                 CANCELAR
                             </Button>
-                            <Button type="submit">
-                                CRIAR CONTA
-                            </Button>
-                        </ButtonContainer>
-                    </SigninFormContainer>
+                        </Link>
+                        <Button type="submit">
+                            CRIAR CONTA
+                        </Button>
+                    </ButtonContainer>
+                </SigninFormContainer>
             </Box>
         </SigninContainer>
     )

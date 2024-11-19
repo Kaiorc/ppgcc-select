@@ -3,7 +3,7 @@ import { styled } from "styled-components";
 import Box from "../components/Box";
 import Button from "../components/Button";
 import { Link } from "react-router-dom";
-import { getProcess } from "../../api";
+import { getProcesses } from "../../api";
 
 const HomeContainer = styled.div`
     display: flex;
@@ -62,7 +62,7 @@ export default function Processes() {
 
     React.useEffect(() => {
         async function loadProcesses() {
-            const data = await getProcess()
+            const data = await getProcesses()
             setSelectionProcesses(data)
         }
         loadProcesses()
@@ -97,8 +97,8 @@ export default function Processes() {
             <Box>
                 <ListHeader>
                     <h1>PROCESSOS SELETIVOS</h1>
-                    <Link to="">
-                        <Button>ADICIONAR</Button>  
+                    <Link to="create-process">
+                        <Button type="button">ADICIONAR</Button>  
                     </Link>
                 </ListHeader>
                 <List role="list">

@@ -4,10 +4,12 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
 import Layout from './src/components/Layout'
 import AuthRequired from './src/components/AuthRequired'
 import Processes from './src/pages/Processes'
+import CreateProcess from './src/pages/CreateProcess'
 import Login from './src/pages/Login'
 import Signin from './src/pages/Signin'
 import ProcessDetail from './src/pages/ProcessDetail'
 import NotFound from './src/pages/NotFound'
+import Applications from './src/pages/Applications'
 import { AuthProvider } from './src/components/AuthContext'
 
 const GlobalStyle = createGlobalStyle`
@@ -50,7 +52,9 @@ export default function App() {
               <Route path="/signin" element={<Signin />} />
               <Route element={<AuthRequired />}>
                 <Route path="/processes" element={<Processes />}/>
+                <Route path="/processes/create-process" element={<CreateProcess />} />
                 <Route path="/processes/:id" element={<ProcessDetail />} />
+                <Route path="/processes/:id/applications" element={<Applications />} />
               </Route>
               <Route path="*" element={<NotFound />} /> 
             </Route>
