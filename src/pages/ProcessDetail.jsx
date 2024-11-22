@@ -70,11 +70,11 @@ export default function ProcessDetail() {
     const location = useLocation()
 
     React.useEffect(() => {
-        async function loadProcesses() {
+        async function loadProcess() {
             const data = await getProcess(id)
             setSelectionProcess(data)
         }
-        loadProcesses()
+        loadProcess()
     }, [id])
     
     return (
@@ -87,7 +87,9 @@ export default function ProcessDetail() {
                             <Link to="applications">
                                 <Button>INSCRIÇÕES</Button>
                             </Link>
-                            <Button>EDITAR</Button>
+                            <Link to="edit-process">
+                                <Button>EDITAR</Button>
+                            </Link>
                         </TitleButtonContainer>
                     </TitleContainer>
                     <InfoContainer>

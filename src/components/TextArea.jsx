@@ -7,13 +7,13 @@ const StyledTextArea = styled.textarea`
     height: 30vh;
     margin: 10px 0;
     padding: 1.2em;
-    border: none;
+    border: 2px solid #008442;
     border-radius: 5px;
     outline: none;
     font-family: 'Roboto', sans-serif;
     font-size: 1rem;
     &:focus {
-        border: 1px solid #008442;
+        border: 2px solid #F0852E;
     }
 `
 

@@ -5,6 +5,7 @@ import Layout from './src/components/Layout'
 import AuthRequired from './src/components/AuthRequired'
 import Processes from './src/pages/Processes'
 import CreateProcess from './src/pages/CreateProcess'
+import EditProcess from './src/pages/EditProcess'
 import Login from './src/pages/Login'
 import Signin from './src/pages/Signin'
 import ProcessDetail from './src/pages/ProcessDetail'
@@ -54,6 +55,7 @@ export default function App() {
                 <Route path="/processes" element={<Processes />}/>
                 <Route path="/processes/create-process" element={<CreateProcess />} />
                 <Route path="/processes/:id" element={<ProcessDetail />} />
+                <Route path="/processes/:id/edit-process" element={<EditProcess />} />
                 <Route path="/processes/:id/applications" element={<Applications />} />
               </Route>
               <Route path="*" element={<NotFound />} /> 

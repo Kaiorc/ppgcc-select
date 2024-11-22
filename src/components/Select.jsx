@@ -6,15 +6,15 @@ const StyledSelect = styled.select`
     height: 40px;
     margin: 10px 0;
     padding: 1.2em;
-    border: none;
+    border: 2px solid #008442;
     border-radius: 5px;
     outline: none;
     font-size: 1rem;
     &:focus {
-        border: 1px solid #008442;
+        border: 2px solid #008442;
     }
     option.placeholder {
-        color: black; /* Cor do placeholder */
+        color: black;
     }
 `;
 

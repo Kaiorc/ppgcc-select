@@ -1,5 +1,7 @@
-import React from "react";
-import { styled } from "styled-components";
+import React from 'react'
+import { useParams } from 'react-router-dom'
+import styled from 'styled-components'
+import { getProcess, updateProcess } from "../../api"
 import { Link } from "react-router-dom";
 import Input from "../components/Input";
 import TextArea from "../components/TextArea";
@@ -8,13 +10,12 @@ import Box from "../components/Box";
 import Table from "../components/Table";
 import RegistrationFieldModal from "../components/RegistrationFieldModal";
 import ImportProcessFieldModal from "../components/ImportProcessFieldModal";
-import { createProcess } from "../../api";
 
-const CreateProcessBox = styled(Box)`
+const EditProcessBox = styled(Box)`
     padding: 1em;
 `;
 
-const CreateProcessFormContainer = styled.form`
+const EditProcessFormContainer = styled.form`
     
 `;
 
@@ -45,8 +46,9 @@ const RedButton = styled(Button)`
   }
 `;
 
-export default function CreateProcess() {
-    const [processFormData, setProcessFormData] = React.useState({
+export default function EditProcess() {
+
+    const [selectionProcessData, setSelectionProcessData] = React.useState({
         name: "", 
         places: "",
         miniDescription: "", 
@@ -57,41 +59,54 @@ export default function CreateProcess() {
         registrationFieldsInfo: []
     });
 
-    const [isRegistrationModalOpen, setIsRegistrationModalOpen] = React.useState(false);
+    const { id } = useParams()
+
+    React.useEffect(() => {
+        async function loadProcess() {
+            const data = await getProcess(id)
+            setSelectionProcessData(data)
+        }
+        loadProcess()
+    }, [id])
+
     const [isImportModalOpen, setIsImportModalOpen] = React.useState(false);
+    const [isRegistrationModalOpen, setIsRegistrationModalOpen] = React.useState(false);
     const [fieldBeingEdited, setFieldBeingEdited] = React.useState(null);
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
 
     async function handleSubmit(event) {
         event.preventDefault();
         try {
-            await createProcess(processFormData);
-            console.log("Processo criado com sucesso!");
+            // Destructuring do id do objeto do getDoc() do Firebase e 
+            // criando um novo objeto sem o id para evitar redundância
+            const { id, ...dataWithoutId } = selectionProcessData;
+            await updateProcess(id, dataWithoutId);
+            console.log("Processo editado com sucesso!");
         } catch (error) {
-            console.error("Erro ao criar processo: ", error);
+            console.error("Erro ao editar processo: ", error);
         }
     }
 
     function handleChange(event) {
         const {name, value} = event.target;
-        setProcessFormData(prevProcessFormData => ({
-            ...prevProcessFormData,
+        setSelectionProcessData(prevSelectionProcessData => ({
+            ...prevSelectionProcessData,
             [name]: value
         }));
     }
 
     function handleAddField(field) {
-        setProcessFormData(prevProcessFormData => ({
-            ...prevProcessFormData,
-            registrationFieldsInfo: [...prevProcessFormData.registrationFieldsInfo, field]
+        setSelectionProcessData(prevSelectionProcessData => ({
+            ...prevSelectionProcessData,
+            registrationFieldsInfo: [...prevSelectionProcessData.registrationFieldsInfo, field]
         }));
     };
 
     function handleImportFields(process) {
-        setProcessFormData(prevProcessFormData => ({
-            ...prevProcessFormData,
+        setSelectionProcessData(prevSelectionProcessData => ({
+            ...prevSelectionProcessData,
             registrationFieldsInfo: [
-                ...prevProcessFormData.registrationFieldsInfo,
+                ...prevSelectionProcessData.registrationFieldsInfo,
                 ...process.registrationFieldsInfo
             ]
         }));
@@ -99,23 +114,23 @@ export default function CreateProcess() {
     };
 
     function handleDeleteField(index) {
-        setProcessFormData(prevProcessFormData => ({
-            ...prevProcessFormData,
-            registrationFieldsInfo: prevProcessFormData.registrationFieldsInfo.filter((_, i) => i !== index)
+        setSelectionProcessData(prevSelectionProcessData => ({
+            ...prevSelectionProcessData,
+            registrationFieldsInfo: prevSelectionProcessData.registrationFieldsInfo.filter((_, i) => i !== index)
         }));
     };
 
     function handleEditField(index) {
-        setFieldBeingEdited({ ...processFormData.registrationFieldsInfo[index], index });
+        setFieldBeingEdited({ ...selectionProcessData.registrationFieldsInfo[index], index });
         setIsEditModalOpen(true);
     }
 
     function handleSaveEditedField(editedField) {
-        setProcessFormData(prevProcessFormData => {
-            const updatedFields = [...prevProcessFormData.registrationFieldsInfo];
+        setSelectionProcessData(prevSelectionProcessData => {
+            const updatedFields = [...prevSelectionProcessData.registrationFieldsInfo];
             updatedFields[editedField.index] = editedField;
             return {
-                ...prevProcessFormData,
+                ...prevSelectionProcessData,
                 registrationFieldsInfo: updatedFields
             };
         });
@@ -123,9 +138,9 @@ export default function CreateProcess() {
     }
 
     return (
-        <CreateProcessBox>
-            <h1>CRIAR PROCESSO SELETIVO</h1>
-            <CreateProcessFormContainer onSubmit={handleSubmit}>
+        <EditProcessBox>
+            <h1>EDITAR PROCESSO SELETIVO</h1>
+            <EditProcessFormContainer onSubmit={handleSubmit}>
                 <h2>DADOS MÍNIMOS OBRIGATÓRIOS</h2>
                     <InputContainer>
                         <label htmlFor="name">
@@ -135,7 +150,7 @@ export default function CreateProcess() {
                                 onChange={handleChange}
                                 type="text"
                                 placeholder="Nome"
-                                value={processFormData.name}
+                                value={selectionProcessData.name}
                                 aria-label="Nome"
                                 required
                             />
@@ -148,7 +163,7 @@ export default function CreateProcess() {
                                 type="number"
                                 min= "1"
                                 placeholder="Número de vagas"
-                                value={processFormData.places}
+                                value={selectionProcessData.places}
                                 aria-label="Número de Vagas"
                                 required
                             />
@@ -160,7 +175,7 @@ export default function CreateProcess() {
                                 onChange={handleChange}
                                 type="text"
                                 placeholder="Mini Descrição"
-                                value={processFormData.miniDescription}
+                                value={selectionProcessData.miniDescription}
                                 aria-label="Mini Descrição"
                                 required
                             />
@@ -172,7 +187,7 @@ export default function CreateProcess() {
                                 onChange={handleChange}
                                 type="text"
                                 placeholder="Descrição"
-                                value={processFormData.description}
+                                value={selectionProcessData.description}
                                 aria-label="Descrição"
                                 required
                             />
@@ -184,7 +199,7 @@ export default function CreateProcess() {
                                 onChange={handleChange}
                                 type="date"
                                 placeholder="Data de início"
-                                value={processFormData.startDate}
+                                value={selectionProcessData.startDate}
                                 aria-label="Data de início"
                                 required
                             />
@@ -196,7 +211,7 @@ export default function CreateProcess() {
                                 onChange={handleChange}
                                 type="date"
                                 placeholder="Data de término"
-                                value={processFormData.endDate}
+                                value={selectionProcessData.endDate}
                                 aria-label="Data de término"
                                 required
                             />    
@@ -208,7 +223,7 @@ export default function CreateProcess() {
                                 onChange={handleChange}
                                 type="date"
                                 placeholder="Data de término da análise"
-                                value={processFormData.endAnalysisDate}
+                                value={selectionProcessData.endAnalysisDate}
                                 aria-label="Data de término da análise"
                                 required
                             />
@@ -218,7 +233,7 @@ export default function CreateProcess() {
                         <h2>DADOS SOLICITADOS AO CANDIDATO</h2>
                         <ButtonContainer>
                             <Button 
-                                type="button" 
+                                type="button"
                                 onClick={() => setIsImportModalOpen(true)}
                             >
                                 IMPORTAR
@@ -233,22 +248,28 @@ export default function CreateProcess() {
                     </TableHeaderContainer>
                     <Table 
                         columnsNames={["Nome", "Tipo", "Obrigatório"]} 
-                        data={processFormData.registrationFieldsInfo.map(field => ({
+                        data={selectionProcessData.registrationFieldsInfo.map(field => ({
                             Nome: field.name,
                             Tipo: field.type,
                             Obrigatório: field.required ? "Sim" : "Não"
                         }))}
                         onEditField={handleEditField}
-                        onDeleteField={handleDeleteField} 
+                        onDeleteField={handleDeleteField}
                     />
                     <ButtonContainer>
-                        <Link to="/processes">
+                        <Link to={`/processes/${id}`}>
                             <Button type="button">
                                 CANCELAR
                             </Button>
                         </Link>
                         <Button type="submit">
-                            CRIAR
+                            CONFIRMAR
+                        </Button>
+                        <Button 
+                            type="button" 
+                            onClick={() => console.log(selectionProcessData)}
+                        >
+                            CONSOLAR LOGAR 
                         </Button>
                     </ButtonContainer>
                 {
@@ -276,7 +297,7 @@ export default function CreateProcess() {
                         />
                     )
                 }
-            </CreateProcessFormContainer>
-        </CreateProcessBox>
+            </EditProcessFormContainer>
+        </EditProcessBox>
     );
 }

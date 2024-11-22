@@ -36,14 +36,14 @@ const RedButton = styled(Button)`
   }
 `
 
-export default function Table({ columnsNames, data }) {
+export default function Table({ columnsNames, data, onEditField, onDeleteField }) {
   return (
     <StyledTable>
         <TableHead>
             <TableRow>
-                {columnsNames.map((col, index) => (
+                {columnsNames.map((column, index) => (
                     <TableHeader key={index}>
-                        {col}
+                        {column}
                     </TableHeader>
                 ))}
                 <TableHeader>
@@ -60,10 +60,14 @@ export default function Table({ columnsNames, data }) {
                         </TableCell>
                     ))}
                     <TableCell>
-                        <Button type="button">
+                        <Button 
+                          type="button"
+                          onClick={() => onEditField(rowIndex)}>
                             EDITAR
                         </Button>
-                        <RedButton type="button">
+                        <RedButton 
+                          type="button"
+                          onClick={() => onDeleteField(rowIndex)}>
                             EXCLUIR
                         </RedButton>
                     </TableCell>

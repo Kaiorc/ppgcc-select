@@ -54,7 +54,7 @@ export default function Header() {
 
     return(
         <HeaderContainer>
-            <Link to="/">
+            <Link to="/processes">
                 <UeceLogoImg 
                     src={UeceLogo} 
                     alt='logo' 

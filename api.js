@@ -1,7 +1,7 @@
 import { initializeApp } from "@firebase/app";
 // Importing from /lite can reduce the bundle size, by not bring a bunch of realtime features, but just providing
 // CRUD opoerations reducing the time it takes to load the app
-import { getFirestore, collection, doc, getDocs, getDoc, query, where, addDoc } from "firebase/firestore/lite";
+import { getFirestore, collection, doc, getDocs, getDoc, query, where, addDoc, updateDoc } from "firebase/firestore/lite";
 
 // Web app's Firebase configuration
 const firebaseConfig = {
@@ -24,12 +24,6 @@ export async function getProcess(id) {
     const docRef = doc(db, "processes", id)
     const snapshot = await getDoc(docRef)
     
-    // console.log(snapshot.data())
-    console.log({
-        ...snapshot.data(),
-        id: snapshot.id
-    })
-    
     // If we dont do it this way, the object will not have the "id" property
     return {
         ...snapshot.data(),
@@ -48,6 +42,13 @@ export async function getProcesses() {
 
 export async function createProcess(data) {
     await addDoc(processesCollectionRef, data)
+}
+
+export async function updateProcess(id, data) {
+    const docRef = doc(db, "processes", id)
+    console.log("docRef", docRef)
+    console.log("data", data)
+    await updateDoc(docRef, data)
 }
 
 // Function to get all processes using Mirage.js

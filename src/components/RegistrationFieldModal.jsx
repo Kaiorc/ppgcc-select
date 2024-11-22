@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React from 'react';
 import styled from 'styled-components';
 import Button from '../components/Button';
 import Input from '../components/Input';
@@ -27,29 +27,52 @@ const CheckboxContainer = styled.div`
   margin-bottom: 1em;
 `
 
-export default function RegistrationFieldModal({ onClose, onSave }) {
-  const [fieldName, setFieldName] = useState('');
-  const [fieldType, setFieldType] = useState('text');
-  const [isRequired, setIsRequired] = useState(false);
+export default function RegistrationFieldModal({ onClose, onSave, fieldToEdit }) {
+  const [fieldData, setFieldData] = React.useState({
+    name: '',
+    type: 'text',
+    required: false
+  });
 
-  const handleSave = () => {
-    onSave({ name: fieldName, type: fieldType, required: isRequired });
+  React.useEffect(() => {
+    if (fieldToEdit) {
+      setFieldData({
+        name: fieldToEdit.name,
+        type: fieldToEdit.type,
+        required: fieldToEdit.required,
+        index: fieldToEdit.index
+      });
+    }
+  }, [fieldToEdit]);
+
+  function handleChange(event) {
+    const { name, value, type, checked } = event.target;
+    setFieldData(prevFieldData => ({
+      ...prevFieldData,
+      [name]: type === 'checkbox' ? checked : value
+    }));
+  }
+
+  function handleSave() {
+    onSave(fieldData);
     onClose();
-  };
+  }
 
   return (
     <ModalBackground>
       <ModalContainer>
-        <h2>ADICIONAR CAMPO</h2>
+        <h2>{ fieldToEdit ? 'EDITAR CAMPO' : 'ADICIONAR CAMPO' }</h2>
         <Input
           type="text"
+          name="name"
           placeholder="Nome do Campo"
-          value={fieldName}
-          onChange={(e) => setFieldName(e.target.value)}
+          value={fieldData.name}
+          onChange={handleChange}
         />
         <Select
-          value={fieldType}
-          onChange={(e) => setFieldType(e.target.value)}
+          name="type"
+          value={fieldData.type}
+          onChange={handleChange}
         >
           <option value="text">Texto</option>
           <option value="number">Número</option>
@@ -60,15 +83,26 @@ export default function RegistrationFieldModal({ onClose, onSave }) {
         <CheckboxContainer>
           <label>
             <input
+            name="required"
               type="checkbox"
-              checked={isRequired}
-              onChange={(e) => setIsRequired(e.target.checked)}
+              checked={fieldData.required}
+              onChange={handleChange}
             />
             Obrigatório
           </label>
         </CheckboxContainer>
-        <Button onClick={onClose}>CANCELAR</Button>
-        <Button onClick={handleSave}>SALVAR</Button>
+        <Button 
+          type="button"
+          onClick={onClose}
+        >
+          CANCELAR
+        </Button>
+        <Button
+          type="button"
+          onClick={handleSave}
+        >
+          SALVAR
+        </Button>
       </ModalContainer>
     </ModalBackground>
   );
