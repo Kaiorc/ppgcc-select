@@ -1,10 +1,12 @@
 import React from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import PpgccSymbol from "../assets/images/symbol-ppgcc.png";
-import { styled } from "styled-components";
-import Box from "../components/Box";
-import Input from "../components/Input";
-import Button from "../components/Button";
+import PpgccSymbol from "../assets/images/symbol-ppgcc.png"
+import { styled } from "styled-components"
+import Box from "../components/Box"
+import Input from "../components/Input"
+import Button from "../components/Button"
+import useAuth from "../hooks/useAuth"
+import { authLogInWithEmail } from "../../api"
 
 const LoginContainer = styled.div`
     display: flex;
@@ -46,13 +48,16 @@ export default function Login() {
     const [loginFormData, setLoginFormData] = React.useState({ email: "", password: "" })
     // const [status, setStatus] = React.useState("idle")
     // const [error, setError] = React.useState(null)
+    const navigate = useNavigate();
+    const { setIsLoggedIn } = useAuth();
 
-    function handleSubmit(e) {
-        e.preventDefault()
+    function handleSubmit(event) {
+        event.preventDefault();
+        authLogInWithEmail(loginFormData.email, loginFormData.password, navigate, setIsLoggedIn);
     }
 
-    function handleChange(e) {
-        const { name, value } = e.target
+    function handleChange(event) {
+        const { name, value } = event.target
         setLoginFormData(prev => ({
             ...prev,
             [name]: value
@@ -91,11 +96,11 @@ export default function Login() {
                     />
                     <ButtonContainer>
                         <Link to="/signin">
-                            <Button>
+                            <Button type="button">
                                 CRIAR CONTA
                             </Button>
                         </Link>
-                        <Button>
+                        <Button type="submit">
                             ENTRAR
                         </Button>
                     </ButtonContainer>

@@ -132,8 +132,13 @@ createServer({
 
   routes() {
     this.namespace = "api"
-
+    
+    // Permitir que as requisições para o Firestore passem
     this.passthrough("https://firestore.googleapis.com/**")
+
+    // Permitir que as requisições para o Firebase Auth passem
+    this.passthrough("https://identitytoolkit.googleapis.com/**")
+    this.passthrough("https://securetoken.googleapis.com/**")
 
     this.get("/processes", (schema, request) => {
       // return new Response(400, {}, {error: "Error fetching data"})

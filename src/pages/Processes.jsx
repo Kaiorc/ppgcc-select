@@ -1,9 +1,9 @@
 import React from "react"
-import { styled } from "styled-components";
-import Box from "../components/Box";
-import Button from "../components/Button";
-import { Link } from "react-router-dom";
-import { getProcesses } from "../../api";
+import { styled } from "styled-components"
+import Box from "../components/Box"
+import Button from "../components/Button"
+import { Link } from "react-router-dom"
+import { getProcesses } from "../../api"
 
 const HomeContainer = styled.div`
     display: flex;
@@ -68,7 +68,7 @@ export default function Processes() {
         loadProcesses()
     }, [])
 
-    console.log(selectionProcesses)
+    console.log("Processes.jsx - ", selectionProcesses)
 
     const processesElements = selectionProcesses.map((process) => {
         return (

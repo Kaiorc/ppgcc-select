@@ -1,8 +1,8 @@
-import React from 'react';
-import styled from 'styled-components';
-import Button from '../components/Button';
-import Input from '../components/Input';
-import Select from '../components/Select';
+import React from 'react'
+import styled from 'styled-components'
+import Button from '../components/Button'
+import Input from '../components/Input'
+import Select from '../components/Select'
 
 const ModalBackground = styled.div`
   position: fixed;
@@ -32,7 +32,7 @@ export default function RegistrationFieldModal({ onClose, onSave, fieldToEdit })
     name: '',
     type: 'text',
     required: false
-  });
+  })
 
   React.useEffect(() => {
     if (fieldToEdit) {
@@ -41,21 +41,21 @@ export default function RegistrationFieldModal({ onClose, onSave, fieldToEdit })
         type: fieldToEdit.type,
         required: fieldToEdit.required,
         index: fieldToEdit.index
-      });
+      })
     }
-  }, [fieldToEdit]);
+  }, [fieldToEdit])
 
   function handleChange(event) {
     const { name, value, type, checked } = event.target;
     setFieldData(prevFieldData => ({
       ...prevFieldData,
       [name]: type === 'checkbox' ? checked : value
-    }));
+    }))
   }
 
   function handleSave() {
-    onSave(fieldData);
-    onClose();
+    onSave(fieldData)
+    onClose()
   }
 
   return (

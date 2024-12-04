@@ -1,40 +1,40 @@
-import React from "react";
-import { styled } from "styled-components";
-import { Link } from "react-router-dom";
-import Input from "../components/Input";
-import TextArea from "../components/TextArea";
-import Button from "../components/Button";
-import Box from "../components/Box";
-import Table from "../components/Table";
-import RegistrationFieldModal from "../components/RegistrationFieldModal";
-import ImportProcessFieldModal from "../components/ImportProcessFieldModal";
-import { createProcess } from "../../api";
+import React from "react"
+import { styled } from "styled-components"
+import { Link } from "react-router-dom"
+import Input from "../components/Input"
+import TextArea from "../components/TextArea"
+import Button from "../components/Button"
+import Box from "../components/Box"
+import Table from "../components/Table"
+import RegistrationFieldModal from "../components/RegistrationFieldModal"
+import ImportProcessFieldModal from "../components/ImportProcessFieldModal"
+import { createProcess } from "../../api"
 
 const CreateProcessBox = styled(Box)`
     padding: 1em;
-`;
+`
 
 const CreateProcessFormContainer = styled.form`
     
-`;
+`
 
 const InputContainer = styled.div`
     /* & input[type=date] { */
     & input, textarea {
         margin-top: 0;
     };
-`;
+`
 
 const ButtonContainer = styled.div`
 
-`;
+`
 
 const TableHeaderContainer = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-`;
+`
 
 const RedButton = styled(Button)`
   background-color: red;
@@ -43,7 +43,7 @@ const RedButton = styled(Button)`
   &:hover {
     background-color: darkred;
   }
-`;
+`
 
 export default function CreateProcess() {
     const [processFormData, setProcessFormData] = React.useState({
@@ -55,12 +55,12 @@ export default function CreateProcess() {
         endDate: "",
         endAnalysisDate: "", 
         registrationFieldsInfo: []
-    });
+    })
 
-    const [isRegistrationModalOpen, setIsRegistrationModalOpen] = React.useState(false);
-    const [isImportModalOpen, setIsImportModalOpen] = React.useState(false);
-    const [fieldBeingEdited, setFieldBeingEdited] = React.useState(null);
-    const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+    const [isRegistrationModalOpen, setIsRegistrationModalOpen] = React.useState(false)
+    const [isImportModalOpen, setIsImportModalOpen] = React.useState(false)
+    const [fieldBeingEdited, setFieldBeingEdited] = React.useState(null)
+    const [isEditModalOpen, setIsEditModalOpen] = React.useState(false)
 
     async function handleSubmit(event) {
         event.preventDefault();
@@ -85,7 +85,7 @@ export default function CreateProcess() {
             ...prevProcessFormData,
             registrationFieldsInfo: [...prevProcessFormData.registrationFieldsInfo, field]
         }));
-    };
+    }
 
     function handleImportFields(process) {
         setProcessFormData(prevProcessFormData => ({
@@ -96,14 +96,14 @@ export default function CreateProcess() {
             ]
         }));
         setIsImportModalOpen(false);
-    };
+    }
 
     function handleDeleteField(index) {
         setProcessFormData(prevProcessFormData => ({
             ...prevProcessFormData,
             registrationFieldsInfo: prevProcessFormData.registrationFieldsInfo.filter((_, i) => i !== index)
         }));
-    };
+    }
 
     function handleEditField(index) {
         setFieldBeingEdited({ ...processFormData.registrationFieldsInfo[index], index });

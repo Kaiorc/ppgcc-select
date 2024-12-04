@@ -2,40 +2,40 @@ import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
 import { getProcess, updateProcess } from "../../api"
-import { Link } from "react-router-dom";
-import Input from "../components/Input";
-import TextArea from "../components/TextArea";
-import Button from "../components/Button";
-import Box from "../components/Box";
-import Table from "../components/Table";
-import RegistrationFieldModal from "../components/RegistrationFieldModal";
-import ImportProcessFieldModal from "../components/ImportProcessFieldModal";
+import { Link } from "react-router-dom"
+import Input from "../components/Input"
+import TextArea from "../components/TextArea"
+import Button from "../components/Button"
+import Box from "../components/Box"
+import Table from "../components/Table"
+import RegistrationFieldModal from "../components/RegistrationFieldModal"
+import ImportProcessFieldModal from "../components/ImportProcessFieldModal"
 
 const EditProcessBox = styled(Box)`
     padding: 1em;
-`;
+`
 
 const EditProcessFormContainer = styled.form`
     
-`;
+`
 
 const InputContainer = styled.div`
     /* & input[type=date] { */
     & input, textarea {
         margin-top: 0;
     };
-`;
+`
 
 const ButtonContainer = styled.div`
 
-`;
+`
 
 const TableHeaderContainer = styled.div`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-`;
+`
 
 const RedButton = styled(Button)`
   background-color: red;
@@ -44,7 +44,7 @@ const RedButton = styled(Button)`
   &:hover {
     background-color: darkred;
   }
-`;
+`
 
 export default function EditProcess() {
 
@@ -57,7 +57,7 @@ export default function EditProcess() {
         endDate: "",
         endAnalysisDate: "", 
         registrationFieldsInfo: []
-    });
+    })
 
     const { id } = useParams()
 
@@ -100,7 +100,7 @@ export default function EditProcess() {
             ...prevSelectionProcessData,
             registrationFieldsInfo: [...prevSelectionProcessData.registrationFieldsInfo, field]
         }));
-    };
+    }
 
     function handleImportFields(process) {
         setSelectionProcessData(prevSelectionProcessData => ({
@@ -111,30 +111,30 @@ export default function EditProcess() {
             ]
         }));
         setIsImportModalOpen(false);
-    };
+    }
 
     function handleDeleteField(index) {
         setSelectionProcessData(prevSelectionProcessData => ({
             ...prevSelectionProcessData,
             registrationFieldsInfo: prevSelectionProcessData.registrationFieldsInfo.filter((_, i) => i !== index)
-        }));
-    };
+        }))
+    }
 
     function handleEditField(index) {
-        setFieldBeingEdited({ ...selectionProcessData.registrationFieldsInfo[index], index });
-        setIsEditModalOpen(true);
+        setFieldBeingEdited({ ...selectionProcessData.registrationFieldsInfo[index], index })
+        setIsEditModalOpen(true)
     }
 
     function handleSaveEditedField(editedField) {
         setSelectionProcessData(prevSelectionProcessData => {
-            const updatedFields = [...prevSelectionProcessData.registrationFieldsInfo];
-            updatedFields[editedField.index] = editedField;
+            const updatedFields = [...prevSelectionProcessData.registrationFieldsInfo]
+            updatedFields[editedField.index] = editedField
             return {
                 ...prevSelectionProcessData,
                 registrationFieldsInfo: updatedFields
-            };
-        });
-        setIsEditModalOpen(false);
+            }
+        })
+        setIsEditModalOpen(false)
     }
 
     return (
@@ -264,12 +264,6 @@ export default function EditProcess() {
                         </Link>
                         <Button type="submit">
                             CONFIRMAR
-                        </Button>
-                        <Button 
-                            type="button" 
-                            onClick={() => console.log(selectionProcessData)}
-                        >
-                            CONSOLAR LOGAR 
                         </Button>
                     </ButtonContainer>
                 {

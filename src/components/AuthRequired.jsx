@@ -1,15 +1,19 @@
-import React from 'react';
-import { Outlet, Navigate } from 'react-router-dom';
-import useAuth from '../hooks/useAuth';
+import React from 'react'
+import { Outlet, Navigate } from 'react-router-dom'
+import useAuth from '../hooks/useAuth'
 
 export default function AuthRequired() {
-  const { isLoggedIn } = useAuth();
+  const { isLoggedIn } = useAuth()
 
-  console.log(isLoggedIn);
+  console.log("AuthRequired.jsx - ", isLoggedIn)
 
-  if (!isLoggedIn) {
-    return <Navigate to="/" />;
+  if (isLoggedIn === null) {
+    return <div>Loading...</div>
   }
 
-  return <Outlet />;
+  if (!isLoggedIn) {
+    return <Navigate to="/" />
+  }
+
+  return <Outlet />
 }

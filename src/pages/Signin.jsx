@@ -1,10 +1,11 @@
 import React from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import PpgccSymbol from "../assets/images/symbol-ppgcc.png";
-import { styled } from "styled-components";
-import Box from "../components/Box";
-import Input from "../components/Input";
-import Button from "../components/Button";
+import PpgccSymbol from "../assets/images/symbol-ppgcc.png"
+import { styled } from "styled-components"
+import Box from "../components/Box"
+import Input from "../components/Input"
+import Button from "../components/Button"
+import { authCreateAccountWithEmail } from "../../api"
 
 const SigninContainer = styled.div`
     display: flex;
@@ -54,10 +55,12 @@ export default function Signin() {
     const [signinFormData, setSigninFormData] = React.useState({ email: "", password: "", confirmPassword: "" })
     // const [status, setStatus] = React.useState("idle")
     // const [error, setError] = React.useState(null)
+    const navigate = useNavigate()
 
-    function handleSubmit(e) {
-        e.preventDefault()
+    function handleSubmit(event) {
+        event.preventDefault()
         console.log(signinFormData)
+        authCreateAccountWithEmail(signinFormData.email, signinFormData.password, navigate)
     }
 
     function handleChange(event) {
@@ -67,16 +70,6 @@ export default function Signin() {
             [name]: value
         }))
     }
-
-    const handleCancel = (event) => {
-        event.preventDefault();
-        console.log('Ação cancelada');
-        setSigninFormData({
-          email: '',
-          password: '',
-          confirmPassword: '',
-        });
-      };
 
     return (
         <SigninContainer>
@@ -121,7 +114,7 @@ export default function Signin() {
                     </InputContainer>
                     <ButtonContainer>
                         <Link to="..">
-                            <Button>
+                            <Button type="button">
                                 CANCELAR
                             </Button>
                         </Link>
