@@ -46,6 +46,23 @@ const RedButton = styled(Button)`
   }
 `
 
+function mapFieldType(type) {
+    switch(type) {
+        case 'text':
+            return 'Texto';
+        case 'number':
+            return 'Número';
+        case 'date':
+            return 'Data';
+        case 'email':
+            return 'Email';
+        case 'file':
+            return 'Arquivo';
+        default:
+            return type;
+    }
+}
+
 export default function EditProcess() {
 
     const [selectionProcessData, setSelectionProcessData] = React.useState({
@@ -250,7 +267,7 @@ export default function EditProcess() {
                         columnsNames={["Nome", "Tipo", "Obrigatório"]} 
                         data={selectionProcessData.registrationFieldsInfo.map(field => ({
                             Nome: field.name,
-                            Tipo: field.type,
+                            Tipo: mapFieldType(field.type),
                             Obrigatório: field.required ? "Sim" : "Não"
                         }))}
                         onEditField={handleEditField}

@@ -3,6 +3,7 @@ import DOMPurify from "dompurify";
 import { Link, useParams, useLocation, Outlet } from "react-router-dom"
 import { getProcess } from "../../api"
 import styled from "styled-components"
+import useRole from "../hooks/useRole"
 import Box from "../components/Box"
 import Button from "../components/Button"
 
@@ -68,6 +69,7 @@ export default function ProcessDetail() {
 
     const { id } = useParams()
     const location = useLocation()
+    const isAdmin = useRole()
 
     React.useEffect(() => {
         async function loadProcess() {
@@ -83,14 +85,23 @@ export default function ProcessDetail() {
                 <ProcessDetailBox>
                     <TitleContainer>
                         <h1>{selectionProcess.name}</h1>
-                        <TitleButtonContainer>
-                            <Link to="applications">
-                                <Button>INSCRIÇÕES</Button>
-                            </Link>
-                            <Link to="edit-process">
-                                <Button>EDITAR</Button>
-                            </Link>
-                        </TitleButtonContainer>
+                        {
+                            isAdmin ?
+                                <TitleButtonContainer>
+                                    <Link to="applications">
+                                        <Button>INSCRIÇÕES</Button>
+                                    </Link>
+                                    <Link to="edit-process">
+                                        <Button>EDITAR</Button>
+                                    </Link>
+                                </TitleButtonContainer>
+                                :
+                                <TitleButtonContainer>
+                                    <Link to="application">
+                                        <Button>INSCREVER-SE</Button>
+                                    </Link>
+                                </TitleButtonContainer>
+                        }
                     </TitleContainer>
                     <InfoContainer>
                         <h3>Número de vagas:</h3>

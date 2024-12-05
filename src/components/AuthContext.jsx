@@ -1,18 +1,20 @@
-import React, { createContext, useContext} from 'react';
-import { authListener } from '../../api';
+import React, { createContext, useContext} from 'react'
+import { authListener } from '../../api'
 
-export const AuthContext = createContext();
+export const AuthContext = createContext()
 
 export function AuthProvider ({ children }) {
-  const [isLoggedIn, setIsLoggedIn] = React.useState(null);
+  const [isLoggedIn, setIsLoggedIn] = React.useState(null)
+  const [userRole, setUserRole] = React.useState(null)
+  const [displayName, setDisplayName] = React.useState(null)
 
   React.useEffect(() => {
-    authListener(setIsLoggedIn, isLoggedIn);
-  }, []);
+    authListener(setIsLoggedIn, setUserRole, setDisplayName)
+  }, [])
 
   return (
-    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn }}>
+    <AuthContext.Provider value={{ isLoggedIn, setIsLoggedIn, userRole, displayName }}>
       {children}
     </AuthContext.Provider>
-  );
-};
+  )
+}

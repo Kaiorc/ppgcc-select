@@ -18,7 +18,8 @@ import {
     createUserWithEmailAndPassword, 
     signInWithEmailAndPassword, 
     signOut, 
-    getIdTokenResult 
+    getIdTokenResult,
+    updateProfile
 } from "firebase/auth"
 
 // Web app's Firebase configuration
@@ -70,8 +71,8 @@ export async function createProcess(data) {
 // Função para atualizar um processo existente pelo ID
 export async function updateProcess(id, data) {
     const docRef = doc(db, "processes", id) // Função para atualizar um processo existente pelo ID
-    console.log("api.js - docRef: ", docRef) // Loga a referência do documento
-    console.log("api.js - data: ", data) // Loga os dados a serem atualizados
+    console.log("api.js - updateProcess() - docRef: ", docRef) // Loga a referência do documento
+    console.log("api.js - updateProcess() - data: ", data) // Loga os dados a serem atualizados
     await updateDoc(docRef, data) // Atualiza o documento no Firestore com os novos dados
 }
 
@@ -79,24 +80,35 @@ export async function updateProcess(id, data) {
 const auth = getAuth(app)
 
 // Função para configurar o listener de autenticação
-export function authListener(setIsLoggedIn) {
-    onAuthStateChanged(auth, (user) => {
+export function authListener(setIsLoggedIn, setUserRole, setDisplayName) {
+    onAuthStateChanged(auth, async (user) => {
         if (user) {
             setIsLoggedIn(true)
-            console.log("api.js - User is logged in")
-            console.log("api.js - ", user)
-            logUserCustomClaims(user)
+            console.log("api.js - authListener() - User is logged in")
+            console.log("api.js - authListener() - ", user)
+            const role = await getUserRole(user)
+            setUserRole(role)
+            setDisplayName(user.displayName)
         } else {
             setIsLoggedIn(false)
-            console.log("api.js - User is logged out")
+            console.log("api.js - authListener() - User is logged out")
+            setUserRole(null);
+            setDisplayName(null);
         }
     });
 }
 
 // Função para criar uma conta com email e senha
-export function authCreateAccountWithEmail(email, password, navigate) {
+export function authCreateAccountWithEmail(name, email, password, navigate) {
     createUserWithEmailAndPassword(auth, email, password)
         .then((userCredential) => {
+            updateProfile(auth.currentUser, {
+                    displayName: name
+                }).then(() => {
+                    console.log("Profile updated")
+                }).catch((error) => {
+                    console.error(error.message)
+                })
             navigate("/")
         })
         .catch((error) => {
@@ -105,24 +117,50 @@ export function authCreateAccountWithEmail(email, password, navigate) {
 }
 
 export function authLogInWithEmail(email, password, navigate, setIsLoggedIn) { 
-    signInWithEmailAndPassword(auth, email, password)
-        .then((userCredential) => {
-            setIsLoggedIn(true)
-            navigate("/processes")
-        })
-        .catch((error) => {
-            console.error(error.message)
-        })
+    try{
+        signInWithEmailAndPassword(auth, email, password)
+        setIsLoggedIn(true)
+        navigate("/processes")
+    } catch(error) {
+        console.error(error.message)
+    }
+        // .then((userCredential) => {
+        //     setIsLoggedIn(true)
+        //     navigate("/processes")
+        // })
+        // .catch((error) => {
+        //     console.error(error.message)
+        // })
 }
 
 export function authLogOut(navigate, setIsLoggedIn) {
-    signOut(auth)
-        .then(() => {
+    try {
+        signOut(auth)
             setIsLoggedIn(false)
             navigate("/")
-        }).catch((error) => {
+        } catch(error) {
             console.error(error.message)
-        })
+        }
+    // signOut(auth)
+    //     .then(() => {
+    //         setIsLoggedIn(false)
+    //         navigate("/")
+    //     }).catch((error) => {
+    //         console.error(error.message)
+    //     })
+}
+
+// Função para obter o papel do usuário
+export async function getUserRole(user) {
+    if (!user) return null;
+    try {
+        const tokenResult = await getIdTokenResult(user);
+        console.log("api.js - getUserRole() - Papel do usuário: ", tokenResult.claims.role);
+        return tokenResult.claims.role || null; // Retorna "role" ou null
+    } catch (error) {
+        console.error("api.js - getUserRole() - Erro ao obter o papel do usuário:", error);
+        return null;
+    }
 }
 
 // Função para logar as custom claims do usuário logado
@@ -132,15 +170,15 @@ export async function logUserCustomClaims(user) {
             const tokenResult = await getIdTokenResult(user)
             const claims = tokenResult.claims;
             if (claims.role === "administrador") {
-                console.log("api.js - Custom Claims:", claims)
+                console.log("api.js - logUserCustomClaims() - Custom Claims:", claims)
             } else {
-                console.log("api.js - O usuário não possui a role de administrador.")
+                console.log("api.js - logUserCustomClaims() - O usuário não possui a role de administrador.")
             }
         } catch (error) {
-            console.error("api.js - Erro ao obter custom claims:", error)
+            console.error("api.js - logUserCustomClaims() - Erro ao obter custom claims:", error)
         }
     } else {
-        console.log("api.js - Nenhum usuário está logado.")
+        console.log("api.js - logUserCustomClaims() - Nenhum usuário está logado.")
     }
 }
 

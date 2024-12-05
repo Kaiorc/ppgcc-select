@@ -52,7 +52,7 @@ const PpgccSymbolImg = styled.img`
 
 export default function Signin() {
 
-    const [signinFormData, setSigninFormData] = React.useState({ email: "", password: "", confirmPassword: "" })
+    const [signinFormData, setSigninFormData] = React.useState({ name: "", email: "", password: "", confirmPassword: "" })
     // const [status, setStatus] = React.useState("idle")
     // const [error, setError] = React.useState(null)
     const navigate = useNavigate()
@@ -60,7 +60,7 @@ export default function Signin() {
     function handleSubmit(event) {
         event.preventDefault()
         console.log(signinFormData)
-        authCreateAccountWithEmail(signinFormData.email, signinFormData.password, navigate)
+        authCreateAccountWithEmail(signinFormData.name, signinFormData.email, signinFormData.password, navigate)
     }
 
     function handleChange(event) {
@@ -84,6 +84,15 @@ export default function Signin() {
                 <h1>Criar Conta</h1>
                 <SigninFormContainer onSubmit={handleSubmit}>
                     <InputContainer>
+                        <Input
+                            name="name"
+                            onChange={handleChange}
+                            type="text"
+                            placeholder="Nome"
+                            value={signinFormData.name}
+                            aria-label="Nome"
+                            required
+                        />
                         <Input
                             name="email"
                             onChange={handleChange}

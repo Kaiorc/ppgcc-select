@@ -1,9 +1,10 @@
 import React from "react"
 import { styled } from "styled-components"
-import Box from "../components/Box"
-import Button from "../components/Button"
 import { Link } from "react-router-dom"
 import { getProcesses } from "../../api"
+import useRole from "../hooks/useRole"
+import Box from "../components/Box"
+import Button from "../components/Button"
 
 const HomeContainer = styled.div`
     display: flex;
@@ -57,9 +58,11 @@ const ListItem = styled.li`
 `
 
 export default function Processes() {
-
     const [selectionProcesses, setSelectionProcesses] = React.useState([])
 
+    const isAdmin = useRole()
+    console.log("Processes.jsx - isAdmin: ", isAdmin)
+    
     React.useEffect(() => {
         async function loadProcesses() {
             const data = await getProcesses()
@@ -97,9 +100,14 @@ export default function Processes() {
             <Box>
                 <ListHeader>
                     <h1>PROCESSOS SELETIVOS</h1>
-                    <Link to="create-process">
-                        <Button type="button">ADICIONAR</Button>  
-                    </Link>
+                    {
+                        isAdmin ?
+                            <Link to="create-process">
+                                <Button type="button">ADICIONAR</Button>  
+                            </Link>
+                            :
+                            null
+                    }
                 </ListHeader>
                 <List role="list">
                     {processesElements}

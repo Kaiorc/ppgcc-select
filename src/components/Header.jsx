@@ -54,8 +54,10 @@ export default function Header() {
     const navigate = useNavigate()
 
     // const { isLoggedIn } = useAuth();
-    const { isLoggedIn, setIsLoggedIn } = useAuth();
+    const { isLoggedIn, setIsLoggedIn, displayName } = useAuth();
 
+    console.log(displayName)
+    
     return(
         <HeaderContainer>
             <Link to="/processes">
@@ -73,7 +75,7 @@ export default function Header() {
                 />
                 { isLoggedIn && location.pathname !== "/" && location.pathname !== "/signin" && (
                     <InfoAreaContainer>
-                        <InfoMessage>BEM VINDO(A), XXXXX XXXXXXXXX</InfoMessage>
+                        <InfoMessage>BEM VINDO(A), {displayName ? displayName.toUpperCase() : "CANDIDATO(A)"}</InfoMessage>
                         <Button 
                             type="button"
                             onClick={() => authLogOut(navigate, setIsLoggedIn)}	

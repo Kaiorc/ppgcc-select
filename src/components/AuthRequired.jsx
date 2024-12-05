@@ -2,8 +2,9 @@ import React from 'react'
 import { Outlet, Navigate } from 'react-router-dom'
 import useAuth from '../hooks/useAuth'
 
-export default function AuthRequired() {
-  const { isLoggedIn } = useAuth()
+export default function AuthRequired({requiredRole}) {
+  
+  const { isLoggedIn, userRole } = useAuth()
 
   console.log("AuthRequired.jsx - ", isLoggedIn)
 
@@ -13,6 +14,10 @@ export default function AuthRequired() {
 
   if (!isLoggedIn) {
     return <Navigate to="/" />
+  }
+
+  if (requiredRole && userRole !== requiredRole) {
+    return <Navigate to="/not-authorized" />;
   }
 
   return <Outlet />
