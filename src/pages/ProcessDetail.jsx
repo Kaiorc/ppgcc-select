@@ -1,7 +1,7 @@
 import React from "react"
 import DOMPurify from "dompurify";
 import { Link, useParams, useLocation, Outlet } from "react-router-dom"
-import { getProcess } from "../../api"
+import { getProcess } from "../../firebase/firebase-firestore"
 import styled from "styled-components"
 import useRole from "../hooks/useRole"
 import Box from "../components/Box"
@@ -78,6 +78,8 @@ export default function ProcessDetail() {
         }
         loadProcess()
     }, [id])
+
+    console.log(selectionProcess)
     
     return (
         <>  

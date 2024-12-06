@@ -1,7 +1,7 @@
 import React from "react"
 import { styled } from "styled-components"
 import { Link } from "react-router-dom"
-import { getProcesses } from "../../api"
+import { getProcesses } from "../../firebase/firebase-firestore"
 import useRole from "../hooks/useRole"
 import Box from "../components/Box"
 import Button from "../components/Button"
@@ -61,7 +61,7 @@ export default function Processes() {
     const [selectionProcesses, setSelectionProcesses] = React.useState([])
 
     const isAdmin = useRole()
-    console.log("Processes.jsx - isAdmin: ", isAdmin)
+    // console.log("Processes.jsx - isAdmin: ", isAdmin)
     
     React.useEffect(() => {
         async function loadProcesses() {
@@ -71,7 +71,7 @@ export default function Processes() {
         loadProcesses()
     }, [])
 
-    console.log("Processes.jsx - ", selectionProcesses)
+    // console.log("Processes.jsx - ", selectionProcesses)
 
     const processesElements = selectionProcesses.map((process) => {
         return (

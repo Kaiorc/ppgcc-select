@@ -1,5 +1,5 @@
 import React, { createContext, useContext} from 'react'
-import { authListener } from '../../api'
+import { authListener } from "../../firebase/firebase-authentication"
 
 export const AuthContext = createContext()
 

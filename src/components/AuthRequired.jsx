@@ -6,7 +6,7 @@ export default function AuthRequired({requiredRole}) {
   
   const { isLoggedIn, userRole } = useAuth()
 
-  console.log("AuthRequired.jsx - ", isLoggedIn)
+  // console.log("AuthRequired.jsx - ", isLoggedIn)
 
   if (isLoggedIn === null) {
     return <div>Loading...</div>

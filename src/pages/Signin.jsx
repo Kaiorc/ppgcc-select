@@ -5,7 +5,7 @@ import { styled } from "styled-components"
 import Box from "../components/Box"
 import Input from "../components/Input"
 import Button from "../components/Button"
-import { authCreateAccountWithEmail } from "../../api"
+import { authCreateAccountWithEmail } from "../../firebase/firebase-authentication"
 
 const SigninContainer = styled.div`
     display: flex;
@@ -50,17 +50,40 @@ const PpgccSymbolImg = styled.img`
     height: 16vh;
 `
 
+const ErrorMessage= styled.p`
+    color: red;
+`
+
 export default function Signin() {
 
     const [signinFormData, setSigninFormData] = React.useState({ name: "", email: "", password: "", confirmPassword: "" })
     // const [status, setStatus] = React.useState("idle")
-    // const [error, setError] = React.useState(null)
+    const [error, setError] = React.useState(null)
+
     const navigate = useNavigate()
+
+    function validateForm() {
+        if (!signinFormData.name || !signinFormData.email || !signinFormData.password || !signinFormData.confirmPassword) {
+            setError("Todos os campos são obrigatórios.")
+            return false
+        }
+        if (signinFormData.password !== signinFormData.confirmPassword) {
+            setError("As senhas não coincidem.")
+            return false
+        }
+        setError(null)
+        return true
+    }
 
     function handleSubmit(event) {
         event.preventDefault()
-        console.log(signinFormData)
-        authCreateAccountWithEmail(signinFormData.name, signinFormData.email, signinFormData.password, navigate)
+        if (validateForm()) {
+            authCreateAccountWithEmail(signinFormData.name, signinFormData.email, signinFormData.password, navigate)
+                .catch((error) => {
+                    setError("Falha ao fazer o cadastro. Verifique suas credenciais.")
+                    console.error(error.message)
+                });
+        }
     }
 
     function handleChange(event) {
@@ -121,6 +144,7 @@ export default function Signin() {
                             required
                         />
                     </InputContainer>
+                    {error && <ErrorMessage>{error}</ErrorMessage>}
                     <ButtonContainer>
                         <Link to="..">
                             <Button type="button">

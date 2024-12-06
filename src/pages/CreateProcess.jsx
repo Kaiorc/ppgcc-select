@@ -8,7 +8,7 @@ import Box from "../components/Box"
 import Table from "../components/Table"
 import RegistrationFieldModal from "../components/RegistrationFieldModal"
 import ImportProcessFieldModal from "../components/ImportProcessFieldModal"
-import { createProcess } from "../../api"
+import { createProcess } from "../../firebase/firebase-firestore"
 
 const CreateProcessBox = styled(Box)`
     padding: 1em;

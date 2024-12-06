@@ -5,7 +5,7 @@ import { styled } from "styled-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "./Button";
 import useAuth from "../hooks/useAuth";
-import { authLogOut } from "../../api";
+import { authLogOut } from "../../firebase/firebase-authentication";
 
 const HeaderContainer = styled.header`
     background-color: #008442;
@@ -49,14 +49,14 @@ const PpgccLogoImg = styled.img`
 export default function Header() {
 
     let location = useLocation();
-    console.log("Header.jsx - ", location.pathname)
+    // console.log("Header.jsx - ", location.pathname)
 
     const navigate = useNavigate()
 
     // const { isLoggedIn } = useAuth();
     const { isLoggedIn, setIsLoggedIn, displayName } = useAuth();
 
-    console.log(displayName)
+    // console.log(displayName)
     
     return(
         <HeaderContainer>

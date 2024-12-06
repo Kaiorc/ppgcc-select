@@ -6,7 +6,7 @@ import Box from "../components/Box"
 import Input from "../components/Input"
 import Button from "../components/Button"
 import useAuth from "../hooks/useAuth"
-import { authLogInWithEmail } from "../../api"
+import { authLogInWithEmail } from "../../firebase/firebase-authentication"
 
 const LoginContainer = styled.div`
     display: flex;
@@ -43,17 +43,37 @@ const PpgccSymbolImg = styled.img`
     height: 16vh;
 `
 
+const ErrorMessage= styled.p`
+    color: red;
+`
+
 export default function Login() {
 
     const [loginFormData, setLoginFormData] = React.useState({ email: "", password: "" })
     // const [status, setStatus] = React.useState("idle")
-    // const [error, setError] = React.useState(null)
+    const [error, setError] = React.useState(null)
+
     const navigate = useNavigate();
     const { setIsLoggedIn } = useAuth();
 
+    function validateForm() {
+        if (!loginFormData.email || !loginFormData.password) {
+            setError("Por favor, preencha todos os campos.")
+            return false
+        }
+        setError(null)
+        return true
+    }
+
     function handleSubmit(event) {
-        event.preventDefault();
-        authLogInWithEmail(loginFormData.email, loginFormData.password, navigate, setIsLoggedIn);
+        event.preventDefault()
+        if (validateForm()) {
+            authLogInWithEmail(loginFormData.email, loginFormData.password, navigate, setIsLoggedIn)
+                .catch((error) => {
+                    setError("Falha ao fazer login. Verifique suas credenciais.")
+                    console.error(error.message);
+                })
+        }
     }
 
     function handleChange(event) {
@@ -62,6 +82,7 @@ export default function Login() {
             ...prev,
             [name]: value
         }))
+        setError(null)
     }
 
     return (
@@ -94,6 +115,7 @@ export default function Login() {
                         aria-label="Senha"
                         required
                     />
+                    {error && <ErrorMessage>{error}</ErrorMessage>}
                     <ButtonContainer>
                         <Link to="/signin">
                             <Button type="button">

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import Button from './Button';
-import { getProcesses } from '../../api';
+import { getProcesses } from "../../firebase/firebase-firestore";
 
 const ModalBackground = styled.div`
   position: fixed;

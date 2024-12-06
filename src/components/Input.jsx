@@ -15,7 +15,7 @@ const StyledInput = styled.input`
     }
 `
 
-export default function Input({ name, onChange, type, placeholder, value, min }) {
+export default function Input({ name, onChange, type, placeholder, value, min, required }) {
     
     return (
         <StyledInput
@@ -24,7 +24,8 @@ export default function Input({ name, onChange, type, placeholder, value, min })
             type={type}
             placeholder={placeholder}
             value={value}
-            min={type === "number" ? min : 1} 
+            min={type === "number" ? min : 1}
+            required={required}
         />
     )
 }

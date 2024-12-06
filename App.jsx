@@ -13,6 +13,7 @@ import ProcessDetail from './src/pages/ProcessDetail'
 import NotAuthorized from './src/pages/NotAuthorized'
 import NotFound from './src/pages/NotFound'
 import Applications from './src/pages/Applications'
+import Application from './src/pages/Application'
 
 const GlobalStyle = createGlobalStyle`
   * {
@@ -51,9 +52,10 @@ export default function App() {
             <Route path='/' element={<Layout />}>
               <Route index element={<Login />} />
               <Route path="/signin" element={<Signin />} />
-              <Route element={<AuthRequired M/>}>
+              <Route element={<AuthRequired />}>
                 <Route path="/processes" element={<Processes />}/>
                 <Route path="/processes/:id" element={<ProcessDetail />} />
+                <Route path="/processes/:id/application" element={<Application />} />
               </Route>
               <Route element={<AuthRequired requiredRole="administrador"/>}>
                 <Route path="/processes/create-process" element={<CreateProcess />} />

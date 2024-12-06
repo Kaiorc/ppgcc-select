@@ -2,7 +2,6 @@ import { useContext } from "react";
 import { AuthContext } from "../components/AuthContext";
 
 export default function useRole() {
-
     const { userRole } = useContext(AuthContext)
 
     const isAdmin = true

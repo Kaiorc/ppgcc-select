@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { getProcess, updateProcess } from "../../api"
+import { getProcess, updateProcess } from "../../firebase/firebase-firestore"
 import { Link } from "react-router-dom"
 import Input from "../components/Input"
 import TextArea from "../components/TextArea"
