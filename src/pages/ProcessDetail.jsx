@@ -1,7 +1,7 @@
 import React from "react"
 import DOMPurify from "dompurify";
 import { Link, useParams, useLocation, Outlet } from "react-router-dom"
-import { getProcess } from "../../firebase/firebase-firestore"
+import { loadProcess } from "../../firebase/firebase-firestore"
 import styled from "styled-components"
 import useRole from "../hooks/useRole"
 import Box from "../components/Box"
@@ -63,7 +63,7 @@ function formatText(text) {
 }
 
 export default function ProcessDetail() {
-    const [selectionProcess, setSelectionProcess] = React.useState()
+    const [selectionProcess, setSelectionProcess] = React.useState(null)
     // const [loading, setLoading] = React.useState(false)
     // const [error, setError] = React.useState(null)
 
@@ -72,14 +72,12 @@ export default function ProcessDetail() {
     const isAdmin = useRole()
 
     React.useEffect(() => {
-        async function loadProcess() {
-            const data = await getProcess(id)
-            setSelectionProcess(data)
-        }
-        loadProcess()
+        loadProcess(id, setSelectionProcess)
     }, [id])
 
     console.log(selectionProcess)
+    console.log(location)
+    console.log(id)
     
     return (
         <>  

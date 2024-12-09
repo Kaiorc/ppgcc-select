@@ -1,7 +1,8 @@
 import React from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import PpgccSymbol from "../assets/images/symbol-ppgcc.png"
+import { useForm } from "react-hook-form"
 import { styled } from "styled-components"
+import PpgccSymbol from "../assets/images/symbol-ppgcc.png"
 import Box from "../components/Box"
 import Input from "../components/Input"
 import Button from "../components/Button"
@@ -55,44 +56,66 @@ const ErrorMessage= styled.p`
 `
 
 export default function Signin() {
+    const { register, handleSubmit, watch, formState: { errors } } = useForm()
 
-    const [signinFormData, setSigninFormData] = React.useState({ name: "", email: "", password: "", confirmPassword: "" })
+    // const [signinFormData, setSigninFormData] = React.useState({ name: "", email: "", password: "", confirmPassword: "" })
     // const [status, setStatus] = React.useState("idle")
     const [error, setError] = React.useState(null)
 
     const navigate = useNavigate()
-
-    function validateForm() {
-        if (!signinFormData.name || !signinFormData.email || !signinFormData.password || !signinFormData.confirmPassword) {
-            setError("Todos os campos são obrigatórios.")
-            return false
-        }
-        if (signinFormData.password !== signinFormData.confirmPassword) {
-            setError("As senhas não coincidem.")
-            return false
-        }
-        setError(null)
-        return true
-    }
-
-    function handleSubmit(event) {
-        event.preventDefault()
-        if (validateForm()) {
-            authCreateAccountWithEmail(signinFormData.name, signinFormData.email, signinFormData.password, navigate)
-                .catch((error) => {
-                    setError("Falha ao fazer o cadastro. Verifique suas credenciais.")
-                    console.error(error.message)
-                });
+    
+    function validatePasswordsMatch(value) {
+        if (value !== watch("password")) {
+            return "As senhas não coincidem."
         }
     }
 
-    function handleChange(event) {
-        const {name, value} = event.target
-        setSigninFormData(prevSigninFormData => ({
-            ...prevSigninFormData,
-            [name]: value
-        }))
+    async function onSubmit(data) {
+        console.log(data)
+        try{
+            await authCreateAccountWithEmail(data.name, data.email, data.password, navigate)
+        } catch(error) {
+            if (error.code === 'auth/email-already-in-use') {
+                setError("Este email já está em uso. Por favor, use outro email.")
+            } else {
+                setError("Falha ao fazer o cadastro. Verifique suas credenciais.")
+            }
+            console.error(error.message)
+            // setError(error.message)	
+        }
     }
+
+    // function validateForm() {
+    //     if (!signinFormData.name || !signinFormData.email || !signinFormData.password || !signinFormData.confirmPassword) {
+    //         setError("Todos os campos são obrigatórios.")
+    //         return false
+    //     }
+    //     if (signinFormData.password !== signinFormData.confirmPassword) {
+    //         setError("As senhas não coincidem.")
+    //         return false
+    //     }
+    //     setError(null)
+    //     return true
+    // }
+
+    // function handleSubmit(event) {
+    //     event.preventDefault()
+    //     if (validateForm()) {
+    //         authCreateAccountWithEmail(signinFormData.name, signinFormData.email, signinFormData.password, navigate)
+    //             .catch((error) => {
+    //                 setError("Falha ao fazer o cadastro. Verifique suas credenciais.")
+    //                 console.error(error.message)
+    //             });
+    //     }
+    // }
+
+    // function handleChange(event) {
+    //     const {name, value} = event.target
+    //     setSigninFormData(prevSigninFormData => ({
+    //         ...prevSigninFormData,
+    //         [name]: value
+    //     }))
+    // }
 
     return (
         <SigninContainer>
@@ -105,44 +128,61 @@ export default function Signin() {
                     />
                 </SigninHeader>
                 <h1>Criar Conta</h1>
-                <SigninFormContainer onSubmit={handleSubmit}>
+                <SigninFormContainer onSubmit={handleSubmit(onSubmit)}>
                     <InputContainer>
                         <Input
+                            {...register("name", { required: "Nome é obrigatório." })}
                             name="name"
-                            onChange={handleChange}
+                            // onChange={handleChange}
                             type="text"
                             placeholder="Nome"
-                            value={signinFormData.name}
+                            // value={signinFormData.name}
                             aria-label="Nome"
                             required
                         />
+                        {errors.name && <ErrorMessage>{errors.name.message}</ErrorMessage>}
                         <Input
+                            {...register("email", {
+                                required: "Email é obrigatório.",
+                                pattern: {
+                                    value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                    message: "Email inválido.",
+                                },
+                            })}
                             name="email"
-                            onChange={handleChange}
+                            // onChange={handleChange}
                             type="email"
                             placeholder="Email"
-                            value={signinFormData.email}
+                            // value={signinFormData.email}
                             aria-label="Email"
                             required
                         />
+                        {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
                         <Input
+                            {...register("password", { required: "Senha é obrigatória." })}
                             name="password"
-                            onChange={handleChange}
+                            // onChange={handleChange}
                             type="password"
                             placeholder="Senha"
-                            value={signinFormData.password}
+                            // value={signinFormData.password}
                             aria-label="Senha"
                             required
                         />
+                        {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
                         <Input
+                            {...register("confirmPassword", {
+                                required: "Confirmação de senha é obrigatória.",
+                                validate: validatePasswordsMatch,
+                            })}
                             name="confirmPassword"
-                            onChange={handleChange}
+                            // onChange={handleChange}
                             type="password"
                             placeholder="Confirmar senha"
-                            value={signinFormData.confirmPassword}
+                            // value={signinFormData.confirmPassword}
                             aria-label="Confirmar senha"
                             required
                         />
+                        {errors.confirmPassword && <ErrorMessage>{errors.confirmPassword.message}</ErrorMessage>}
                     </InputContainer>
                     {error && <ErrorMessage>{error}</ErrorMessage>}
                     <ButtonContainer>

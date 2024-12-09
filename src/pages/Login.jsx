@@ -1,7 +1,8 @@
 import React from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
-import PpgccSymbol from "../assets/images/symbol-ppgcc.png"
+import { useForm } from "react-hook-form"
 import { styled } from "styled-components"
+import PpgccSymbol from "../assets/images/symbol-ppgcc.png"
 import Box from "../components/Box"
 import Input from "../components/Input"
 import Button from "../components/Button"
@@ -48,41 +49,23 @@ const ErrorMessage= styled.p`
 `
 
 export default function Login() {
+    const { register, handleSubmit, watch, formState: { errors } } = useForm()
 
-    const [loginFormData, setLoginFormData] = React.useState({ email: "", password: "" })
+    // const [loginFormData, setLoginFormData] = React.useState({ email: "", password: "" })
     // const [status, setStatus] = React.useState("idle")
     const [error, setError] = React.useState(null)
 
     const navigate = useNavigate();
     const { setIsLoggedIn } = useAuth();
-
-    function validateForm() {
-        if (!loginFormData.email || !loginFormData.password) {
-            setError("Por favor, preencha todos os campos.")
-            return false
+    
+    async function onSubmit(data) {
+        console.log(data)
+        try {
+            await authLogInWithEmail(data.email, data.password, navigate, setIsLoggedIn)
+        } catch(error) {
+            setError("Falha ao fazer login. Verifique suas credenciais.")
+            console.error(error.message);
         }
-        setError(null)
-        return true
-    }
-
-    function handleSubmit(event) {
-        event.preventDefault()
-        if (validateForm()) {
-            authLogInWithEmail(loginFormData.email, loginFormData.password, navigate, setIsLoggedIn)
-                .catch((error) => {
-                    setError("Falha ao fazer login. Verifique suas credenciais.")
-                    console.error(error.message);
-                })
-        }
-    }
-
-    function handleChange(event) {
-        const { name, value } = event.target
-        setLoginFormData(prev => ({
-            ...prev,
-            [name]: value
-        }))
-        setError(null)
     }
 
     return (
@@ -96,25 +79,31 @@ export default function Login() {
                     />
                 </LoginHeader>
                 <h1>Login</h1>
-                <LoginFormContainer onSubmit={handleSubmit}>
+                <LoginFormContainer onSubmit={handleSubmit(onSubmit)}>
                     <Input
+                        {...register("email", {
+                            required: "Email é obrigatório.",
+                            pattern: {
+                                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                message: "Email inválido.",
+                            },
+                        })}
                         name="email"
-                        onChange={handleChange}
                         type="email"
                         placeholder="Email"
-                        value={loginFormData.email}
                         aria-label="Email"
                         required
                     />
+                    {errors.email && <ErrorMessage>{errors.email.message}</ErrorMessage>}
                     <Input
+                        {...register("password", { required: "Senha é obrigatória." })}
                         name="password"
-                        onChange={handleChange}
                         type="password"
                         placeholder="Senha"
-                        value={loginFormData.password}
                         aria-label="Senha"
                         required
                     />
+                    {errors.password && <ErrorMessage>{errors.password.message}</ErrorMessage>}
                     {error && <ErrorMessage>{error}</ErrorMessage>}
                     <ButtonContainer>
                         <Link to="/signin">

@@ -45,6 +45,10 @@ const RedButton = styled(Button)`
   }
 `
 
+const ErrorMessage= styled.p`
+    color: red;
+`
+
 function mapFieldType(type) {
     switch(type) {
         case 'text':
@@ -74,18 +78,22 @@ export default function CreateProcess() {
         registrationFieldsInfo: []
     })
 
+    const [error, setError] = React.useState(null)
+
     const [isRegistrationModalOpen, setIsRegistrationModalOpen] = React.useState(false)
     const [isImportModalOpen, setIsImportModalOpen] = React.useState(false)
     const [fieldBeingEdited, setFieldBeingEdited] = React.useState(null)
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false)
 
     async function handleSubmit(event) {
-        event.preventDefault();
+        event.preventDefault()
         try {
-            await createProcess(processFormData);
-            console.log("Processo criado com sucesso!");
+            await createProcess(processFormData)
+            console.log("Processo criado com sucesso!")
         } catch (error) {
-            console.error("Erro ao criar processo: ", error);
+            console.error("Erro ao criar processo: ", error)
+            setError(error)
+            alert("Erro ao criar processo: " + error.message)
         }
     }
 
@@ -258,6 +266,7 @@ export default function CreateProcess() {
                         onEditField={handleEditField}
                         onDeleteField={handleDeleteField} 
                     />
+                    {error && <ErrorMessage>{error.message}</ErrorMessage>}
                     <ButtonContainer>
                         <Link to="/processes">
                             <Button type="button">

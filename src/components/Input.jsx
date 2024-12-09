@@ -1,4 +1,5 @@
-import { styled } from "styled-components";
+import React from "react"
+import { styled } from "styled-components"
 
 const StyledInput = styled.input`
     background-color: #f5f5f5;
@@ -15,17 +16,40 @@ const StyledInput = styled.input`
     }
 `
 
-export default function Input({ name, onChange, type, placeholder, value, min, required }) {
+// Define o Input usando React.forwardRef() para que o ref possa ser passado para o <input>
+// e o React Hook Form possa acessar o <input> diretamente
+const Input = React.forwardRef(
+    ({ name, onChange, type, placeholder, value, min, required, ...rest }, ref) => {
+        return (
+            <StyledInput
+                name={name}
+                onChange={onChange}
+                type={type}
+                placeholder={placeholder}
+                value={value}
+                min={type === "number" ? min : undefined}
+                required={required}
+                ref={ref} // Passa o ref para o <input>
+                {...rest} // Passa outras props adicionais
+            />
+        )
+    }
+)
+
+export default Input
+
+// export default function Input({ name, onChange, type, placeholder, value, min, required, ...rest }) {
     
-    return (
-        <StyledInput
-            name={name}
-            onChange={onChange}
-            type={type}
-            placeholder={placeholder}
-            value={value}
-            min={type === "number" ? min : 1}
-            required={required}
-        />
-    )
-}
+//     return (
+//         <StyledInput
+//             name={name}
+//             onChange={onChange}
+//             type={type}
+//             placeholder={placeholder}
+//             value={value}
+//             min={type === "number" ? min : 1}
+//             required={required}
+//             {...rest} // Passa as props adicionais (como as do `register`)
+//         />
+//     )
+// }

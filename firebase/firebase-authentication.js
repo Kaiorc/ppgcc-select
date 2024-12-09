@@ -42,7 +42,7 @@ export async function authCreateAccountWithEmail(name, email, password, navigate
         await createUserWithEmailAndPassword(auth, email, password)
         await updateProfile(auth.currentUser, { displayName: name })
         // console.log("Profile updated")
-        navigate("/")
+        navigate("/processes")
     } catch(error) {
         console.error(error.message)
         throw error
