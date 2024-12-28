@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { getProcess, updateProcess } from "../../firebase/firebase-firestore"
+import { getProcess, updateProcess, hasApplications } from "../../firebase/firebase-firestore"
 import { Link } from "react-router-dom"
 import Input from "../components/Input"
 import TextArea from "../components/TextArea"
@@ -46,6 +46,10 @@ const RedButton = styled(Button)`
   }
 `
 
+const ErrorMessage= styled.p`
+    color: red;
+`
+
 function mapFieldType(type) {
     switch(type) {
         case 'text':
@@ -70,11 +74,14 @@ export default function EditProcess() {
         places: "",
         miniDescription: "", 
         description: "",
+        researchFieldRequired: false,
         startDate: "",
         endDate: "",
         endAnalysisDate: "", 
         registrationFieldsInfo: []
     })
+
+    const [hasApplicationsState, setHasApplicationsState] = React.useState(false)
 
     const { id } = useParams()
 
@@ -82,6 +89,9 @@ export default function EditProcess() {
         async function loadProcess() {
             const data = await getProcess(id)
             setSelectionProcessData(data)
+            const applications = await hasApplications(id)
+            // console.log("hasApplicationsState", applications)
+            setHasApplicationsState(applications)
         }
         loadProcess()
     }, [id])
@@ -105,11 +115,11 @@ export default function EditProcess() {
     }
 
     function handleChange(event) {
-        const {name, value} = event.target;
+        const { name, value, type, checked } = event.target
         setSelectionProcessData(prevSelectionProcessData => ({
             ...prevSelectionProcessData,
-            [name]: value
-        }));
+            [name]: type === 'checkbox' ? checked : value
+        }))
     }
 
     function handleAddField(field) {
@@ -207,8 +217,25 @@ export default function EditProcess() {
                                 value={selectionProcessData.description}
                                 aria-label="Descrição"
                                 required
-                            />
+                                />
                         </label>
+                        <label htmlFor="researchFieldRequired">
+                            Seleção de linha de pesquisa é obrigatória?
+                            <Input
+                                name="researchFieldRequired"
+                                onChange={handleChange}
+                                type="checkbox"
+                                placeholder="Linha de pesquisa obrigatória"
+                                checked={selectionProcessData.researchFieldRequired}
+                                aria-label="Linha de pesquisa obrigatória"
+                                disabled={hasApplicationsState ? true : false}
+                                />
+                        </label>
+                        {
+                            hasApplicationsState && (
+                                <ErrorMessage>Este campo não pode ser alterado, pois o processo seletivo já possui inscritos</ErrorMessage>
+                            )
+                        }
                         <label htmlFor="startDate">
                             Data de início de inscrição
                             <Input
@@ -219,7 +246,7 @@ export default function EditProcess() {
                                 value={selectionProcessData.startDate}
                                 aria-label="Data de início"
                                 required
-                            />
+                                />
                         </label>
                         <label htmlFor="endDate">
                             Data de término de inscrição
@@ -231,7 +258,7 @@ export default function EditProcess() {
                                 value={selectionProcessData.endDate}
                                 aria-label="Data de término"
                                 required
-                            />    
+                                />    
                         </label>
                         <label htmlFor="endAnalysisDate">
                             Data de limite da análise de inscrição
@@ -243,7 +270,7 @@ export default function EditProcess() {
                                 value={selectionProcessData.endAnalysisDate}
                                 aria-label="Data de término da análise"
                                 required
-                            />
+                                />
                         </label>
                     </InputContainer>
                     <TableHeaderContainer>
@@ -252,13 +279,13 @@ export default function EditProcess() {
                             <Button 
                                 type="button"
                                 onClick={() => setIsImportModalOpen(true)}
-                            >
+                                >
                                 IMPORTAR
                             </Button>
                             <Button 
                                 type="button" 
                                 onClick={() => setIsRegistrationModalOpen(true)}
-                            >
+                                >
                                 + CAMPO
                             </Button>
                         </ButtonContainer>
@@ -272,7 +299,7 @@ export default function EditProcess() {
                         }))}
                         onEditField={handleEditField}
                         onDeleteField={handleDeleteField}
-                    />
+                        />
                     <ButtonContainer>
                         <Link to={`/processes/${id}`}>
                             <Button type="button">
@@ -286,25 +313,25 @@ export default function EditProcess() {
                 {
                     isRegistrationModalOpen && (
                         <RegistrationFieldModal 
-                            onClose={() => setIsRegistrationModalOpen(false)} 
-                            onSave={handleAddField} 
+                        onClose={() => setIsRegistrationModalOpen(false)} 
+                        onSave={handleAddField} 
                         />
                     )
                 }
                 {
                     isImportModalOpen && (
                         <ImportProcessFieldModal 
-                            onClose={() => setIsImportModalOpen(false)} 
-                            onImport={handleImportFields} 
+                        onClose={() => setIsImportModalOpen(false)} 
+                        onImport={handleImportFields} 
                         />
                     )
                 }
                 {
                     isEditModalOpen && (
                         <RegistrationFieldModal 
-                            onClose={() => setIsEditModalOpen(false)} 
-                            onSave={handleSaveEditedField} 
-                            fieldToEdit={fieldBeingEdited}
+                        onClose={() => setIsEditModalOpen(false)} 
+                        onSave={handleSaveEditedField} 
+                        fieldToEdit={fieldBeingEdited}
                         />
                     )
                 }

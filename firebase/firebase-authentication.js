@@ -18,10 +18,11 @@ const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 
 // Função para configurar o listener de autenticação
-export function authListener(setIsLoggedIn, setUserRole, setDisplayName) {
+export function authListener(setIsLoggedIn, setUserRole, setDisplayName, setUid) {
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             setIsLoggedIn(true)
+            setUid(user.uid)
             console.log("api.js - authListener() - User is logged in")
             // console.log("api.js - authListener() - ", user)
             const role = await getUserRole(user)
@@ -29,11 +30,12 @@ export function authListener(setIsLoggedIn, setUserRole, setDisplayName) {
             setDisplayName(user.displayName)
         } else {
             setIsLoggedIn(false)
+            setUid(null)
             console.log("api.js - authListener() - User is logged out")
             setUserRole(null);
             setDisplayName(null);
         }
-    });
+    })
 }
 
 // Função para criar uma conta com email e senha
@@ -63,11 +65,11 @@ export async function authLogInWithEmail(email, password, navigate, setIsLoggedI
 export async function authLogOut(navigate, setIsLoggedIn) {
     try {
         await signOut(auth)
-            setIsLoggedIn(false)
-            navigate("/")
-        } catch(error) {
-            console.error(error.message)
-        }
+        setIsLoggedIn(false)
+        navigate("/")
+    } catch(error) {
+        console.error(error.message)
+    }
 }
 
 // Função para obter o papel do usuário

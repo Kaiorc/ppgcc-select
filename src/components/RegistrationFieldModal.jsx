@@ -83,7 +83,7 @@ export default function RegistrationFieldModal({ onClose, onSave, fieldToEdit })
         <CheckboxContainer>
           <label>
             <input
-            name="required"
+              name="required"
               type="checkbox"
               checked={fieldData.required}
               onChange={handleChange}

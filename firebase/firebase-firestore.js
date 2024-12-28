@@ -13,7 +13,9 @@ import {
     where, 
     setDoc,
     addDoc, 
-    updateDoc
+    updateDoc,
+    deleteDoc,
+    serverTimestamp
 } from "firebase/firestore/lite"
 
 // Initialize Firebase
@@ -24,8 +26,6 @@ const db = getFirestore(app)
 
 // Referência para a coleção "processes" no Firestore
 export const processesCollectionRef = collection(db, "processes")
-// Referência para a coleção "applications" no Firestore
-export const applicationsCollectionRef = collection(db, "applications")
 
 // Função para obter um processo pelo ID
 export async function getProcess(id) {
@@ -61,7 +61,6 @@ export async function loadProcess(id, stateSetter) {
 }
 
 // Função para criar um novo processo na coleção "processes" com id gerado manualmente
-// e adicionar um documento vazio com o mesmo id na coleção "applications" e "updates"
 export async function createProcess(data) {
     try{
         // Usa o valor de "name" como ID
@@ -75,12 +74,14 @@ export async function createProcess(data) {
         }
     
         // Cria o documento na coleção "processes"
-        await setDoc(processDocRef, { ...data, id: processId })
-    
-        // Cria um documento vazio na coleção "applications" com o mesmo ID
-        const applicationDocRef = doc(applicationsCollectionRef, processId)
-        // Documento vazio
-        await setDoc(applicationDocRef, {})
+        await setDoc(processDocRef, { ...data, id: processId, createdAt: serverTimestamp() })
+
+        // Cria a sub-coleção "applications" dentro do documento do processo
+        const applicationsSubCollectionRef = collection(processDocRef, "applications")
+        // Cria um documento "placeholder" na sub-coleção "applications", pois o Firestore não permite
+        // coleções vazias e é necessário ter pelo menos um documento para a sub-coleção existir
+        await setDoc(doc(applicationsSubCollectionRef, "placeholder"), {})
+
     } catch (error) {
         console.error("Erro ao criar processo:", error)
         throw error
@@ -104,14 +105,90 @@ export async function updateProcess(id, data) {
 }
 
 // Função para deletar um processo pelo ID
-
-
-// Função para adicionar os dados do candidato a um doc na coleção "applications", com
-// o mesmo id do processo do doc na coleção "processes"
-export async function addApplication(id, data) {
-    
+export async function deleteProcess(id) {
+    // Cria uma referência ao documento com o ID fornecido
+    const processRef = doc(db, "processes", id) 
+    // Deleta o documento do Firestore
+    await deleteDoc(processRef)
 }
 
+
+// Função para adicionar os dados do candidato a um doc na coleção "applications"
+export async function addApplication(id, data, name, uid) {
+    try {
+        // Usa o valor de "uid" como ID
+        const applicationId = uid
+    
+        // Cria a referência ao documento na coleção "applications" do processo
+        const applicationDocRef = doc(db, `processes/${id}/applications`, applicationId)
+    
+        // Adiciona o documento com os dados do candidato
+        await setDoc(applicationDocRef, { ...data, name:name, uid: applicationId, createdAt: serverTimestamp() })
+    } catch (error) {
+        console.error("Erro ao adicionar aplicação:", error)
+        throw error
+    }
+}
+
+// Função para deletar uma inscrição pelo ID
+export async function deleteApplication(processId, applicationId) {
+    try {
+        const applicationDocRef = doc(db, `processes/${processId}/applications`, applicationId)
+        await deleteDoc(applicationDocRef)
+    } catch (error) {
+        console.error("Erro ao deletar inscrição:", error)
+        throw error
+    }
+}
+
+// Função para obter todas as inscrições de um processo pelo ID
+export async function getApplications(processId) {
+    try{
+        const applicationsRef = collection(db, `processes/${processId}/applications`)
+        const snapshot = await getDocs(applicationsRef)
+        return snapshot.docs.map(doc => doc.data())
+    } catch (error) {
+        console.error("Erro ao obter inscrições:", error)
+        throw error
+    }
+}
+
+// Função para checar se existe algum documento na coleção "applications" que possui
+// o ID igual ao uid do usuário
+export async function userHasApplication(processId, uid) {
+    try {
+        // Cria uma referência à coleção "applications"
+        const applicationsRef = collection(db, `processes/${processId}/applications`)
+        
+        // Cria uma query para buscar documentos com o ID igual ao uid do usuário
+        const q = query(applicationsRef, where("__name__", "==", uid))
+        
+        // Executa a query
+        const snapshot = await getDocs(q)
+        
+        // Retorna true se existir pelo menos um documento, caso contrário, false
+        return !snapshot.empty
+    } catch (error) {
+        console.error("Erro ao verificar se o usuário já está inscrito:", error)
+        throw error
+    }
+}
+
+// Função para checar se um processo já possui inscrições
+export async function hasApplications(processId) {
+    const applicationsRef = collection(db, `processes/${processId}/applications`)
+    const snapshot = await getDocs(applicationsRef)
+    
+    if (snapshot.empty) {
+        return false
+    }
+
+    const docs = snapshot.docs.map(doc => doc.id)
+    
+    const isPlaceholderOnly = docs.length === 1 && docs[0] === "placeholder"
+    console.log("isPlaceholderOnly ", isPlaceholderOnly)
+    return !isPlaceholderOnly
+}
 
 // Function to get all processes using Mirage.js
 // export async function getProcess(id) {

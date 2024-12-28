@@ -72,6 +72,7 @@ export default function CreateProcess() {
         places: "",
         miniDescription: "", 
         description: "",
+        researchFieldRequired: false,
         startDate: "",
         endDate: "",
         endAnalysisDate: "", 
@@ -88,7 +89,7 @@ export default function CreateProcess() {
     async function handleSubmit(event) {
         event.preventDefault()
         try {
-            await createProcess(processFormData)
+            await createProcess(processFormData, processFormData.researchFieldRequired)
             console.log("Processo criado com sucesso!")
         } catch (error) {
             console.error("Erro ao criar processo: ", error)
@@ -97,12 +98,14 @@ export default function CreateProcess() {
         }
     }
 
+    console.log(processFormData)
+
     function handleChange(event) {
-        const {name, value} = event.target;
+        const {name, value, type, checked} = event.target;
         setProcessFormData(prevProcessFormData => ({
             ...prevProcessFormData,
-            [name]: value
-        }));
+            [name]: type === 'checkbox' ? checked : value
+        }))
     }
 
     function handleAddField(field) {
@@ -200,6 +203,18 @@ export default function CreateProcess() {
                                 value={processFormData.description}
                                 aria-label="Descrição"
                                 required
+                            />
+                        </label>
+                        <label htmlFor="researchFieldRequired">
+                            Linha de pesquisa obrigatória
+                            <Input
+                                name="researchFieldRequired"
+                                onChange={handleChange}
+                                type="checkbox"
+                                placeholder="Linha de pesquisa obrigatória"
+                                value={processFormData.researchFieldRequired}
+                                checked={processFormData.researchFieldRequired}
+                                aria-label="Linha de pesquisa obrigatória"
                             />
                         </label>
                         <label htmlFor="startDate">

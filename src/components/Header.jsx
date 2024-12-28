@@ -54,7 +54,7 @@ export default function Header() {
     const navigate = useNavigate()
 
     // const { isLoggedIn } = useAuth();
-    const { isLoggedIn, setIsLoggedIn, displayName } = useAuth();
+    const { isLoggedIn, setIsLoggedIn, displayName } = useAuth()
 
     // console.log(displayName)
     

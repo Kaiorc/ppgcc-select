@@ -1,3 +1,4 @@
+import React from "react";
 import { styled } from "styled-components";
 
 const StyledSelect = styled.select`
@@ -16,12 +17,35 @@ const StyledSelect = styled.select`
     option.placeholder {
         color: black;
     }
-`;
+`
 
-export default function Select({ children, ...props }) {
+const Select = React.forwardRef(({ children, optionPlaceholder, optionsArray, ...props }, ref) => {
     return (
-        <StyledSelect {...props}>
-            {children}
+        <StyledSelect ref={ref} {...props}>
+            <option value="" className="placeholder">
+                {optionPlaceholder}
+            </option>
+            {
+                optionsArray ? (
+                    optionsArray.map((option, index) => (
+                        <option key={index} value={option}>
+                            {option}
+                        </option>
+                    ))
+                ) : (
+                    children
+                )
+            }
         </StyledSelect>
     )
-}
+})
+
+export default Select
+
+// export default function Select({ children, ...props }) {
+//     return (
+//         <StyledSelect {...props}>
+//             {children}
+//         </StyledSelect>
+//     )
+// }

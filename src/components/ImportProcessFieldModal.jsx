@@ -66,7 +66,7 @@ export default function ImportProcessFieldModal({ onClose, onImport }) {
         <List>
           { processesElements }
         </List>
-        <Button onClick={onClose} type="button">Fechar</Button>
+        <Button onClick={onClose} type="button">FECHAR</Button>
       </ModalContainer>
     </ModalBackground>
   );
