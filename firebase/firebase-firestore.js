@@ -55,9 +55,9 @@ export async function getProcesses() {
 
 // Função para carregar um processo pelo ID e atualizar o estado no componente em
 // que é chamada
-export async function loadProcess(id, stateSetter) {
+export async function loadProcess(id) {
     const data = await getProcess(id)
-    stateSetter(data)
+    return data
 }
 
 // Função para criar um novo processo na coleção "processes" com id gerado manualmente
@@ -112,7 +112,6 @@ export async function deleteProcess(id) {
     await deleteDoc(processRef)
 }
 
-
 // Função para adicionar os dados do candidato a um doc na coleção "applications"
 export async function addApplication(id, data, name, uid) {
     try {
@@ -146,7 +145,8 @@ export async function getApplications(processId) {
     try{
         const applicationsRef = collection(db, `processes/${processId}/applications`)
         const snapshot = await getDocs(applicationsRef)
-        return snapshot.docs.map(doc => doc.data())
+        const filteredSnapshot = snapshot.docs.filter(doc => doc.id !== "placeholder").map(doc => doc.data())
+        return filteredSnapshot
     } catch (error) {
         console.error("Erro ao obter inscrições:", error)
         throw error
@@ -174,6 +174,33 @@ export async function userHasApplication(processId, uid) {
     }
 }
 
+export async function getProcessesWithUserApplications(uid) {
+    try {
+        const snapshot = await getDocs(processesCollectionRef);
+        const processes = snapshot.docs.map(doc => ({
+            ...doc.data(),
+            id: doc.id
+        }))
+
+        const userApplications = []
+
+        for (const process of processes) {
+            const applicationsRef = collection(db, `processes/${process.id}/applications`)
+            const q = query(applicationsRef, where("__name__", "==", uid))
+            const applicationSnapshot = await getDocs(q)
+
+            if (!applicationSnapshot.empty) {
+                userApplications.push(process)
+            }
+        }
+
+        return userApplications
+    } catch (error) {
+        console.error("Erro ao obter os processos com inscrições do usuário:", error)
+        throw error
+    }
+}
+
 // Função para checar se um processo já possui inscrições
 export async function hasApplications(processId) {
     const applicationsRef = collection(db, `processes/${processId}/applications`)
@@ -188,6 +215,26 @@ export async function hasApplications(processId) {
     const isPlaceholderOnly = docs.length === 1 && docs[0] === "placeholder"
     console.log("isPlaceholderOnly ", isPlaceholderOnly)
     return !isPlaceholderOnly
+}
+
+// Função para obter os dados da inscrição de um usuário em um processo seletivo específico
+export async function getUserApplication(processId, uid) {
+    try {
+        const applicationDocRef = doc(db, `processes/${processId}/applications`, uid)
+        const snapshot = await getDoc(applicationDocRef)
+        
+        if (!snapshot.exists()) {
+            throw new Error("Inscrição não encontrada.")
+        }
+
+        return {
+            ...snapshot.data(),
+            id: snapshot.id
+        }
+    } catch (error) {
+        console.error("Erro ao obter a inscrição do usuário:", error)
+        throw error
+    }
 }
 
 // Function to get all processes using Mirage.js

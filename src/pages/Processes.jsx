@@ -71,7 +71,8 @@ export default function Processes() {
         loadProcesses()
     }, [])
 
-    // console.log("Processes.jsx - ", selectionProcesses)
+    console.log("Processes.jsx - ", selectionProcesses)
+    console.log("Processes.jsx - ", typeof selectionProcesses)
 
     const processesElements = selectionProcesses.map((process) => {
         return (

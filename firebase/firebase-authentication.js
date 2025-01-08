@@ -39,34 +39,32 @@ export function authListener(setIsLoggedIn, setUserRole, setDisplayName, setUid)
 }
 
 // Função para criar uma conta com email e senha
-export async function authCreateAccountWithEmail(name, email, password, navigate) {
+export async function authCreateAccountWithEmail(name, email, password) {
     try{
         await createUserWithEmailAndPassword(auth, email, password)
         await updateProfile(auth.currentUser, { displayName: name })
         // console.log("Profile updated")
-        navigate("/processes")
     } catch(error) {
         console.error(error.message)
         throw error
     }
 }
 
-export async function authLogInWithEmail(email, password, navigate, setIsLoggedIn) { 
+ 
+export async function authLogInWithEmail(email, password, setIsLoggedIn) { 
     try{
         await signInWithEmailAndPassword(auth, email, password)
         setIsLoggedIn(true)
-        navigate("/processes")
     } catch(error) {
         console.error(error.message)
         throw error
     }
 }
 
-export async function authLogOut(navigate, setIsLoggedIn) {
+export async function authLogOut(setIsLoggedIn) {
     try {
         await signOut(auth)
         setIsLoggedIn(false)
-        navigate("/")
     } catch(error) {
         console.error(error.message)
     }

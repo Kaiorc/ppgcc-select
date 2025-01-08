@@ -1,8 +1,9 @@
 import React from "react"
-import { useParams, useLocation, Link } from "react-router-dom"
+import { useParams, useLocation, Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { styled } from "styled-components"
 import { loadProcess, addApplication } from "../../firebase/firebase-firestore"
+import { uploadFileToStorage } from "../../appwrite/appwrite-storage"
 import useAuth from "../hooks/useAuth"
 import { researchAreas } from "../../config"
 import Input from "../components/Input"
@@ -66,9 +67,14 @@ export default function Application() {
 
     const { id } = useParams()
     const location = useLocation()
+    const navigate = useNavigate()
 
     React.useEffect(() => {
-        loadProcess(id, setSelectionProcess)
+        async function loadData() {
+            const process = await loadProcess(id)
+            setSelectionProcess(process)
+        }
+        loadData()
     }, [id])
 
     function isResearchAreaSelected() {
@@ -85,19 +91,33 @@ export default function Application() {
     // ao serviço de cloud).
     async function onSubmit(data) {
         try {
+            // Cria uma cópia dos dados do formulário
             const formData = { ...data }
+            // Verifica se o valor é uma lista de arquivos
             for (const key in formData) {
+                // Verifica se o valor associado à chave é uma lista de arquivos (FileList)
                 if (formData[key] instanceof FileList) {
-                    formData[key] = formData[key][0]
+                    // Pega o primeiro arquivo da lista
+                    const file = formData[key][0]
+                    if (file) {
+                        // Upload no Appwrite Storage e obtém o fileId
+                        const fileId = await uploadFileToStorage(file)
+                        // Substitui o arquivo pelo fileId
+                        formData[key] = fileId
+                    }
                 }
             }
 
+            // Filtra os dados do formulário para remover valores indefinidos
             const filteredData = Object.fromEntries(
                 Object.entries(formData).filter(([_, value]) => value !== undefined)
             )
         
             console.log(filteredData)
+
+            // Envia os dados processados para a função addApplication
             await addApplication(id, filteredData, displayName, uid)
+            navigate(`/processes/${id}`)
         } catch (error) {
             console.error("Erro fazer inscrição: ", error)
             setError(error)

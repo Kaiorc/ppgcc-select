@@ -57,6 +57,16 @@ export default function Header() {
     const { isLoggedIn, setIsLoggedIn, displayName } = useAuth()
 
     // console.log(displayName)
+
+    async function handleLogOutButtonClick() {
+        try {
+            await authLogOut(setIsLoggedIn)
+            navigate("/")
+        } catch(error) {
+            console.error(error.message)
+            throw error
+        }
+    }
     
     return(
         <HeaderContainer>
@@ -78,7 +88,7 @@ export default function Header() {
                         <InfoMessage>BEM VINDO(A), {displayName ? displayName.toUpperCase() : "CANDIDATO(A)"}</InfoMessage>
                         <Button 
                             type="button"
-                            onClick={() => authLogOut(navigate, setIsLoggedIn)}	
+                            onClick={handleLogOutButtonClick}	
                         >
                             SAIR
                         </Button>

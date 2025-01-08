@@ -1,8 +1,9 @@
 import React from "react"
 import DOMPurify from "dompurify";
 import { Link, useParams, useLocation, Outlet } from "react-router-dom"
-import { loadProcess } from "../../firebase/firebase-firestore"
+import { loadProcess, userHasApplication } from "../../firebase/firebase-firestore"
 import styled from "styled-components"
+import useAuth from "../hooks/useAuth"
 import useRole from "../hooks/useRole"
 import Box from "../components/Box"
 import Button from "../components/Button"
@@ -53,6 +54,11 @@ const TitleButtonContainer = styled.div`
     gap: 1em;
 `
 
+const RegisteredMessage = styled.p`
+    color: green;
+    font-weight: bold;
+`
+
 function formatText(text) {
     if (!text) return "";
     
@@ -64,29 +70,43 @@ function formatText(text) {
 
 export default function ProcessDetail() {
     const [selectionProcess, setSelectionProcess] = React.useState(null)
+    const [isUserRegistered, setIsUserRegistered] = React.useState(false)
     // const [loading, setLoading] = React.useState(false)
     // const [error, setError] = React.useState(null)
 
     const { id } = useParams()
     const location = useLocation()
     const isAdmin = useRole()
+    const { uid } = useAuth()
 
     React.useEffect(() => {
-        loadProcess(id, setSelectionProcess)
-    }, [id])
+        async function loadData() {
+            const process = await loadProcess(id)
+            setSelectionProcess(process)
+            if (uid) {
+                const registered = await userHasApplication(id, uid)
+                setIsUserRegistered(registered)
+            }
+        }
+        loadData()
+    }, [id, uid])
+
+    // React.useEffect(() => {
+    //     loadProcess(id, setSelectionProcess)
+    // }, [id])
 
     console.log(selectionProcess)
     console.log(location)
     console.log(id)
     
     return (
-        <>  
+        <>
             {selectionProcess && (
                 <ProcessDetailBox>
                     <TitleContainer>
                         <h1>{selectionProcess.name}</h1>
                         {
-                            isAdmin ?
+                            isAdmin ? (
                                 <TitleButtonContainer>
                                     <Link to="applications">
                                         <Button>INSCRIÇÕES</Button>
@@ -95,12 +115,17 @@ export default function ProcessDetail() {
                                         <Button>EDITAR</Button>
                                     </Link>
                                 </TitleButtonContainer>
-                                :
-                                <TitleButtonContainer>
-                                    <Link to="application">
-                                        <Button>INSCREVER-SE</Button>
-                                    </Link>
-                                </TitleButtonContainer>
+                            ) : (
+                                isUserRegistered ? (
+                                    <RegisteredMessage>Você já está inscrito(a)</RegisteredMessage>
+                                ) : (
+                                    <TitleButtonContainer>
+                                        <Link to="application">
+                                            <Button>INSCREVER-SE</Button>
+                                        </Link>
+                                    </TitleButtonContainer>
+                                )
+                            )
                         }
                     </TitleContainer>
                     <InfoContainer>

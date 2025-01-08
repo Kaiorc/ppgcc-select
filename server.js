@@ -140,6 +140,12 @@ createServer({
     this.passthrough("https://identitytoolkit.googleapis.com/**")
     this.passthrough("https://securetoken.googleapis.com/**")
 
+    // Permitir que as requisições para o Appwrite passem
+    this.passthrough("https://cloud.appwrite.io/**");
+
+    // Permitir que as requisições para o Cloudinary passem
+    this.passthrough("https://api.cloudinary.com/**")
+
     this.get("/processes", (schema, request) => {
       // return new Response(400, {}, {error: "Error fetching data"})
       return schema.processes.all()

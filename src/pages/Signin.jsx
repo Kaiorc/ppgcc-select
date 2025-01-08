@@ -73,7 +73,8 @@ export default function Signin() {
     async function onSubmit(data) {
         console.log(data)
         try{
-            await authCreateAccountWithEmail(data.name, data.email, data.password, navigate)
+            await authCreateAccountWithEmail(data.name, data.email, data.password)
+            navigate("/processes")
         } catch(error) {
             if (error.code === 'auth/email-already-in-use') {
                 setError("Este email já está em uso. Por favor, use outro email.")

@@ -1,42 +1,33 @@
-import React from 'react';
-import styled from 'styled-components';
-import Button from './Button';
+import React from 'react'
+import styled from 'styled-components'
+import Button from './Button'
 
 const StyledTable = styled.table`
   border-collapse: collapse;
   width: 100%;
-`;
+`
 
 const TableHead = styled.thead`
   background-color: #f2f2f2;
-`;
+`
 
 const TableHeader = styled.th`
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
-`;
+`
 
 const TableRow = styled.tr`
 
-`;
+`
 
 const TableCell = styled.td`
   border: 1px solid #ddd;
   padding: 8px;
   text-align: left;
-`;
-
-const RedButton = styled(Button)`
-  background-color: red;
-  color: white;
-
-  &:hover {
-    background-color: darkred;
-  }
 `
 
-export default function Table({ columnsNames, data, onEditField, onDeleteField }) {
+export default function ApplicationsTable({ columnsNames, data, onView, onEvaluate }) {
   return (
     <StyledTable>
         <TableHead>
@@ -62,14 +53,14 @@ export default function Table({ columnsNames, data, onEditField, onDeleteField }
                     <TableCell>
                         <Button 
                           type="button"
-                          onClick={() => onEditField(rowIndex)}>
-                            EDITAR
+                          onClick={() => onView(row["ID do Usuário"])}>
+                            VISUALIZAR
                         </Button>
-                        <RedButton 
+                        <Button 
                           type="button"
-                          onClick={() => onDeleteField(rowIndex)}>
-                            EXCLUIR
-                        </RedButton>
+                          onClick={() => onEvaluate(rowIndex)}>
+                            AVALIAR
+                        </Button>
                     </TableCell>
                 </TableRow>
             ))}

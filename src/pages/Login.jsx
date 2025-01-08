@@ -62,6 +62,8 @@ export default function Login() {
         console.log(data)
         try {
             await authLogInWithEmail(data.email, data.password, navigate, setIsLoggedIn)
+            // await authLogInWithEmail(data.email, data.password, navigate, setIsLoggedIn)
+            navigate("/processes")
         } catch(error) {
             setError("Falha ao fazer login. Verifique suas credenciais.")
             console.error(error.message);
