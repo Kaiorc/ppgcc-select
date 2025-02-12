@@ -2,12 +2,12 @@ import React from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { styled } from "styled-components"
+import useAuth from "../hooks/useAuth"
 import PpgccSymbol from "../assets/images/symbol-ppgcc.png"
 import Box from "../components/Box"
 import Input from "../components/Input"
 import Button from "../components/Button"
-import useAuth from "../hooks/useAuth"
-import { authLogInWithEmail } from "../../firebase/firebase-authentication"
+import { authLogInWithEmail } from "../../services/firebase/firebase-authentication"
 
 const LoginContainer = styled.div`
     display: flex;
@@ -55,15 +55,21 @@ export default function Login() {
     // const [status, setStatus] = React.useState("idle")
     const [error, setError] = React.useState(null)
 
-    const navigate = useNavigate();
-    const { setIsLoggedIn } = useAuth();
+    const navigate = useNavigate()
+    const { setIsLoggedIn, isLoggedIn } = useAuth()
     
+    React.useEffect(() => {
+        if (isLoggedIn) {
+            navigate("/processes", { replace: true })
+        }
+    }, [isLoggedIn, navigate])
+
     async function onSubmit(data) {
         console.log(data)
         try {
-            await authLogInWithEmail(data.email, data.password, navigate, setIsLoggedIn)
+            await authLogInWithEmail(data.email, data.password, setIsLoggedIn)
             // await authLogInWithEmail(data.email, data.password, navigate, setIsLoggedIn)
-            navigate("/processes")
+            navigate("/processes", { replace: true })
         } catch(error) {
             setError("Falha ao fazer login. Verifique suas credenciais.")
             console.error(error.message);

@@ -18,11 +18,12 @@ const app = initializeApp(firebaseConfig)
 const auth = getAuth(app)
 
 // Função para configurar o listener de autenticação
-export function authListener(setIsLoggedIn, setUserRole, setDisplayName, setUid) {
+export function authListener(setIsLoggedIn, setUserRole, setDisplayName, setUid, setUserEmail) {
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             setIsLoggedIn(true)
             setUid(user.uid)
+            setUserEmail(user.email)
             console.log("api.js - authListener() - User is logged in")
             // console.log("api.js - authListener() - ", user)
             const role = await getUserRole(user)

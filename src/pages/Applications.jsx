@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from "react"
+import React from "react"
 import { useParams, useNavigate } from "react-router-dom"
-import { getApplications, loadProcess } from "../../firebase/firebase-firestore"
+import { getApplications, loadProcess } from "../../services/firebase/firebase-firestore"
 import styled from "styled-components"
 import Box from "../components/Box"
 import ApplicationsTable from "../components/ApplicationsTable"
@@ -50,7 +50,7 @@ export default function Applications() {
     const { id } = useParams()
     const navigate = useNavigate()
 
-    useEffect(() => {
+    React.useEffect(() => {
         async function loadData() {
             const applications = await getApplications(id)
             const formattedApplications = formatCreatedAt(applications)
@@ -67,28 +67,23 @@ export default function Applications() {
 
     const isApplicationsEmpty = isApplicationsStateEmpty(applications)
 
-    function handleView(uid) {
-        navigate(`view/${uid}`)
-    }
-
-    function handleEvaluate(index) {
-        const application = applications[index]
-        // Implementar lógica para avaliar a aplicação
-        console.log("Avaliar aplicação:", application)
+    function handleEvaluate(uid) {
+        console.log("UID recebido no handleEvaluate:", uid)
+        navigate(`evaluate/${uid}`)
     }
 
     const tablesElements = Object.keys(groupedApplications).map(researchArea => (
         <div key={researchArea}>
             <h2>{researchArea}</h2>
             <ApplicationsTable 
-                columnsNames={["Nome", "ID do Usuário", "Data de Criação", "Status"]} 
+                columnsNames={["NOME", "EMAIL DO USUÁRIO", "DATA DE CRIAÇÃO", "STATUS"]} 
                 data={groupedApplications[researchArea].map(application => ({
-                    Nome: application.name,
-                    "ID do Usuário": application.uid,
-                    "Data de Criação": application.createdAt,
-                    Status: application.status
+                    NOME: application.name,
+                    "EMAIL DO USUÁRIO": application.userEmail,
+                    "DATA DE CRIAÇÃO": application.createdAt,
+                    STATUS: application.status,
+                    uid: application.uid
                 }))}
-                onView={handleView}
                 onEvaluate={handleEvaluate}
             />
         </div>

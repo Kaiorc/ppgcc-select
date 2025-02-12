@@ -2,11 +2,12 @@ import React from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { styled } from "styled-components"
+import useAuth from "../hooks/useAuth"
 import PpgccSymbol from "../assets/images/symbol-ppgcc.png"
 import Box from "../components/Box"
 import Input from "../components/Input"
 import Button from "../components/Button"
-import { authCreateAccountWithEmail } from "../../firebase/firebase-authentication"
+import { authCreateAccountWithEmail } from "../../services/firebase/firebase-authentication"
 
 const SigninContainer = styled.div`
     display: flex;
@@ -63,6 +64,13 @@ export default function Signin() {
     const [error, setError] = React.useState(null)
 
     const navigate = useNavigate()
+    const { isLoggedIn } = useAuth()
+
+    React.useEffect(() => {
+        if (isLoggedIn) {
+            navigate("/processes", { replace: true })
+        }
+    }, [isLoggedIn, navigate])
     
     function validatePasswordsMatch(value) {
         if (value !== watch("password")) {

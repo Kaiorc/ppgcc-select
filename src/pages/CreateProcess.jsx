@@ -8,7 +8,7 @@ import Box from "../components/Box"
 import Table from "../components/Table"
 import RegistrationFieldModal from "../components/RegistrationFieldModal"
 import ImportProcessFieldModal from "../components/ImportProcessFieldModal"
-import { createProcess } from "../../firebase/firebase-firestore"
+import { createProcess } from "../../services/firebase/firebase-firestore"
 
 const CreateProcessBox = styled(Box)`
     padding: 1em;
@@ -109,21 +109,34 @@ export default function CreateProcess() {
     }
 
     function handleAddField(field) {
+        const isDuplicate = processFormData.registrationFieldsInfo.some(existingField => existingField.name === field.name)
+        if (isDuplicate) {
+            alert("Um campo com esse nome já existe.")
+            return
+        }
         setProcessFormData(prevProcessFormData => ({
             ...prevProcessFormData,
             registrationFieldsInfo: [...prevProcessFormData.registrationFieldsInfo, field]
-        }));
+        }))
     }
 
     function handleImportFields(process) {
+        const newFields = process.registrationFieldsInfo.filter(importedField => 
+            !processFormData.registrationFieldsInfo.some(existingField => existingField.name === importedField.name)
+        )
+
+        if (newFields.length < process.registrationFieldsInfo.length) {
+            alert("Alguns campos não foram importados porque já existem.")
+        }
+
         setProcessFormData(prevProcessFormData => ({
             ...prevProcessFormData,
             registrationFieldsInfo: [
                 ...prevProcessFormData.registrationFieldsInfo,
-                ...process.registrationFieldsInfo
+                ...newFields
             ]
-        }));
-        setIsImportModalOpen(false);
+        }))
+        setIsImportModalOpen(false)
     }
 
     function handleDeleteField(index) {

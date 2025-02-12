@@ -113,7 +113,7 @@ export async function deleteProcess(id) {
 }
 
 // Função para adicionar os dados do candidato a um doc na coleção "applications"
-export async function addApplication(id, data, name, uid) {
+export async function addApplication(id, data, name, uid, userEmail) {
     try {
         // Usa o valor de "uid" como ID
         const applicationId = uid
@@ -122,9 +122,20 @@ export async function addApplication(id, data, name, uid) {
         const applicationDocRef = doc(db, `processes/${id}/applications`, applicationId)
     
         // Adiciona o documento com os dados do candidato
-        await setDoc(applicationDocRef, { ...data, name:name, uid: applicationId, createdAt: serverTimestamp() })
+        await setDoc(applicationDocRef, { ...data, name:name, uid: applicationId, userEmail: userEmail, status: "Não analisada", createdAt: serverTimestamp() })
     } catch (error) {
         console.error("Erro ao adicionar aplicação:", error)
+        throw error
+    }
+}
+
+// Função para atualizar o status de uma inscrição
+export async function updateApplicationStatus(processId, applicationId, status) {
+    try {
+        const applicationDocRef = doc(db, `processes/${processId}/applications`, applicationId)
+        await updateDoc(applicationDocRef, { status })
+    } catch (error) {
+        console.error("Erro ao atualizar o status da inscrição:", error)
         throw error
     }
 }

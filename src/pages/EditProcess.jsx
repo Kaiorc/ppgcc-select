@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import styled from 'styled-components'
-import { getProcess, updateProcess, hasApplications } from "../../firebase/firebase-firestore"
+import { getProcess, updateProcess, hasApplications } from "../../services/firebase/firebase-firestore"
 import { Link } from "react-router-dom"
 import Input from "../components/Input"
 import TextArea from "../components/TextArea"
@@ -123,6 +123,11 @@ export default function EditProcess() {
     }
 
     function handleAddField(field) {
+        const isDuplicate = selectionProcessData.registrationFieldsInfo.some(existingField => existingField.name === field.name);
+        if (isDuplicate) {
+            alert("Um campo com esse nome já existe.");
+            return;
+        }
         setSelectionProcessData(prevSelectionProcessData => ({
             ...prevSelectionProcessData,
             registrationFieldsInfo: [...prevSelectionProcessData.registrationFieldsInfo, field]
@@ -130,11 +135,19 @@ export default function EditProcess() {
     }
 
     function handleImportFields(process) {
+        const newFields = process.registrationFieldsInfo.filter(importedField => 
+            !selectionProcessData.registrationFieldsInfo.some(existingField => existingField.name === importedField.name)
+        );
+
+        if (newFields.length < process.registrationFieldsInfo.length) {
+            alert("Alguns campos não foram importados porque já existem.");
+        }
+
         setSelectionProcessData(prevSelectionProcessData => ({
             ...prevSelectionProcessData,
             registrationFieldsInfo: [
                 ...prevSelectionProcessData.registrationFieldsInfo,
-                ...process.registrationFieldsInfo
+                ...newFields
             ]
         }));
         setIsImportModalOpen(false);

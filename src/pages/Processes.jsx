@@ -1,7 +1,8 @@
 import React from "react"
 import { styled } from "styled-components"
 import { Link } from "react-router-dom"
-import { getProcesses } from "../../firebase/firebase-firestore"
+import { getProcesses } from "../../services/firebase/firebase-firestore"
+import { formatFirestoreDate } from "../../formatters/formatters"
 import useRole from "../hooks/useRole"
 import Box from "../components/Box"
 import Button from "../components/Button"
@@ -42,19 +43,29 @@ const ListItem = styled.li`
     padding: 1em 2em;
     width: 100%;
     gap: 2em;
+    border-bottom: 2px solid #E5E5E5;
+    &:first-child {
+        border-top: 2px solid #E5E5E5;
+    }
+    &:last-child {
+        border-bottom: none;
+    }
     &:hover {
         background-color: #E5E5E5;
         transition-duration: 0.2s;
         cursor: pointer;
-        border-radius: 8px;
-    };
+    }
     &:active {
         background-color: #D9D9D9;
-    };
+    }
 
-    p { margin: 0.5em 0; }
+    p { 
+        margin: 0.5em 0;
+    }
 
-    b{ color: grey; }
+    b { 
+        color: grey;
+    }
 `
 
 export default function Processes() {
@@ -88,8 +99,8 @@ export default function Processes() {
                     <h3>{process.name}</h3>
                     <div>
                         <b>{process.miniDescription}</b>
-                        <p><b>Data de início:</b> {process.startDate}</p>
-                        <p><b>Data limite:</b> {process.endDate}</p>
+                        <p><b>Data de início:</b> {formatFirestoreDate(process.startDate)}</p>
+                        <p><b>Data limite:</b> {formatFirestoreDate(process.endDate)}</p>
                     </div>
                 </ListItem>
             </Link>

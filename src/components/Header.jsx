@@ -5,7 +5,7 @@ import { styled } from "styled-components";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import Button from "./Button";
 import useAuth from "../hooks/useAuth";
-import { authLogOut } from "../../firebase/firebase-authentication";
+import { authLogOut } from "../../services/firebase/firebase-authentication"
 
 const HeaderContainer = styled.header`
     background-color: #008442;
@@ -26,42 +26,54 @@ const InfoAreaContainer = styled.div`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 20px;
-    margin: 2px 10px 10px 0;
+    gap: 20px; 
+    margin: 0.6em 10px 10px 0;
 `    
 
-const InfoMessage = styled.p`
+const InfoMessage = styled.b`
     color: #fff;
     margin: 0 0 0 2px;
 `    
 
 const UeceLogoImg = styled.img`
+    max-width: 100%; 
+    height: auto;
     width: 26vw;
-    height: 15vh;
+    max-height: 15vh;
     margin: 10px 0 0 20px;
+    object-fit: contain;
 `
 
 const PpgccLogoImg = styled.img`
-    width: 28vw;
-    height: 14vh;
+    max-width: 100%; 
+    height: auto;
+    width: 30vw;
+    max-height: 20vh;
+    object-fit: contain;
+    margin: 10px 0 0 0;
+`
+
+const NavigationButtonsContainer = styled.div`
+    display: flex;
+    flex-direction: row;
+    justify-content: start;
+    align-items: center;
+    gap: 1em;
+    margin: 0.6em 0 0.6em 1.25em;
 `
 
 export default function Header() {
 
     let location = useLocation();
-    // console.log("Header.jsx - ", location.pathname)
 
     const navigate = useNavigate()
 
-    // const { isLoggedIn } = useAuth();
     const { isLoggedIn, setIsLoggedIn, displayName } = useAuth()
-
-    // console.log(displayName)
 
     async function handleLogOutButtonClick() {
         try {
             await authLogOut(setIsLoggedIn)
-            navigate("/")
+            navigate("/", { replace: true })
         } catch(error) {
             console.error(error.message)
             throw error
@@ -70,13 +82,31 @@ export default function Header() {
     
     return(
         <HeaderContainer>
-            <Link to="/processes">
-                <UeceLogoImg 
-                    src={UeceLogo} 
-                    alt='logo' 
-                    className="logo-img"
-                />
-            </Link>
+            <InfoContainer>
+                <Link to="/processes">
+                    <UeceLogoImg 
+                        src={UeceLogo} 
+                        alt='logo' 
+                        className="logo-img"
+                        />
+                </Link>
+                {location.pathname !== "/" && location.pathname !== "/processes" && location.pathname !== "/signin" && (
+                    <NavigationButtonsContainer>
+                        <Button 
+                            type="button" 
+                            onClick={() => navigate(-1)}
+                        >
+                            ← VOLTAR
+                        </Button>
+                        <Button 
+                            type="button" 
+                            onClick={() => navigate("/")}
+                        >
+                            ⌂ INÍCIO
+                        </Button>
+                    </NavigationButtonsContainer>
+                )}
+            </InfoContainer>
             <InfoContainer>
                 <PpgccLogoImg 
                     src={PpgccLogo} 

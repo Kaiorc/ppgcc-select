@@ -2,8 +2,8 @@ import React from "react"
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { styled } from "styled-components"
-import { loadProcess, addApplication } from "../../firebase/firebase-firestore"
-import { uploadFileToStorage } from "../../appwrite/appwrite-storage"
+import { loadProcess, addApplication } from "../../services/firebase/firebase-firestore"
+import { uploadFileToStorage } from "../../services/appwrite/appwrite-storage"
 import useAuth from "../hooks/useAuth"
 import { researchAreas } from "../../config"
 import Input from "../components/Input"
@@ -59,7 +59,7 @@ function validateFile(value) {
 
 export default function Application() {
     const { register, handleSubmit, watch, resetField, formState: { errors } } = useForm()
-    const { displayName, uid } = useAuth()
+    const { displayName, uid, userEmail } = useAuth()
 
     const [selectionProcess, setSelectionProcess] = React.useState()
     // const [loading, setLoading] = React.useState(false)
@@ -116,7 +116,7 @@ export default function Application() {
             console.log(filteredData)
 
             // Envia os dados processados para a função addApplication
-            await addApplication(id, filteredData, displayName, uid)
+            await addApplication(id, filteredData, displayName, uid, userEmail)
             navigate(`/processes/${id}`)
         } catch (error) {
             console.error("Erro fazer inscrição: ", error)
@@ -172,6 +172,7 @@ export default function Application() {
             <ApplicationFormContainer onSubmit={handleSubmit(onSubmit)}>
                 <h2>DADOS DO CANDIDATO</h2>
                     <InputContainer>
+                    {selectionProcess?.researchFieldRequired ? (
                         <label htmlFor="researchArea">
                             Linha de Pesquisa
                             <Select
@@ -182,9 +183,12 @@ export default function Application() {
                                 required
                             />
                         </label>
-                        { isResearchAreaSelected() && inputElements }
+                        ) : (
+                            inputElements
+                        )}
+                        {selectionProcess?.researchFieldRequired && isResearchAreaSelected() && inputElements}
                     </InputContainer>
-                    { isResearchAreaSelected() && (
+                    {(!selectionProcess?.researchFieldRequired || isResearchAreaSelected()) && (
                         <ButtonContainer>
                             <Link to="/processes">
                                 <Button type="button">

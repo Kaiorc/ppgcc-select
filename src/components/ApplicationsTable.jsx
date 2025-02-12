@@ -27,7 +27,7 @@ const TableCell = styled.td`
   text-align: left;
 `
 
-export default function ApplicationsTable({ columnsNames, data, onView, onEvaluate }) {
+export default function ApplicationsTable({ columnsNames, data, onEvaluate }) {
   return (
     <StyledTable>
         <TableHead>
@@ -38,7 +38,7 @@ export default function ApplicationsTable({ columnsNames, data, onView, onEvalua
                     </TableHeader>
                 ))}
                 <TableHeader>
-                    Ações
+                    AÇÕES
                 </TableHeader>
             </TableRow>
         </TableHead>
@@ -53,12 +53,7 @@ export default function ApplicationsTable({ columnsNames, data, onView, onEvalua
                     <TableCell>
                         <Button 
                           type="button"
-                          onClick={() => onView(row["ID do Usuário"])}>
-                            VISUALIZAR
-                        </Button>
-                        <Button 
-                          type="button"
-                          onClick={() => onEvaluate(rowIndex)}>
+                          onClick={() => onEvaluate(row.uid)}>
                             AVALIAR
                         </Button>
                     </TableCell>

@@ -1,7 +1,8 @@
 import React from "react"
-import DOMPurify from "dompurify";
+import DOMPurify from "dompurify"
 import { Link, useParams, useLocation, Outlet } from "react-router-dom"
-import { loadProcess, userHasApplication } from "../../firebase/firebase-firestore"
+import { loadProcess, userHasApplication } from "../../services/firebase/firebase-firestore"
+import { formatFirestoreDate, formatProcessDescription } from "../../formatters/formatters"
 import styled from "styled-components"
 import useAuth from "../hooks/useAuth"
 import useRole from "../hooks/useRole"
@@ -58,15 +59,6 @@ const RegisteredMessage = styled.p`
     color: green;
     font-weight: bold;
 `
-
-function formatText(text) {
-    if (!text) return "";
-    
-    const formattedText = text.replace(/\n/g, "<br>");
-    
-    const linkedText = formattedText.replace(/(https?:\/\/[^\s]+)/g, '<a href="$1" target="_blank">$1</a>');
-    return linkedText;
-}
 
 export default function ProcessDetail() {
     const [selectionProcess, setSelectionProcess] = React.useState(null)
@@ -136,21 +128,21 @@ export default function ProcessDetail() {
                         <h3>Descrição:</h3>
                         <p 
                             dangerouslySetInnerHTML={{ 
-                                __html: DOMPurify.sanitize(formatText(selectionProcess.description)) 
+                                __html: DOMPurify.sanitize(formatProcessDescription(selectionProcess.description)) 
                             }} 
                         />
                     </InfoContainer>
                     <InfoContainer>
                         <h3>Data de início de inscrição:</h3>
-                        <p> {selectionProcess.startDate}</p>
+                        <p> {formatFirestoreDate(selectionProcess.startDate)}</p>
                     </InfoContainer>
                     <InfoContainer>
                         <h3>Data limite de inscrição:</h3>
-                        <p> {selectionProcess.endDate}</p>
+                        <p> {formatFirestoreDate(selectionProcess.endDate)}</p>
                     </InfoContainer>
                     <InfoContainer>
                         <h3>Data limite de análise de inscrição:</h3>
-                        <p> {selectionProcess.endAnalysisDate}</p>
+                        <p> {formatFirestoreDate(selectionProcess.endAnalysisDate)}</p>
                     </InfoContainer>
                 </ProcessDetailBox>
             )}

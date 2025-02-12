@@ -2,11 +2,16 @@ import { storage } from "./appwrite-config"
 
 const bucketId = import.meta.env.VITE_APPWRITE_STORAGE_BUCKET_ID
 
+// Função para fazer upload de um arquivo para o Appwrite Storage e retornar a
+// URL para visualização do arquivo
 export async function uploadFileToStorage(file) {
     try {
         const response = await storage.createFile(bucketId, "unique()", file)
         // Retorna o fileId
-        return response.$id
+        const fileId = response.$id
+        // Retorna a URL para visualização do arquivo
+        const fileUrl = storage.getFileView(bucketId, fileId)
+        return fileUrl
     } catch (error) {
         console.error("Erro ao fazer upload para o Appwrite:", error)
         throw error
