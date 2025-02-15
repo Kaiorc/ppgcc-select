@@ -10,29 +10,32 @@ import Button from "../components/Button"
 const HomeContainer = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: center;
-    
+    align-items: center; 
+    width: 100%;
+    padding: 1rem;
 `
 
 const ListHeader = styled.div`
     display: flex;
     flex-direction: row;
-    justify-content: space-between;
+    justify-content: ${({ isAdmin }) => (isAdmin ? 'space-between' : 'center')};
     gap: 5em;
     align-items: center;
+    width: 100%;
+    padding: 1rem;
+    
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
 `
 
 const List = styled.ul`
-    // display: flex;
-    // flex-direction: column;
-    // justify-content: center;
-    // align-items: center;
-    padding: 0;
+    padding: 0 0 1em 0;
     width: 100%;
     list-style: none;
     margin: 0;
-    width: 100%;
-
 `
 
 const ListItem = styled.li`
@@ -44,27 +47,43 @@ const ListItem = styled.li`
     width: 100%;
     gap: 2em;
     border-bottom: 2px solid #E5E5E5;
+
     &:first-child {
         border-top: 2px solid #E5E5E5;
     }
+    
     &:last-child {
         border-bottom: none;
     }
+    
     &:hover {
         background-color: #E5E5E5;
         transition-duration: 0.2s;
         cursor: pointer;
     }
+    
     &:active {
         background-color: #D9D9D9;
     }
 
     p { 
+        font-weight: bold;
         margin: 0.5em 0;
     }
 
-    b { 
-        color: grey;
+    @media (max-width: 768px) {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+    }
+`
+
+const BoldInfo = styled.b`
+    color: grey;
+    font-size: 1rem;
+
+    @media (max-width: 768px) {
+        font-size: 0.9rem;
     }
 `
 
@@ -98,9 +117,9 @@ export default function Processes() {
                 >
                     <h3>{process.name}</h3>
                     <div>
-                        <b>{process.miniDescription}</b>
-                        <p><b>Data de início:</b> {formatFirestoreDate(process.startDate)}</p>
-                        <p><b>Data limite:</b> {formatFirestoreDate(process.endDate)}</p>
+                        <BoldInfo>{process.miniDescription}</BoldInfo>
+                        <p><BoldInfo>Data de início:</BoldInfo> {formatFirestoreDate(process.startDate)}</p>
+                        <p><BoldInfo>Data limite:</BoldInfo> {formatFirestoreDate(process.endDate)}</p> 
                     </div>
                 </ListItem>
             </Link>

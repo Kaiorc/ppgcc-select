@@ -13,21 +13,64 @@ import ImportProcessFieldModal from "../components/ImportProcessFieldModal"
 
 const EditProcessBox = styled(Box)`
     padding: 1em;
+    min-width: 300px; // Adicionando min-width
+    
+    @media (max-width: 1024px) {
+        max-width: 900px;
+    }
+
+    @media (max-width: 768px) {
+        max-width: 100%;
+    }
+
+    @media (max-width: 480px) {
+        max-width: 100%;
+        
+    }
+
+    @media (max-width: 345px) {
+        padding: 0.25em;
+        margin: 1em 0.5em;
+    }
 `
 
 const EditProcessFormContainer = styled.form`
-    
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+    padding: 0 1em 1em 1em;
 `
 
 const InputContainer = styled.div`
-    /* & input[type=date] { */
+    display: flex;
+    flex-direction: column;
+    gap: 1em;
+
     & input, textarea {
         margin-top: 0;
-    };
+    }
+`
+
+const BoldLabel = styled.label`
+    font-weight: bold;
+`
+
+const ResearchFieldRequiredLabel = styled(BoldLabel)`
+    display: flex;
+    align-items: center;
+    gap: 5px;
 `
 
 const ButtonContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    flex-wrap: wrap;
 
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+    }
 `
 
 const TableHeaderContainer = styled.div`
@@ -35,6 +78,13 @@ const TableHeaderContainer = styled.div`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    gap: 1em;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+    }
 `
 
 const RedButton = styled(Button)`
@@ -183,7 +233,7 @@ export default function EditProcess() {
             <EditProcessFormContainer onSubmit={handleSubmit}>
                 <h2>DADOS MÍNIMOS OBRIGATÓRIOS</h2>
                     <InputContainer>
-                        <label htmlFor="name">
+                        <BoldLabel htmlFor="name">
                             Nome
                             <Input
                                 name="name"
@@ -194,8 +244,8 @@ export default function EditProcess() {
                                 aria-label="Nome"
                                 required
                             />
-                        </label>
-                        <label htmlFor="places">
+                        </BoldLabel>
+                        <BoldLabel htmlFor="places">
                             Número de vagas
                             <Input
                                 name="places"
@@ -207,8 +257,8 @@ export default function EditProcess() {
                                 aria-label="Número de Vagas"
                                 required
                             />
-                        </label>
-                        <label htmlFor="miniDescription">
+                        </BoldLabel>
+                        <BoldLabel htmlFor="miniDescription">
                             Mini descrição
                             <Input
                                 name="miniDescription"
@@ -219,8 +269,8 @@ export default function EditProcess() {
                                 aria-label="Mini Descrição"
                                 required
                             />
-                        </label>
-                        <label htmlFor="description">
+                        </BoldLabel>
+                        <BoldLabel htmlFor="description">
                             Descrição
                             <TextArea
                                 name="description"
@@ -231,9 +281,8 @@ export default function EditProcess() {
                                 aria-label="Descrição"
                                 required
                                 />
-                        </label>
-                        <label htmlFor="researchFieldRequired">
-                            Seleção de linha de pesquisa é obrigatória?
+                        </BoldLabel>
+                        <ResearchFieldRequiredLabel htmlFor="researchFieldRequired">
                             <Input
                                 name="researchFieldRequired"
                                 onChange={handleChange}
@@ -243,13 +292,14 @@ export default function EditProcess() {
                                 aria-label="Linha de pesquisa obrigatória"
                                 disabled={hasApplicationsState ? true : false}
                                 />
-                        </label>
+                                Seleção de linha de pesquisa é obrigatória?
+                        </ResearchFieldRequiredLabel>
                         {
                             hasApplicationsState && (
                                 <ErrorMessage>Este campo não pode ser alterado, pois o processo seletivo já possui inscritos</ErrorMessage>
                             )
                         }
-                        <label htmlFor="startDate">
+                        <BoldLabel htmlFor="startDate">
                             Data de início de inscrição
                             <Input
                                 name="startDate"
@@ -260,8 +310,8 @@ export default function EditProcess() {
                                 aria-label="Data de início"
                                 required
                                 />
-                        </label>
-                        <label htmlFor="endDate">
+                        </BoldLabel>
+                        <BoldLabel htmlFor="endDate">
                             Data de término de inscrição
                             <Input
                                 name="endDate"
@@ -272,8 +322,8 @@ export default function EditProcess() {
                                 aria-label="Data de término"
                                 required
                                 />    
-                        </label>
-                        <label htmlFor="endAnalysisDate">
+                        </BoldLabel>
+                        <BoldLabel htmlFor="endAnalysisDate">
                             Data de limite da análise de inscrição
                             <Input
                                 name="endAnalysisDate"
@@ -284,7 +334,7 @@ export default function EditProcess() {
                                 aria-label="Data de término da análise"
                                 required
                                 />
-                        </label>
+                        </BoldLabel>
                     </InputContainer>
                     <TableHeaderContainer>
                         <h2>DADOS SOLICITADOS AO CANDIDATO</h2>

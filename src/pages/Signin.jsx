@@ -13,6 +13,8 @@ const SigninContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    width: 100%;
+    padding: 1rem;
 `
 
 const SigninHeader = styled.div`
@@ -22,14 +24,20 @@ const SigninHeader = styled.div`
     justify-content: center;
     align-items: center;
     border-radius: 8px 8px 0 0;
+    padding: 1rem;
 `
 
 const SigninFormContainer = styled.form`
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 1em 2em;
-    width: 22vw;
+    padding: 2rem;
+    width: 100%;
+    max-width: 400px;
+
+    @media (max-width: 480px) {
+        padding: 1rem;
+    }
 `
 
 const InputContainer = styled.div`
@@ -43,17 +51,26 @@ const ButtonContainer = styled.div`
     display: flex;
     justify-content: center;
     align-items: stretch;
-    gap: 4em;
+    gap: 1rem;
+    flex-wrap: wrap;
     margin-top: 1em;
+    width: 100%;
 `
 
 const PpgccSymbolImg = styled.img`
-    width: 8vw;
-    height: 16vh;
+    width: 100px;
+    height: auto;
+    max-width: 20vw;
+
+    @media (max-width: 480px) {
+        width: 80px;
+    }
 `
 
-const ErrorMessage= styled.p`
+const ErrorMessage = styled.p`
     color: red;
+    font-size: 0.875rem;
+    text-align: center;
 `
 
 export default function Signin() {

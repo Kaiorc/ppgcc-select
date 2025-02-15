@@ -6,38 +6,33 @@ import { formatFirestoreDate, formatProcessDescription } from "../../formatters/
 import styled from "styled-components"
 import useAuth from "../hooks/useAuth"
 import useRole from "../hooks/useRole"
-import Box from "../components/Box"
 import Button from "../components/Button"
 
 const ProcessDetailContainer = styled.div`
-    
+    display: flex;
+    justify-content: center;
+    padding: 1rem;
 `
 
 const ProcessDetailBox = styled.div`
     display: flex;
     flex-direction: column;
     align-items: flex-start;
-    margin: 2em 2em 8em 2em;
+    margin: 2em;
     padding: 1em;
     border-radius: 8px;
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
-`
+    max-width: 900px; /* Para evitar que fique muito largo em telas grandes */
+    width: 100%;
 
-// const ProcessDetailBox = styled(Box)`
-//     &&{
-//         background-color: #f5f5f5;
-//     }
-// `
-
-const InfoContainer = styled.div`
-    display: flex;
-    flex-direction: column;
-    align-items: flex-start;   
-    & h3 {
-        margin-bottom: 0;
+    @media (max-width: 768px) {
+        margin: 1em;
+        padding: 0.8em;
     }
-    & p {
-        margin-top: 0;
+
+    @media (max-width: 480px) {
+        margin: 0.5em;
+        padding: 0.5em;
     }
 `
 
@@ -46,18 +41,78 @@ const TitleContainer = styled.div`
     align-items: center;
     justify-content: space-between;
     width: 100%;
+    flex-wrap: wrap; /* Permite que os botões fiquem abaixo do título se necessário */
+
+    @media (max-width: 600px) {
+        flex-direction: column;
+        gap: 1rem;
+        text-align: center;
+    }
 `
 
 const TitleButtonContainer = styled.div`
     display: flex;
     align-items: center;
-    justify-content: space-between;
     gap: 1em;
+
+    @media (max-width: 600px) {
+        flex-direction: column;
+        width: 100%;
+    }
+`
+
+const InfoGrid = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    width: 100%;
+
+    @media (min-width: 768px) {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 2rem;
+    }
+`
+
+const InfoContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+
+    h3 {
+        margin-bottom: 0;
+        font-size: 1.2rem;
+    }
+
+    p {
+        margin-top: 0.3rem;
+        font-size: 1rem;
+    }
+
+    @media (max-width: 768px) {
+        h3 {
+            font-size: 1rem;
+        }
+
+        p {
+            font-size: 0.9rem;
+        }
+    }
 `
 
 const RegisteredMessage = styled.p`
-    color: green;
+    color: white;
     font-weight: bold;
+    font-size: 1.1rem;
+    background-color: #006734;
+    padding: 0.8rem;
+    border-radius: 20px;
+
+    @media (max-width: 600px) {
+        font-size: 1rem;
+        text-align: center;
+    }
 `
 
 export default function ProcessDetail() {
@@ -92,7 +147,7 @@ export default function ProcessDetail() {
     console.log(id)
     
     return (
-        <>
+        <ProcessDetailContainer>
             {selectionProcess && (
                 <ProcessDetailBox>
                     <TitleContainer>
@@ -109,7 +164,7 @@ export default function ProcessDetail() {
                                 </TitleButtonContainer>
                             ) : (
                                 isUserRegistered ? (
-                                    <RegisteredMessage>Você já está inscrito(a)</RegisteredMessage>
+                                    <RegisteredMessage>VOCÊ JÁ ESTÁ INSCRITO(A)</RegisteredMessage>
                                 ) : (
                                     <TitleButtonContainer>
                                         <Link to="application">
@@ -120,10 +175,24 @@ export default function ProcessDetail() {
                             )
                         }
                     </TitleContainer>
-                    <InfoContainer>
-                        <h3>Número de vagas:</h3>
-                        <p> {selectionProcess.places}</p>
-                    </InfoContainer>
+                    <InfoGrid>
+                        <InfoContainer>
+                            <h3>Número de vagas:</h3>
+                            <p> {selectionProcess.places}</p>
+                        </InfoContainer>
+                        <InfoContainer>
+                            <h3>Data de início de inscrições:</h3>
+                            <p> {formatFirestoreDate(selectionProcess.startDate)}</p>
+                        </InfoContainer>
+                        <InfoContainer>
+                            <h3>Data de encerramento de inscrições:</h3>
+                            <p> {formatFirestoreDate(selectionProcess.endDate)}</p>
+                        </InfoContainer>
+                        <InfoContainer>
+                            <h3>Data de encerramento de análise de inscrições:</h3>
+                            <p> {formatFirestoreDate(selectionProcess.endAnalysisDate)}</p>
+                        </InfoContainer>
+                    </InfoGrid>
                     <InfoContainer>
                         <h3>Descrição:</h3>
                         <p 
@@ -132,20 +201,8 @@ export default function ProcessDetail() {
                             }} 
                         />
                     </InfoContainer>
-                    <InfoContainer>
-                        <h3>Data de início de inscrição:</h3>
-                        <p> {formatFirestoreDate(selectionProcess.startDate)}</p>
-                    </InfoContainer>
-                    <InfoContainer>
-                        <h3>Data limite de inscrição:</h3>
-                        <p> {formatFirestoreDate(selectionProcess.endDate)}</p>
-                    </InfoContainer>
-                    <InfoContainer>
-                        <h3>Data limite de análise de inscrição:</h3>
-                        <p> {formatFirestoreDate(selectionProcess.endAnalysisDate)}</p>
-                    </InfoContainer>
                 </ProcessDetailBox>
             )}
-        </>
+        </ProcessDetailContainer>
     )
 }

@@ -11,12 +11,8 @@ import Select from "../components/Select"
 import Button from "../components/Button"
 import Box from "../components/Box"
 
-const ApplicationBox = styled(Box)`
-    padding: 1em;
-`
-
 const ApplicationFormContainer = styled.form`
-    
+    padding: 1em;
 `
 
 const InputContainer = styled.div`
@@ -31,8 +27,45 @@ const InputContainer = styled.div`
     }
 `
 
-const ButtonContainer = styled.div`
+const FileInputContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 
+    &.with-file {
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        & input {
+            padding-bottom: 2.5rem;
+        }
+    }
+        
+    input {
+        flex: 1;
+    }
+`
+
+const ButtonContainer = styled.div`
+    display: flex;
+    justify-content: space-evenly;
+    align-items: stretch;
+    gap: 1em;
+    margin-top: 0.5em;
+    flex-wrap: wrap;
+`
+
+const RedButton = styled(Button)`
+    background: red;
+    color: white;
+    border: none;
+    padding: 0.3rem 0.6rem;
+    cursor: pointer;
+    border-radius: 8px;
+`
+
+const BoldLabel = styled.label`
+    font-weight: bold;
 `
 
 const RedSpan = styled.span`
@@ -108,7 +141,7 @@ export default function Application() {
                 }
             }
 
-            // Filtra os dados do formulário para remover valores indefinidos
+            // Filtra os dados do formulário para remover valores undefined
             const filteredData = Object.fromEntries(
                 Object.entries(formData).filter(([_, value]) => value !== undefined)
             )
@@ -129,51 +162,69 @@ export default function Application() {
     // Cada campo é um label que contém um input (com validação), um botão para limpar o campo (caso seja 
     // um input do tipo file), e uma mensagem de erro (caso exista).
     const inputElements = selectionProcess?.registrationFieldsInfo?.map((info) => {
-        const isFile = info.type === "file"
-
-        const validationRules = isFile ? {
-            required: info.required ? `${info.name} é obrigatório.` : false,
-            validate: validateFile
-        } : {
-            required: info.required ? `${info.name} é obrigatório.` : false
-        }
-
-        const fieldValue = watch(info.name)
-        const isModified = fieldValue && fieldValue.length > 0
-
+        const isFile = info.type === "file";
+    
+        const validationRules = isFile
+            ? {
+                  required: info.required ? `${info.name} é obrigatório.` : false,
+                  validate: validateFile,
+              }
+            : {
+                  required: info.required ? `${info.name} é obrigatório.` : false,
+              };
+    
+        const fieldValue = watch(info.name);
+        const isModified = fieldValue && fieldValue.length > 0;
+    
         return (
-            <label 
-                htmlFor={info.name}
-                key={info.name}
-            >
+            <BoldLabel htmlFor={info.name} key={info.name}>
                 {info.name}
                 {info.required && <RedSpan>*Obrigatório</RedSpan>}
-                <Input
-                    {...register(`${info.name}`, validationRules)}
-                    name={info.name}
-                    type={info.type}
-                    placeholder={info.name}
-                    aria-label={info.name}
-                    required={info.required}
-                />
-                {isFile && isModified && (
-                    <button type="button" onClick={() => resetField(info.name)}>
-                        Limpar
-                    </button>
+    
+                {isFile ? (
+                    <FileInputContainer className={isModified ? "with-file" : ""}>
+                        <Input
+                            {...register(info.name, validationRules)}
+                            name={info.name}
+                            type="file"
+                            aria-label={info.name}
+                            required={info.required}
+                        />
+                        {isModified && (
+                            <RedButton type="button" onClick={() => resetField(info.name)}>
+                                LIMPAR
+                            </RedButton>
+                        )}
+                    </FileInputContainer>
+                ) : (
+                    <Input
+                        {...register(info.name, validationRules)}
+                        name={info.name}
+                        type={info.type}
+                        placeholder={info.name}
+                        aria-label={info.name}
+                        required={info.required}
+                    />
                 )}
+    
                 {errors[info.name] && <RedSpan>{errors[info.name].message}</RedSpan>}
-            </label>
-        )
-    })
+            </BoldLabel>
+        );
+    });
+    
+
+    if (!selectionProcess) {
+        return <p>Carregando...</p>
+    }
 
     return (
-        <ApplicationBox>
+        <Box>
             <h1>INSCRIÇÃO</h1>
             <ApplicationFormContainer onSubmit={handleSubmit(onSubmit)}>
                 <h2>DADOS DO CANDIDATO</h2>
                     <InputContainer>
                     {selectionProcess?.researchFieldRequired ? (
-                        <label htmlFor="researchArea">
+                        <BoldLabel htmlFor="researchArea">
                             Linha de Pesquisa
                             <Select
                                 optionPlaceholder="Selecione a linha de pesquisa desejada"
@@ -182,7 +233,7 @@ export default function Application() {
                                 name="researchArea"
                                 required
                             />
-                        </label>
+                        </BoldLabel>
                         ) : (
                             inputElements
                         )}
@@ -202,6 +253,6 @@ export default function Application() {
                         )
                     }
             </ApplicationFormContainer>
-        </ApplicationBox>
+        </Box>
     )
 }

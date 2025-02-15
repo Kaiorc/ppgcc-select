@@ -12,12 +12,21 @@ const HeaderContainer = styled.header`
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    padding: 10px;
+
+    @media (max-width: 1024px) {
+        flex-direction: column;
+        align-items: center;
+    }
 `
 
 const InfoContainer = styled.div`
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
     gap: 0px;
 `    
     
@@ -26,40 +35,82 @@ const InfoAreaContainer = styled.div`
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    gap: 20px; 
+    gap: 20px;
     margin: 0.6em 10px 10px 0;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 10px;
+        margin: 0;
+    }
 `    
 
 const InfoMessage = styled.b`
     color: #fff;
-    margin: 0 0 0 2px;
+    margin: 0;
+    text-align: center;
+    font-size: 1rem;
+
+    @media (max-width: 480px) {
+        font-size: 0.9rem;
+    }
 `    
 
 const UeceLogoImg = styled.img`
-    max-width: 100%; 
+    width: 22vw;
+    max-width: 490px;
+    min-width: 180px;
     height: auto;
-    width: 26vw;
-    max-height: 15vh;
-    margin: 10px 0 0 20px;
+    margin: 10px;
     object-fit: contain;
+
+    @media (max-width: 1024px) {
+        width: 35vw;
+    }
+
+    @media (max-width: 768px) {
+        width: 55vw;
+    }
+
+    @media (max-width: 480px) {
+        width: 65vw;
+    }
 `
 
 const PpgccLogoImg = styled.img`
-    max-width: 100%; 
+    width: 28vw;
+    max-width: 576px;
+    min-width: 200px;
     height: auto;
-    width: 30vw;
-    max-height: 20vh;
+    margin: 10px;
     object-fit: contain;
-    margin: 10px 0 0 0;
+
+    @media (max-width: 1024px) {
+        width: 35vw;
+    }
+
+    @media (max-width: 768px) {
+        width: 60vw;
+    }
+
+    @media (max-width: 480px) {
+        width: 70vw;
+    }
 `
 
 const NavigationButtonsContainer = styled.div`
     display: flex;
     flex-direction: row;
-    justify-content: start;
+    justify-content: center;
     align-items: center;
     gap: 1em;
-    margin: 0.6em 0 0.6em 1.25em;
+    margin: 0.6em 0;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 10px;
+        margin: 0;
+    }
 `
 
 export default function Header() {

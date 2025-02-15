@@ -14,6 +14,17 @@ const StyledInput = styled.input`
     &:focus {
         border: 2px solid #F0852E;
     }
+    &[type="file"] {
+        min-height: 40px;
+        appearance: none; /* Evita estilos nativos do navegador */
+    }
+
+    &[type="checkbox"] {
+        width: 1.5em; 
+        height: 1.5em; 
+        margin: 0 0.5em 0 0;
+        cursor: pointer;
+    }
 `
 
 // Define o Input usando React.forwardRef() para que o ref possa ser passado para o <input>

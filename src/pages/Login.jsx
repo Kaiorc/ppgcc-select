@@ -13,6 +13,7 @@ const LoginContainer = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
+    padding: 1em;
 `
 
 const LoginHeader = styled.div`
@@ -35,13 +36,18 @@ const ButtonContainer = styled.div`
     display: flex;
     justify-content: space-evenly;
     align-items: stretch;
-    gap: 4em;
-    margin-top: 1em;
+    gap: 1em;
+    margin: 1em 1em 0 1em;
+    flex-wrap: wrap;
 `
 
 const PpgccSymbolImg = styled.img`
-    width: 8vw;
-    height: 16vh;
+    width: 20vw;
+    max-width: 120px;
+    height: auto;
+    @media (max-width: 768px) {
+        width: 30vw;
+    }
 `
 
 const ErrorMessage= styled.p`
