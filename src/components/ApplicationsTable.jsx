@@ -2,9 +2,17 @@ import React from 'react'
 import styled from 'styled-components'
 import Button from './Button'
 
+const StyledTableContainer = styled.div`
+    width: 100%;
+    padding: 0 1rem 1rem 1rem;
+    overflow-x: auto; 
+    isolation: isolate;
+`
+
 const StyledTable = styled.table`
   border-collapse: collapse;
   width: 100%;
+  min-width: 600px;
 `
 
 const TableHead = styled.thead`
@@ -14,7 +22,7 @@ const TableHead = styled.thead`
 const TableHeader = styled.th`
   border: 1px solid #ddd;
   padding: 8px;
-  text-align: left;
+  text-align: center;
 `
 
 const TableRow = styled.tr`
@@ -24,11 +32,12 @@ const TableRow = styled.tr`
 const TableCell = styled.td`
   border: 1px solid #ddd;
   padding: 8px;
-  text-align: left;
+  text-align: center;
 `
 
 export default function ApplicationsTable({ columnsNames, data, onEvaluate }) {
   return (
+    <StyledTableContainer>
     <StyledTable>
         <TableHead>
             <TableRow>
@@ -61,5 +70,6 @@ export default function ApplicationsTable({ columnsNames, data, onEvaluate }) {
             ))}
         </tbody>
     </StyledTable>
+    </StyledTableContainer>
   )
 }

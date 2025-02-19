@@ -2,7 +2,7 @@ import React from "react"
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { styled } from "styled-components"
-import { loadProcess, addApplication } from "../../services/firebase/firebase-firestore"
+import { loadProcess, addApplication, userHasApplication } from "../../services/firebase/firebase-firestore"
 import { uploadFileToStorage } from "../../services/appwrite/appwrite-storage"
 import useAuth from "../hooks/useAuth"
 import { researchAreas } from "../../config"
@@ -10,6 +10,13 @@ import Input from "../components/Input"
 import Select from "../components/Select"
 import Button from "../components/Button"
 import Box from "../components/Box"
+
+const ApplicationContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 1em;
+`
 
 const ApplicationFormContainer = styled.form`
     padding: 1em;
@@ -53,6 +60,9 @@ const ButtonContainer = styled.div`
     gap: 1em;
     margin-top: 0.5em;
     flex-wrap: wrap;
+    @media (max-width: 320px) {
+        flex-wrap: wrap-reverse;
+    }
 `
 
 const RedButton = styled(Button)`
@@ -78,16 +88,21 @@ function validateFile(value) {
     const file = value[0]
     const allowedTypes = ["image/jpeg", "image/png", "application/pdf"]
     const maxSize = 2 * 1024 * 1024 // "O arquivo deve ter no máximo 2MB."
-
+    
     if (!allowedTypes.includes(file.type)) {
         return "Tipo de arquivo não suportado."
     }
-
+    
     if (file.size > maxSize) {
         return "O arquivo deve ter no máximo 2MB."
     }
-
+    
     return true
+}
+
+function isWithinApplicationPeriod(startDate, endDate) {
+    const now = new Date()
+    return now >= new Date(startDate) && now <= new Date(endDate)
 }
 
 export default function Application() {
@@ -106,9 +121,22 @@ export default function Application() {
         async function loadData() {
             const process = await loadProcess(id)
             setSelectionProcess(process)
+
+            // Verificar se está fora do período de inscrição
+            if (!isWithinApplicationPeriod(process.startDate, process.endDate)) {
+                alert("As inscrições não estão abertas no momento.");
+                navigate(`/processes/${id}`);
+            }
+
+            // Verificar se o usuário já está inscrito
+            const isRegistered = await userHasApplication(id, uid)
+            if (isRegistered) {
+                alert("Você já está inscrito neste processo.");
+                navigate(`/processes/${id}`);
+            }
         }
         loadData()
-    }, [id])
+    }, [id, navigate, uid])
 
     function isResearchAreaSelected() {
         return watch("researchArea") !== ""
@@ -150,7 +178,7 @@ export default function Application() {
 
             // Envia os dados processados para a função addApplication
             await addApplication(id, filteredData, displayName, uid, userEmail)
-            navigate(`/processes/${id}`)
+            navigate(`/processes/${id}`, { replace: true })
         } catch (error) {
             console.error("Erro fazer inscrição: ", error)
             setError(error)
@@ -218,41 +246,43 @@ export default function Application() {
     }
 
     return (
-        <Box>
-            <h1>INSCRIÇÃO</h1>
-            <ApplicationFormContainer onSubmit={handleSubmit(onSubmit)}>
-                <h2>DADOS DO CANDIDATO</h2>
-                    <InputContainer>
-                    {selectionProcess?.researchFieldRequired ? (
-                        <BoldLabel htmlFor="researchArea">
-                            Linha de Pesquisa
-                            <Select
-                                optionPlaceholder="Selecione a linha de pesquisa desejada"
-                                optionsArray={researchAreas}
-                                {...register("researchArea", { required: "Linha de pesquisa é obrigatória." })}
-                                name="researchArea"
-                                required
-                            />
-                        </BoldLabel>
-                        ) : (
-                            inputElements
-                        )}
-                        {selectionProcess?.researchFieldRequired && isResearchAreaSelected() && inputElements}
-                    </InputContainer>
-                    {(!selectionProcess?.researchFieldRequired || isResearchAreaSelected()) && (
-                        <ButtonContainer>
-                            <Link to="/processes">
-                                <Button type="button">
-                                    CANCELAR
+        <ApplicationContainer>
+            <Box>
+                <h1>INSCRIÇÃO</h1>
+                <ApplicationFormContainer onSubmit={handleSubmit(onSubmit)}>
+                    <h2>DADOS DO CANDIDATO</h2>
+                        <InputContainer>
+                        {selectionProcess?.researchFieldRequired ? (
+                            <BoldLabel htmlFor="researchArea">
+                                Linha de Pesquisa
+                                <Select
+                                    optionPlaceholder="Selecione a linha de pesquisa desejada"
+                                    optionsArray={researchAreas}
+                                    {...register("researchArea", { required: "Linha de pesquisa é obrigatória." })}
+                                    name="researchArea"
+                                    required
+                                />
+                            </BoldLabel>
+                            ) : (
+                                inputElements
+                            )}
+                            {selectionProcess?.researchFieldRequired && isResearchAreaSelected() && inputElements}
+                        </InputContainer>
+                        {(!selectionProcess?.researchFieldRequired || isResearchAreaSelected()) && (
+                            <ButtonContainer>
+                                <Link to="/processes">
+                                    <Button type="button">
+                                        CANCELAR
+                                    </Button>
+                                </Link>
+                                <Button type="submit">
+                                    ENVIAR
                                 </Button>
-                            </Link>
-                            <Button type="submit">
-                                ENVIAR
-                            </Button>
-                        </ButtonContainer>
-                        )
-                    }
-            </ApplicationFormContainer>
-        </Box>
+                            </ButtonContainer>
+                            )
+                        }
+                </ApplicationFormContainer>
+            </Box>
+        </ApplicationContainer>
     )
 }

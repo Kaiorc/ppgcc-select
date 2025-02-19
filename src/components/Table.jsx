@@ -14,7 +14,7 @@ const TableHead = styled.thead`
 const TableHeader = styled.th`
   border: 1px solid #ddd;
   padding: 8px;
-  text-align: left;
+  text-align: center;
 `;
 
 const TableRow = styled.tr`
@@ -24,8 +24,15 @@ const TableRow = styled.tr`
 const TableCell = styled.td`
   border: 1px solid #ddd;
   padding: 8px;
-  text-align: left;
+  text-align: center;
 `;
+
+const ButtonCell = styled(TableCell)`
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+`
 
 const RedButton = styled(Button)`
   background-color: red;
@@ -47,7 +54,7 @@ export default function Table({ columnsNames, data, onEditField, onDeleteField }
                     </TableHeader>
                 ))}
                 <TableHeader>
-                    Ações
+                    AÇÕES
                 </TableHeader>
             </TableRow>
         </TableHead>
@@ -59,7 +66,7 @@ export default function Table({ columnsNames, data, onEditField, onDeleteField }
                             {row[col]}
                         </TableCell>
                     ))}
-                    <TableCell>
+                    <ButtonCell>
                         <Button 
                           type="button"
                           onClick={() => onEditField(rowIndex)}>
@@ -70,7 +77,7 @@ export default function Table({ columnsNames, data, onEditField, onDeleteField }
                           onClick={() => onDeleteField(rowIndex)}>
                             EXCLUIR
                         </RedButton>
-                    </TableCell>
+                    </ButtonCell>
                 </TableRow>
             ))}
         </tbody>

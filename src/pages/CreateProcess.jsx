@@ -52,6 +52,12 @@ const InputContainer = styled.div`
 
 const BoldLabel = styled.label`
     font-weight: bold;
+    & p {
+        margin: 0;
+        font-weight: normal;
+        font-size: 1em;
+        color: #008442;
+    }
 `
 
 const ResearchFieldRequiredLabel = styled(BoldLabel)`
@@ -66,7 +72,7 @@ const ButtonContainer = styled.div`
     gap: 1em;
     flex-wrap: wrap;
 
-    @media (max-width: 768px) {
+    @media (max-width: 425px) {
         flex-direction: column;
         align-items: center;
     }
@@ -136,6 +142,17 @@ export default function CreateProcess() {
     const [fieldBeingEdited, setFieldBeingEdited] = React.useState(null)
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false)
 
+    React.useEffect(() => {
+        if (processFormData.endDate) {
+            const endDate = new Date(processFormData.endDate)
+            endDate.setDate(endDate.getDate() + 10)
+            setProcessFormData(prevProcessFormData => ({
+                ...prevProcessFormData,
+                endAnalysisDate: endDate.toISOString().split('T')[0]
+            }))
+        }
+    }, [processFormData.endDate])
+
     async function handleSubmit(event) {
         event.preventDefault()
         try {
@@ -152,6 +169,10 @@ export default function CreateProcess() {
 
     function handleChange(event) {
         const {name, value, type, checked} = event.target;
+        if (name === "endDate" && new Date(value) <= new Date(processFormData.startDate)) {
+            alert("A data de término deve ser após a data de início.")
+            return
+        }
         setProcessFormData(prevProcessFormData => ({
             ...prevProcessFormData,
             [name]: type === 'checkbox' ? checked : value
@@ -303,15 +324,17 @@ export default function CreateProcess() {
                             />    
                         </BoldLabel>
                         <BoldLabel htmlFor="endAnalysisDate">
-                            Data de limite da análise de inscrição
+                            Data limite da análise de inscrição
+                            <p>Essa data é automaticamente 10 dias após a data de término de inscrição</p>
                             <Input
                                 name="endAnalysisDate"
                                 onChange={handleChange}
                                 type="date"
-                                placeholder="Data de término da análise"
+                                placeholder="Data limite da análise de inscrição"
                                 value={processFormData.endAnalysisDate}
-                                aria-label="Data de término da análise"
+                                aria-label="Data limite da análise de inscrição"
                                 required
+                                disabled
                             />
                         </BoldLabel>
                     </InputContainer>
@@ -333,14 +356,14 @@ export default function CreateProcess() {
                         </ButtonContainer>
                     </TableHeaderContainer>
                     <Table 
-                        columnsNames={["Nome", "Tipo", "Obrigatório"]} 
+                        columnsNames={["NOME", "TIPO", "OBRIGATÓRIO"]} 
                         data={processFormData.registrationFieldsInfo.map(field => ({
-                            Nome: field.name,
-                            Tipo: mapFieldType(field.type),
-                            Obrigatório: field.required ? "Sim" : "Não"
+                            NOME: field.name,
+                            TIPO: mapFieldType(field.type),
+                            OBRIGATÓRIO: field.required ? "Sim" : "Não"
                         }))}
                         onEditField={handleEditField}
-                        onDeleteField={handleDeleteField} 
+                        onDeleteField={handleDeleteField}
                     />
                     {error && <ErrorMessage>{error.message}</ErrorMessage>}
                     <ButtonContainer>

@@ -1,7 +1,7 @@
 import React from 'react'
-import { useParams } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import styled from 'styled-components'
-import { getProcess, updateProcess, hasApplications } from "../../services/firebase/firebase-firestore"
+import { getProcess, updateProcess, processHasApplications } from "../../services/firebase/firebase-firestore"
 import { Link } from "react-router-dom"
 import Input from "../components/Input"
 import TextArea from "../components/TextArea"
@@ -53,6 +53,12 @@ const InputContainer = styled.div`
 
 const BoldLabel = styled.label`
     font-weight: bold;
+    & p {
+        margin: 0;
+        font-weight: normal;
+        font-size: 1em;
+        color: #008442;
+    }
 `
 
 const ResearchFieldRequiredLabel = styled(BoldLabel)`
@@ -96,7 +102,12 @@ const RedButton = styled(Button)`
   }
 `
 
-const ErrorMessage= styled.p`
+const ResearchFieldMessage = styled.p`
+    color: red;
+    margin-top: 0;
+`
+
+const ErrorMessage = styled.p`
     color: red;
 `
 
@@ -118,7 +129,6 @@ function mapFieldType(type) {
 }
 
 export default function EditProcess() {
-
     const [selectionProcessData, setSelectionProcessData] = React.useState({
         name: "", 
         places: "",
@@ -131,41 +141,58 @@ export default function EditProcess() {
         registrationFieldsInfo: []
     })
 
-    const [hasApplicationsState, setHasApplicationsState] = React.useState(false)
+    const [hasApplications, setHasApplications] = React.useState(false)
 
+    const navigate = useNavigate()
     const { id } = useParams()
 
     React.useEffect(() => {
         async function loadProcess() {
             const data = await getProcess(id)
             setSelectionProcessData(data)
-            const applications = await hasApplications(id)
-            // console.log("hasApplicationsState", applications)
-            setHasApplicationsState(applications)
+            const applications = await processHasApplications(id)
+            // console.log("hasApplications", applications)
+            setHasApplications(applications)
         }
         loadProcess()
     }, [id])
+    
+    React.useEffect(() => {
+        if (selectionProcessData.endDate) {
+            const endDate = new Date(selectionProcessData.endDate)
+            endDate.setDate(endDate.getDate() + 10)
+            setSelectionProcessData(prevSelectionProcessData => ({
+                ...prevSelectionProcessData,
+                endAnalysisDate: endDate.toISOString().split('T')[0]
+            }))
+        }
+    }, [selectionProcessData.endDate])
 
-    const [isImportModalOpen, setIsImportModalOpen] = React.useState(false);
-    const [isRegistrationModalOpen, setIsRegistrationModalOpen] = React.useState(false);
-    const [fieldBeingEdited, setFieldBeingEdited] = React.useState(null);
-    const [isEditModalOpen, setIsEditModalOpen] = React.useState(false);
+    const [isImportModalOpen, setIsImportModalOpen] = React.useState(false)
+    const [isRegistrationModalOpen, setIsRegistrationModalOpen] = React.useState(false)
+    const [fieldBeingEdited, setFieldBeingEdited] = React.useState(null)
+    const [isEditModalOpen, setIsEditModalOpen] = React.useState(false)
 
     async function handleSubmit(event) {
-        event.preventDefault();
+        event.preventDefault()
         try {
             // Destructuring do id do objeto do getDoc() do Firebase e 
             // criando um novo objeto sem o id para evitar redundância
-            const { id, ...dataWithoutId } = selectionProcessData;
-            await updateProcess(id, dataWithoutId);
-            console.log("Processo editado com sucesso!");
+            const { id, ...dataWithoutId } = selectionProcessData
+            await updateProcess(id, dataWithoutId)
+            console.log("Processo editado com sucesso!")
+            navigate(`/processes/${id}`, { replace: true })
         } catch (error) {
-            console.error("Erro ao editar processo: ", error);
+            console.error("Erro ao editar processo: ", error)
         }
     }
 
     function handleChange(event) {
         const { name, value, type, checked } = event.target
+        if (name === "endDate" && new Date(value) <= new Date(selectionProcessData.startDate)) {
+            alert("A data de término deve ser maior que a data de início.")
+            return
+        }
         setSelectionProcessData(prevSelectionProcessData => ({
             ...prevSelectionProcessData,
             [name]: type === 'checkbox' ? checked : value
@@ -280,7 +307,7 @@ export default function EditProcess() {
                                 value={selectionProcessData.description}
                                 aria-label="Descrição"
                                 required
-                                />
+                            />
                         </BoldLabel>
                         <ResearchFieldRequiredLabel htmlFor="researchFieldRequired">
                             <Input
@@ -290,13 +317,13 @@ export default function EditProcess() {
                                 placeholder="Linha de pesquisa obrigatória"
                                 checked={selectionProcessData.researchFieldRequired}
                                 aria-label="Linha de pesquisa obrigatória"
-                                disabled={hasApplicationsState ? true : false}
-                                />
-                                Seleção de linha de pesquisa é obrigatória?
+                                disabled={hasApplications ? true : false}
+                            />
+                            Seleção de linha de pesquisa é obrigatória?
                         </ResearchFieldRequiredLabel>
                         {
-                            hasApplicationsState && (
-                                <ErrorMessage>Este campo não pode ser alterado, pois o processo seletivo já possui inscritos</ErrorMessage>
+                            hasApplications && (
+                                <ResearchFieldMessage>O campo acima não pode ser alterado, pois o processo seletivo já possui inscritos</ResearchFieldMessage>
                             )
                         }
                         <BoldLabel htmlFor="startDate">
@@ -309,7 +336,7 @@ export default function EditProcess() {
                                 value={selectionProcessData.startDate}
                                 aria-label="Data de início"
                                 required
-                                />
+                            />
                         </BoldLabel>
                         <BoldLabel htmlFor="endDate">
                             Data de término de inscrição
@@ -321,19 +348,21 @@ export default function EditProcess() {
                                 value={selectionProcessData.endDate}
                                 aria-label="Data de término"
                                 required
-                                />    
+                            />    
                         </BoldLabel>
                         <BoldLabel htmlFor="endAnalysisDate">
-                            Data de limite da análise de inscrição
+                            Data limite da análise de inscrição
+                            <p>Essa data é automaticamente 10 dias após a data de término de inscrição</p>
                             <Input
                                 name="endAnalysisDate"
                                 onChange={handleChange}
                                 type="date"
-                                placeholder="Data de término da análise"
+                                placeholder="Data limite da análise de inscrição"
                                 value={selectionProcessData.endAnalysisDate}
-                                aria-label="Data de término da análise"
+                                aria-label="Data limite da análise de inscrição"
                                 required
-                                />
+                                disabled
+                            />
                         </BoldLabel>
                     </InputContainer>
                     <TableHeaderContainer>
@@ -342,7 +371,7 @@ export default function EditProcess() {
                             <Button 
                                 type="button"
                                 onClick={() => setIsImportModalOpen(true)}
-                                >
+                            >
                                 IMPORTAR
                             </Button>
                             <Button 
@@ -354,11 +383,11 @@ export default function EditProcess() {
                         </ButtonContainer>
                     </TableHeaderContainer>
                     <Table 
-                        columnsNames={["Nome", "Tipo", "Obrigatório"]} 
+                        columnsNames={["NOME", "TIPO", "OBRIGATÓRIO"]} 
                         data={selectionProcessData.registrationFieldsInfo.map(field => ({
-                            Nome: field.name,
-                            Tipo: mapFieldType(field.type),
-                            Obrigatório: field.required ? "Sim" : "Não"
+                            NOME: field.name,
+                            TIPO: mapFieldType(field.type),
+                            OBRIGATÓRIO: field.required ? "Sim" : "Não"
                         }))}
                         onEditField={handleEditField}
                         onDeleteField={handleDeleteField}

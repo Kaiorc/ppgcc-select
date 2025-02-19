@@ -45,10 +45,12 @@ export async function getProcess(id) {
 export async function getProcesses() {
     // Obtém todos os documentos da coleção "processes"
     const snapshot = await getDocs(processesCollectionRef) 
+
     const processes = snapshot.docs.map(doc => ({
         ...doc.data(), // Mapeia os dados de cada documento
         id: doc.id // Adiciona a propriedade "id" a cada objeto de processo
     }))
+
     // Retorna a lista de processos
     return processes 
 }
@@ -98,8 +100,6 @@ export async function createProcess(data) {
 export async function updateProcess(id, data) {
     // Função para atualizar um processo existente pelo ID
     const docRef = doc(db, "processes", id) 
-    // console.log("api.js - updateProcess() - docRef: ", docRef) // Loga a referência do documento
-    // console.log("api.js - updateProcess() - data: ", data) // Loga os dados a serem atualizados
     // Atualiza o documento no Firestore com os novos dados
     await updateDoc(docRef, data) 
 }
@@ -129,7 +129,7 @@ export async function addApplication(id, data, name, uid, userEmail) {
     }
 }
 
-// Função para atualizar o status de uma inscrição
+// Função para atualizar o campo "status" de uma inscrição
 export async function updateApplicationStatus(processId, applicationId, status) {
     try {
         const applicationDocRef = doc(db, `processes/${processId}/applications`, applicationId)
@@ -164,8 +164,8 @@ export async function getApplications(processId) {
     }
 }
 
-// Função para checar se existe algum documento na coleção "applications" que possui
-// o ID igual ao uid do usuário
+// Função para checar se existe algum documento na coleção "applications" de um processo
+// seletivo que possui o ID igual ao uid do usuário
 export async function userHasApplication(processId, uid) {
     try {
         // Cria uma referência à coleção "applications"
@@ -185,6 +185,7 @@ export async function userHasApplication(processId, uid) {
     }
 }
 
+// Função para obter os processos que possuem inscrições do usuário
 export async function getProcessesWithUserApplications(uid) {
     try {
         const snapshot = await getDocs(processesCollectionRef);
@@ -213,7 +214,7 @@ export async function getProcessesWithUserApplications(uid) {
 }
 
 // Função para checar se um processo já possui inscrições
-export async function hasApplications(processId) {
+export async function processHasApplications(processId) {
     const applicationsRef = collection(db, `processes/${processId}/applications`)
     const snapshot = await getDocs(applicationsRef)
     
@@ -229,6 +230,7 @@ export async function hasApplications(processId) {
 }
 
 // Função para obter os dados da inscrição de um usuário em um processo seletivo específico
+// utilizando o id do processo e o uid do usuário
 export async function getUserApplication(processId, uid) {
     try {
         const applicationDocRef = doc(db, `processes/${processId}/applications`, uid)

@@ -55,6 +55,9 @@ const ButtonContainer = styled.div`
     flex-wrap: wrap;
     margin-top: 1em;
     width: 100%;
+    @media (max-width: 768px) {
+        flex-wrap: wrap-reverse;
+    }
 `
 
 const PpgccSymbolImg = styled.img`
@@ -153,7 +156,7 @@ export default function Signin() {
                         className="logo-img"
                     />
                 </SigninHeader>
-                <h1>Criar Conta</h1>
+                <h1>CRIAR CONTA</h1>
                 <SigninFormContainer onSubmit={handleSubmit(onSubmit)}>
                     <InputContainer>
                         <Input

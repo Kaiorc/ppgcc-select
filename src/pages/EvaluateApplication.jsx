@@ -8,28 +8,114 @@ import Input from "../components/Input"
 import Box from "../components/Box"
 import Button from "../components/Button"
 
+const EvaluateApplicationContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+`
+
+const EvaluateApplicationBox = styled(Box)`
+    padding: 0 1rem;
+    width: 100%;
+    max-width: 1500px;
+    min-width: 300px; 
+`
+
+const Title = styled.h1`
+    text-align: center;
+`
+
 const InfoGrid = styled.div`
     display: grid;
     grid-template-columns: 1fr 1fr;
-    gap: 16px;
-    margin-bottom: 16px;
+    gap: 1em;
+    
+    padding: 0 1rem 1rem 1rem;
+
+    @media (max-width: 768px) {
+        grid-template-columns: 1fr;
+    }
 `
 
 const InfoContainer = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: flex-start;   
+    align-items: center;   
     & h3 {
         margin-bottom: 0;
     }
     & p {
+        font-size: 1.2rem;
         margin-top: 0;
     }
+`
+
+const StatusContainer = styled.div`
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 1rem;
+    & h2 {
+        margin: 0;
+        text-align: center;
+    }
+`
+
+const Status = styled.p`
+    text-transform: uppercase;
+    color: white;
+    font-weight: bold;
+    font-size: 1.2rem;
+    background-color: #006734;
+    padding: 0.8rem;
+    border-radius: 20px;
+
+    @media (max-width: 600px) {
+        font-size: 1rem;
+        text-align: center;
+    }
+`
+
+const StyledTableContainer = styled.div`
+    width: 90%;
+    padding: 0 1rem 1rem 1rem;
+    overflow-x: auto;
+    isolation: isolate;
 `
 
 const StyledTable = styled.table`
     border-collapse: collapse;
     width: 100%;
+    min-width: 600px;
+    max-width: 100%;
+`
+
+const SelectWrapper = styled.div`
+    width: 100%;
+    max-width: 300px;
+    padding: 0 1rem;
+
+    @media (max-width: 768px) {
+        max-width: 100%;
+    }
+`
+
+const ButtonWrapper = styled.div`
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    padding: 0 1rem;
+    margin-bottom: 1em;
+
+    & button {
+        max-width: 300px;
+        width: 100%;
+
+        @media (max-width: 768px) {
+            max-width: 100%;
+        }
+    }
 `
 
 const TableHead = styled.thead`
@@ -39,15 +125,29 @@ const TableHead = styled.thead`
 const TableHeader = styled.th`
     border: 1px solid #ddd;
     padding: 8px;
-    text-align: left;
+    text-align: center;
 `
 
-const TableRow = styled.tr``
+const TableRow = styled.tr`
+
+`
 
 const TableCell = styled.td`
     border: 1px solid #ddd;
     padding: 8px;
-    text-align: left;
+    text-align: center;
+`
+
+const BoldGreenMessage = styled.p`
+    color: #008442;
+    font-weight: bold;
+    padding: 0 1em;
+    margin: 0;
+    text-align: center;
+
+    @media (max-width: 768px) {
+        font-size: 1.2em;
+    }   
 `
 
 export default function EvaluateApplication() {
@@ -98,7 +198,7 @@ export default function EvaluateApplication() {
         if (areAllChecked() && selectedStatus) {
             try {
                 await updateApplicationStatus(processId, uid, selectedStatus)
-                alert("Status da inscrição atualizado com sucesso!")
+                setApplication(prev => ({ ...prev, status: selectedStatus }))
             } catch (error) {
                 console.error("Erro ao atualizar o status da inscrição: ", error)
                 alert("Erro ao atualizar o status da inscrição.")
@@ -143,61 +243,72 @@ export default function EvaluateApplication() {
         ))
 
     return (
-        <Box>
-            <h1>DETALHES DA INSCRIÇÃO</h1>
-            <InfoGrid>
-                <InfoContainer>
-                    <h3>Nome do Candidato:</h3>
-                    <p>{application.name}</p>
-                </InfoContainer>
-                <InfoContainer>
-                    <h3>Email do Candidato:</h3>
-                    <p>{application.userEmail}</p>
-                </InfoContainer>
-                {application.researchArea && (
+        <EvaluateApplicationContainer>
+            <EvaluateApplicationBox>
+                <Title>DETALHES DA INSCRIÇÃO</Title>
+                <InfoGrid>
                     <InfoContainer>
-                        <h3>Área de pesquisa:</h3>
-                        <p>{application.researchArea}</p>
+                        <h3>Nome do Candidato:</h3>
+                        <p>{application.name}</p>
                     </InfoContainer>
+                    <InfoContainer>
+                        <h3>Email do Candidato:</h3>
+                        <p>{application.userEmail}</p>
+                    </InfoContainer>
+                    {application.researchArea && (
+                        <InfoContainer>
+                            <h3>Área de pesquisa:</h3>
+                            <p>{application.researchArea}</p>
+                        </InfoContainer>
+                    )}
+                    <InfoContainer>
+                        <h3>Data de inscrição:</h3>
+                        <p>{formatTimestamp(application.createdAt)}</p>
+                    </InfoContainer>
+                </InfoGrid>
+                <StatusContainer>
+                    <h2>STATUS DA INSCRIÇÃO:</h2>
+                    <Status aria-live="polite">
+                        {application.status}
+                    </Status>
+                    <BoldGreenMessage>O STATUS PODERÁ SER ALTERADO APÓS VERIFICAR TODOS OS DADOS</BoldGreenMessage>
+                </StatusContainer>
+                {areAllChecked() && (
+                    <>
+                        <SelectWrapper>
+                            <Select
+                                value={selectedStatus}
+                                onChange={(event) => setSelectedStatus(event.target.value)}
+                                optionPlaceholder="Selecione o novo status"
+                                optionsArray={["Não analisada", "Indeferida", "Deferida"]}
+                                />
+                        </SelectWrapper>
+                        <ButtonWrapper>
+                            <Button 
+                                type="button" 
+                                onClick={handleUpdateStatus} 
+                                disabled={!selectedStatus}
+                                >
+                                MODIFICAR STATUS
+                            </Button>
+                        </ButtonWrapper>
+                    </>
                 )}
-                <InfoContainer>
-                    <h3>Data de inscrição:</h3>
-                    <p>{formatTimestamp(application.createdAt)}</p>
-                </InfoContainer>
-                <InfoContainer>
-                    <h3>Status da inscrição:</h3>
-                    <p>{application.status}</p>
-                </InfoContainer>
-            </InfoGrid>
-            <StyledTable>
-                <TableHead>
-                    <TableRow>
-                        <TableHeader>DADO SOLICITADO</TableHeader>
-                        <TableHeader>DADO FORNECIDO</TableHeader>
-                        <TableHeader>VERIFICADO</TableHeader>
-                    </TableRow>
-                </TableHead>
-                <tbody>
-                    {applicationElements}
-                </tbody>
-            </StyledTable>
-            {areAllChecked() && (
-                <>
-                    <Select
-                        value={selectedStatus}
-                        onChange={(event) => setSelectedStatus(event.target.value)}
-                        optionPlaceholder="Selecione o novo status"
-                        optionsArray={["Não analisada", "Indeferida", "Deferida"]}
-                    />
-                    <Button 
-                        type="button" 
-                        onClick={handleUpdateStatus} 
-                        disabled={!selectedStatus}
-                    >
-                        MODIFICAR STATUS
-                    </Button>
-                </>
-            )}
-        </Box>
+                <StyledTableContainer>
+                    <StyledTable>
+                        <TableHead>
+                            <TableRow>
+                                <TableHeader>DADO SOLICITADO</TableHeader>
+                                <TableHeader>DADO FORNECIDO</TableHeader>
+                                <TableHeader>VERIFICADO</TableHeader>
+                            </TableRow>
+                        </TableHead>
+                        <tbody>
+                            {applicationElements}
+                        </tbody>
+                    </StyledTable>
+                </StyledTableContainer>
+            </EvaluateApplicationBox>
+        </EvaluateApplicationContainer>
     )
 }

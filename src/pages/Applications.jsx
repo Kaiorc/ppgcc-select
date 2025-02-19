@@ -16,9 +16,8 @@ const InfoGrid = styled.div`
     display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 1em;
-    width: 100%;
-    margin-bottom: 1em;
-    padding: 1em;
+    
+    padding: 0 1em;
 
     @media (max-width: 768px) {
         grid-template-columns: 1fr;
@@ -29,27 +28,61 @@ const InfoGrid = styled.div`
 const InfoContainer = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
-    @media (max-width: 768px) {
-        align-items: center;
-    }
+    align-items: center;
     & h3 {
         margin-bottom: 0;
     }
     & p {
         margin-top: 0;
     }
+
+    @media (max-width: 768px) {
+        align-items: center;
+        font-size: 1.2em;
+    }   
+`
+
+const StyledTableContainer = styled.div`
+    width: 100%;
+    padding: 0 1rem 1rem 1rem;
+    overflow-x: auto; 
+    isolation: isolate;
+
+    &::-webkit-scrollbar {
+        height: 8px;
+    }
+
+    &::-webkit-scrollbar-track {
+        background: #f0f0f0;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background: #008442;
+        border-radius: 10px;
+    }
 `
 
 const TablesContainer = styled.div`
     padding: 0 1em 1em 1em;
+    & h2 {
+        text-align: center;
+    }
 `
 
-const EmptyApplicationMessage = styled.p`
+const InfoMessage = styled.h1`
+    text-align: center;
+`
+
+const BoldGreenMessage = styled.p`
     color: #008442;
     font-weight: bold;
     padding: 0 1em 1em 1em;
+    margin: 0;
     text-align: center;
+
+    @media (max-width: 768px) {
+        font-size: 1.2em;
+    }   
 `
 
 function groupByResearchArea(data) {
@@ -67,6 +100,16 @@ function formatCreatedAt(data) {
     return data.map(info => ({
         ...info,
         createdAt: new Date(info.createdAt.seconds * 1000).toLocaleDateString()
+    }))
+}
+
+function formatApplicationData(applications) {
+    return applications.map(application => ({
+        NOME: application.name,
+        "EMAIL DO USUÁRIO": application.userEmail,
+        "DATA DE CRIAÇÃO": application.createdAt,
+        STATUS: application.status,
+        uid: application.uid
     }))
 }
 
@@ -104,54 +147,57 @@ export default function Applications() {
     }
 
     const tablesElements = Object.keys(groupedApplications).map(researchArea => (
-        <div key={researchArea}>
-            <h2>{researchArea}</h2>
-            <ApplicationsTable 
-                columnsNames={["NOME", "EMAIL DO USUÁRIO", "DATA DE CRIAÇÃO", "STATUS"]} 
-                data={groupedApplications[researchArea].map(application => ({
-                    NOME: application.name,
-                    "EMAIL DO USUÁRIO": application.userEmail,
-                    "DATA DE CRIAÇÃO": application.createdAt,
-                    STATUS: application.status,
-                    uid: application.uid
-                }))}
-                onEvaluate={handleEvaluate}
-            />
-        </div>
+        <>
+            <h2>{researchArea.toLocaleUpperCase()}</h2>
+            <div key={researchArea}>
+                <ApplicationsTable 
+                    columnsNames={["NOME", "EMAIL DO USUÁRIO", "DATA DE CRIAÇÃO", "STATUS"]} 
+                    data={formatApplicationData(groupedApplications[researchArea])}
+                    onEvaluate={handleEvaluate}
+                />
+            </div>
+        </>
     ))
 
     return (
         <ApplicationsContainer>
-            {selectionProcess && (
-                <Box>
-                    <h1>INSCRIÇÕES</h1>
-                    <InfoGrid>
-                        <InfoContainer>
-                            <h3>Número de vagas:</h3>
-                            <p>{selectionProcess.places}</p>
-                        </InfoContainer>
-                        <InfoContainer>
-                            <h3>Data de início de inscrição:</h3>
-                            <p>{formatFirestoreDate(selectionProcess.startDate)}</p>
-                        </InfoContainer>
-                        <InfoContainer>
-                            <h3>Data limite de inscrição:</h3>
-                            <p>{formatFirestoreDate(selectionProcess.endDate)}</p>
-                        </InfoContainer>
-                        <InfoContainer>
-                            <h3>Data limite de análise de inscrição:</h3>
-                            <p>{formatFirestoreDate(selectionProcess.endAnalysisDate)}</p>
-                        </InfoContainer>
-                    </InfoGrid>
-                    { isApplicationsEmpty ? (
-                        <EmptyApplicationMessage>AINDA NÃO HÁ INSCRIÇÕES NESSE PROCESSO SELETIVO</EmptyApplicationMessage>
-                    ) : (
-                        <TablesContainer>
-                            {tablesElements}
-                        </TablesContainer>
+            <Box>
+                {selectionProcess && (
+                    <>
+                        <h1>{selectionProcess.name}</h1>
+                        <h2>DETALHES</h2>
+                        <BoldGreenMessage>
+                            A EXPORTAÇÃO DA LISTA DE APROVADOS SERÁ LIBERADA APENAS QUANDO TODA AS INSCRIÇÕES DO PROCESSO SELETIVO FOREM ANALISADAS 
+                        </BoldGreenMessage>
+                        <InfoGrid>
+                            <InfoContainer>
+                                <h3>Número de vagas:</h3>
+                                <p>{selectionProcess.places}</p>
+                            </InfoContainer>
+                            <InfoContainer>
+                                <h3>Data de início de inscrição:</h3>
+                                <p>{formatFirestoreDate(selectionProcess.startDate)}</p>
+                            </InfoContainer>
+                            <InfoContainer>
+                                <h3>Data limite de inscrição:</h3>
+                                <p>{formatFirestoreDate(selectionProcess.endDate)}</p>
+                            </InfoContainer>
+                            <InfoContainer>
+                                <h3>Data limite de análise de inscrição:</h3>
+                                <p>{formatFirestoreDate(selectionProcess.endAnalysisDate)}</p>
+                            </InfoContainer>
+                        </InfoGrid>
+                        <InfoMessage>INSCRIÇÕES</InfoMessage>
+                        { isApplicationsEmpty ? (
+                            <BoldGreenMessage>AINDA NÃO HÁ INSCRIÇÕES NESSE PROCESSO SELETIVO</BoldGreenMessage>
+                        ) : (
+                            <TablesContainer>
+                                {tablesElements}
+                            </TablesContainer>
+                        )}
+                        </>
                     )}
-                </Box>
-            )}
+            </Box>
         </ApplicationsContainer>
     )   
 }

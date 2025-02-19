@@ -27,21 +27,25 @@ const ProcessDetailBox = styled.div`
 
     @media (max-width: 768px) {
         margin: 1em;
-        padding: 0.8em;
+        padding: 1em;
     }
 
     @media (max-width: 480px) {
         margin: 0.5em;
-        padding: 0.5em;
+        padding: 0.8em;
     }
 `
 
 const TitleContainer = styled.div`
     display: flex;
     align-items: center;
-    justify-content: space-between;
+    justify-content: ${({ isCentered }) => (isCentered ? "center" : "space-between")};
     width: 100%;
-    flex-wrap: wrap; /* Permite que os botões fiquem abaixo do título se necessário */
+    flex-wrap: wrap;
+
+    h1 {
+        text-transform: uppercase;
+    }
 
     @media (max-width: 600px) {
         flex-direction: column;
@@ -64,6 +68,8 @@ const TitleButtonContainer = styled.div`
 const InfoGrid = styled.div`
     display: flex;
     flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 1rem;
     width: 100%;
 
@@ -77,7 +83,7 @@ const InfoGrid = styled.div`
 const InfoContainer = styled.div`
     display: flex;
     flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     width: 100%;
 
     h3 {
@@ -87,7 +93,7 @@ const InfoContainer = styled.div`
 
     p {
         margin-top: 0.3rem;
-        font-size: 1rem;
+        font-size: 1.2rem;
     }
 
     @media (max-width: 768px) {
@@ -96,7 +102,7 @@ const InfoContainer = styled.div`
         }
 
         p {
-            font-size: 0.9rem;
+            font-size: 1rem;
         }
     }
 `
@@ -114,6 +120,11 @@ const RegisteredMessage = styled.p`
         text-align: center;
     }
 `
+
+function isWithinApplicationPeriod(startDate, endDate) {
+    const now = new Date()
+    return now >= new Date(startDate) && now <= new Date(endDate)
+}
 
 export default function ProcessDetail() {
     const [selectionProcess, setSelectionProcess] = React.useState(null)
@@ -138,9 +149,14 @@ export default function ProcessDetail() {
         loadData()
     }, [id, uid])
 
-    // React.useEffect(() => {
-    //     loadProcess(id, setSelectionProcess)
-    // }, [id])
+    function checkSelectionProcessAndApplicationPeriod() {
+        if (!selectionProcess) return false
+        isWithinApplicationPeriod(selectionProcess.startDate, selectionProcess.endDate)
+    }
+
+    const hasAdminButtons = isAdmin
+    const hasUserButton = !isAdmin && !isUserRegistered && checkSelectionProcessAndApplicationPeriod()
+    const shouldCenterTitle = !hasAdminButtons && !hasUserButton && !isUserRegistered
 
     console.log(selectionProcess)
     console.log(location)
@@ -150,10 +166,10 @@ export default function ProcessDetail() {
         <ProcessDetailContainer>
             {selectionProcess && (
                 <ProcessDetailBox>
-                    <TitleContainer>
+                    <TitleContainer isCentered={shouldCenterTitle}>
                         <h1>{selectionProcess.name}</h1>
                         {
-                            isAdmin ? (
+                            hasAdminButtons ? (
                                 <TitleButtonContainer>
                                     <Link to="applications">
                                         <Button>INSCRIÇÕES</Button>
@@ -164,13 +180,17 @@ export default function ProcessDetail() {
                                 </TitleButtonContainer>
                             ) : (
                                 isUserRegistered ? (
-                                    <RegisteredMessage>VOCÊ JÁ ESTÁ INSCRITO(A)</RegisteredMessage>
+                                    <RegisteredMessage aria-live="polite">
+                                        VOCÊ JÁ ESTÁ INSCRITO(A)
+                                    </RegisteredMessage>
                                 ) : (
-                                    <TitleButtonContainer>
-                                        <Link to="application">
-                                            <Button>INSCREVER-SE</Button>
-                                        </Link>
-                                    </TitleButtonContainer>
+                                    hasUserButton && (
+                                        <TitleButtonContainer>
+                                            <Link to="application">
+                                                <Button>INSCREVER-SE</Button>
+                                            </Link>
+                                        </TitleButtonContainer>
+                                    )
                                 )
                             )
                         }

@@ -39,6 +39,9 @@ const ButtonContainer = styled.div`
     gap: 1em;
     margin: 1em 1em 0 1em;
     flex-wrap: wrap;
+    @media (max-width: 768px) {
+        flex-wrap: wrap-reverse;
+    }
 `
 
 const PpgccSymbolImg = styled.img`
@@ -92,7 +95,7 @@ export default function Login() {
                         className="logo-img"
                     />
                 </LoginHeader>
-                <h1>Login</h1>
+                <h1>LOGIN</h1>
                 <LoginFormContainer onSubmit={handleSubmit(onSubmit)}>
                     <Input
                         {...register("email", {
