@@ -1,12 +1,12 @@
 import React from "react"
 import DOMPurify from "dompurify"
 import { Link, useParams, useLocation, Outlet } from "react-router-dom"
-import { loadProcess, userHasApplication } from "../../services/firebase/firebase-firestore"
-import { formatFirestoreDate, formatProcessDescription } from "../../formatters/formatters"
+import { loadProcess, userHasApplication } from "../../../services/firebase/firebase-firestore"
+import { formatFirestoreDate, formatProcessDescription } from "../../../formatters/formatters"
 import styled from "styled-components"
-import useAuth from "../hooks/useAuth"
-import useRole from "../hooks/useRole"
-import Button from "../components/Button"
+import useAuth from "../../hooks/useAuth"
+import useRole from "../../hooks/useRole"
+import Button from "../../components/Button"
 
 const ProcessDetailContainer = styled.div`
     display: flex;
@@ -151,12 +151,18 @@ export default function ProcessDetail() {
 
     function checkSelectionProcessAndApplicationPeriod() {
         if (!selectionProcess) return false
-        isWithinApplicationPeriod(selectionProcess.startDate, selectionProcess.endDate)
+        return isWithinApplicationPeriod(selectionProcess.startDate, selectionProcess.endDate)
     }
 
     const hasAdminButtons = isAdmin
     const hasUserButton = !isAdmin && !isUserRegistered && checkSelectionProcessAndApplicationPeriod()
     const shouldCenterTitle = !hasAdminButtons && !hasUserButton && !isUserRegistered
+
+    console.log("hasAdminButtons: ", hasAdminButtons)
+    console.log("isUserRegistered: ", isUserRegistered)
+    console.log("checkSelectionProcessAndApplicationPeriod: ", checkSelectionProcessAndApplicationPeriod())
+    console.log("hasUserButton: ", hasUserButton)
+    console.log("shouldCenterTitle: ", shouldCenterTitle)
 
     console.log(selectionProcess)
     console.log(location)
@@ -166,7 +172,7 @@ export default function ProcessDetail() {
         <ProcessDetailContainer>
             {selectionProcess && (
                 <ProcessDetailBox>
-                    <TitleContainer isCentered={shouldCenterTitle}>
+                    <TitleContainer $isCentered={shouldCenterTitle}>
                         <h1>{selectionProcess.name}</h1>
                         {
                             hasAdminButtons ? (

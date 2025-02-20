@@ -1,13 +1,14 @@
-import React from "react";
-import PpgccLogo from "../assets/images/logo-ppgcc.png";
-import UeceLogo from "../assets/images/logo-uece.png";
-import PpgccelectLogoSide from "../assets/images/logo-ppgccelect-side-cropped.png";
-import PpgccelectLogoTop from "../assets/images/logo-ppgccelect-top-cropped.png";
-import { styled } from "styled-components";
-import { Link, useLocation, useNavigate } from "react-router-dom";
-import Button from "./Button";
-import useAuth from "../hooks/useAuth";
+import React from "react"
+import PpgccLogo from "../assets/images/logo-ppgcc.png"
+import UeceLogo from "../assets/images/logo-uece.png"
+import PpgccelectLogoSide from "../assets/images/logo-ppgccelect-side-cropped.png"
+import PpgccelectLogoTop from "../assets/images/logo-ppgccelect-top-cropped.png"
+import { styled } from "styled-components"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { authLogOut } from "../../services/firebase/firebase-authentication"
+import { formatFirstTwoNames } from "../../formatters/formatters"
+import useAuth from "../hooks/useAuth"
+import Button from "./Button"
 
 const HeaderContainer = styled.header`
     background-color: #008442;
@@ -159,6 +160,18 @@ const NavigationButtonsContainer = styled.div`
     }
 `
 
+function shouldShowNavigationButtons(location) {
+    // return location.pathname !== "/" && location.pathname !== "/processes" && location.pathname !== "/signin"
+    const hiddenPaths = ["/", "/processes", "/signin", "/processes/active", "/processes/inactive", "/processes/my-applications"]
+    return !hiddenPaths.includes(location.pathname)
+}
+
+function shouldShowInfoArea(isLoggedIn, location) {
+    // return isLoggedIn && location.pathname !== "/" && location.pathname !== "/signin"
+    const hiddenPaths = ["/", "/signin"]
+    return isLoggedIn && !hiddenPaths.includes(location.pathname)
+}
+
 export default function Header() {
 
     let location = useLocation();
@@ -190,7 +203,7 @@ export default function Header() {
                     alt='logo' 
                     className="logo-img"
                 />
-                {location.pathname !== "/" && location.pathname !== "/processes" && location.pathname !== "/signin" && (
+                { shouldShowNavigationButtons(location) && (
                     <NavigationButtonsContainer>
                         <Button 
                             type="button" 
@@ -218,9 +231,9 @@ export default function Header() {
                     alt='logo' 
                     className="logo-img"
                 />
-                { isLoggedIn && location.pathname !== "/" && location.pathname !== "/signin" && (
+                { shouldShowInfoArea(isLoggedIn, location) && (
                     <InfoAreaContainer>
-                        <InfoMessage>BEM VINDO(A), {displayName ? displayName.toUpperCase() : "CANDIDATO(A)"}</InfoMessage>
+                        <InfoMessage>BEM VINDO(A), {displayName ? formatFirstTwoNames(displayName).toUpperCase() : "CANDIDATO(A)"}</InfoMessage>
                         <Button 
                             type="button"
                             onClick={handleLogOutButtonClick}	

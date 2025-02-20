@@ -4,12 +4,15 @@ import { BrowserRouter, Routes, Route, Link } from "react-router-dom"
 import Layout from './src/components/Layout'
 import AuthRequired from './src/components/AuthRequired'
 import { AuthProvider } from './src/components/AuthContext'
-import Processes from './src/pages/Processes'
+import Processes from './src/pages/processes/Processes'
+import ActiveProcesses from './src/pages/processes/ActiveProcesses'
+import InactiveProcesses from './src/pages/processes/InactiveProcesses'
+import MyApplicationsProcesses from './src/pages/processes/MyApplicationsProcesses'
+import ProcessDetail from './src/pages/processes/ProcessDetail'
 import CreateProcess from './src/pages/CreateProcess'
 import EditProcess from './src/pages/EditProcess'
 import Login from './src/pages/Login'
 import Signin from './src/pages/Signin'
-import ProcessDetail from './src/pages/ProcessDetail'
 import NotAuthorized from './src/pages/NotAuthorized'
 import NotFound from './src/pages/NotFound'
 import Applications from './src/pages/Applications'
@@ -54,7 +57,13 @@ export default function App() {
               <Route index element={<Login />} />
               <Route path="/signin" element={<Signin />} />
               <Route element={<AuthRequired />}>
-                <Route path="/processes" element={<Processes />}/>
+                <Route path="/processes" element={<Processes />}>
+                  <Route index element={<ActiveProcesses />} />
+                  <Route path="my-applications" element={<MyApplicationsProcesses />} />
+                  <Route element={<AuthRequired requiredRole="administrador"/>}>
+                    <Route path="inactive" element={<InactiveProcesses />} />
+                  </Route>
+                </Route>
                 <Route path="/processes/:id" element={<ProcessDetail />} />
                 <Route path="/processes/:id/application" element={<Application />} />
               </Route>

@@ -1,7 +1,7 @@
 import React from "react"
 import { useParams } from "react-router-dom"
 import { getUserApplication, updateApplicationStatus } from "../../services/firebase/firebase-firestore"
-import { formatTimestamp } from "../../formatters/formatters"
+import { formatTimestamp, formatFirestoreDate } from "../../formatters/formatters"
 import styled from "styled-components"
 import Select from "../components/Select"
 import Input from "../components/Input"
@@ -62,12 +62,25 @@ const StatusContainer = styled.div`
     }
 `
 
+function getStatusColor(status) {
+    switch (status) {
+        case "Não analisada":
+            return "#F0852E"; // Laranja
+        case "Indeferida":
+            return "red"; // Vermelho
+        case "Deferida":
+            return "#006734"; // Verde
+        default:
+            return "#006734"; // Verde adicionado como padrão
+    }
+}
+
 const Status = styled.p`
     text-transform: uppercase;
     color: white;
     font-weight: bold;
     font-size: 1.2rem;
-    background-color: #006734;
+    background-color: ${props => getStatusColor(props.$status)};
     padding: 0.8rem;
     border-radius: 20px;
 
@@ -150,6 +163,25 @@ const BoldGreenMessage = styled.p`
     }   
 `
 
+function formatValue (key, value) {
+    if (typeof value === 'string' && value.startsWith("https://cloud.appwrite.io/v1/storage/buckets/")) {
+        return (
+            <Button onClick={() => window.open(value, "_blank")}>
+                VISUALIZAR DOCUMENTO
+            </Button>
+        )
+    } else if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+        // Verifica se o valor é uma string no formato de data YYYY-MM-DD
+        return formatFirestoreDate(value)
+    } else if (typeof value === 'object' && value !== null) {
+        if (value.seconds && value.nanoseconds) {
+            formatTimestamp(value)
+        }
+        return JSON.stringify(value)
+    }
+    return value
+}
+
 export default function EvaluateApplication() {
     const [application, setApplication] = React.useState(null)
     const [checkboxes, setCheckboxes] = React.useState({})
@@ -210,22 +242,6 @@ export default function EvaluateApplication() {
         return <p>Carregando...</p>
     }
 
-    function formatValue (key, value) {
-        if (typeof value === 'string' && value.startsWith("https://cloud.appwrite.io/v1/storage/buckets/")) {
-            return (
-                <Button onClick={() => window.open(value, "_blank")}>
-                    VISUALIZAR DOCUMENTO
-                </Button>
-            )
-        } else if (typeof value === 'object' && value !== null) {
-            if (value.seconds && value.nanoseconds) {
-                formatTimestamp(value)
-            }
-            return JSON.stringify(value)
-        }
-        return value
-    }
-
     const applicationElements = Object.entries(application)
         .filter(([key]) => !hiddenTableFields.includes(key))
         .map(([key, value]) => (
@@ -268,7 +284,7 @@ export default function EvaluateApplication() {
                 </InfoGrid>
                 <StatusContainer>
                     <h2>STATUS DA INSCRIÇÃO:</h2>
-                    <Status aria-live="polite">
+                    <Status aria-live="polite" $status={application.status}>
                         {application.status}
                     </Status>
                     <BoldGreenMessage>O STATUS PODERÁ SER ALTERADO APÓS VERIFICAR TODOS OS DADOS</BoldGreenMessage>
