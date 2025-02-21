@@ -7,6 +7,7 @@ const StyledButton = styled.button`
     border-radius: 20px;
     padding: 10px 20px;
     font-size: 1rem;
+    font-weight: bold;
     cursor: pointer;
     // flex: 1; /* Permite que o botão cresça para preencher o espaço disponível */
 

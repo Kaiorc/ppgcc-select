@@ -8,7 +8,9 @@ import Processes from './src/pages/processes/Processes'
 import ActiveProcesses from './src/pages/processes/ActiveProcesses'
 import InactiveProcesses from './src/pages/processes/InactiveProcesses'
 import MyApplicationsProcesses from './src/pages/processes/MyApplicationsProcesses'
-import ProcessDetail from './src/pages/processes/ProcessDetail'
+import Process from './src/pages/process/Process'
+import ProcessDetail from './src/pages/process/ProcessDetail'
+import ProcessNews from './src/pages/process/ProcessNews'
 import CreateProcess from './src/pages/CreateProcess'
 import EditProcess from './src/pages/EditProcess'
 import Login from './src/pages/Login'
@@ -60,11 +62,12 @@ export default function App() {
                 <Route path="/processes" element={<Processes />}>
                   <Route index element={<ActiveProcesses />} />
                   <Route path="my-applications" element={<MyApplicationsProcesses />} />
-                  <Route element={<AuthRequired requiredRole="administrador"/>}>
-                    <Route path="inactive" element={<InactiveProcesses />} />
-                  </Route>
+                  <Route path="inactive" element={<InactiveProcesses />} />
                 </Route>
-                <Route path="/processes/:id" element={<ProcessDetail />} />
+                <Route path="/processes/:id" element={<Process />}>
+                  <Route index element={<ProcessDetail />} />
+                  <Route path="news" element={<ProcessNews />} />
+                </Route>
                 <Route path="/processes/:id/application" element={<Application />} />
               </Route>
               <Route element={<AuthRequired requiredRole="administrador"/>}>

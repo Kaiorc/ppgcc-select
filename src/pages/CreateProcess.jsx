@@ -274,6 +274,7 @@ export default function CreateProcess() {
                                 placeholder="Mini descrição"
                                 value={processFormData.miniDescription}
                                 aria-label="Mini Descrição"
+                                maxLength="60"
                                 required
                             />
                         </BoldLabel>

@@ -10,7 +10,7 @@ const StyledFooter = styled.footer`
     justify-content: center;
     align-items: center;
     margin-top: auto;
-    font-weight: 500;
+    font-weight: bold;
 `
 
 export default function Footer() {

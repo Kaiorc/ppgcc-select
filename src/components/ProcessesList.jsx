@@ -13,6 +13,19 @@ const ListItem = styled.li`
     gap: 2em;
     border-bottom: 2px solid #E5E5E5;
 
+    p { 
+        font-weight: bold;
+        margin: 0.5em 0;
+    }
+
+    & div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+
     &:first-child {
         border-top: 2px solid #E5E5E5;
     }
@@ -29,11 +42,6 @@ const ListItem = styled.li`
     
     &:active {
         background-color: #D9D9D9;
-    }
-
-    p { 
-        font-weight: bold;
-        margin: 0.5em 0;
     }
 
     @media (max-width: 768px) {
@@ -54,11 +62,14 @@ const BoldInfo = styled.b`
     color: grey;
     font-size: 1rem;
 
+    text-align: center;
+
     @media (max-width: 768px) {
         font-size: 0.9rem;
     }
 `
 
+// Componente que renderiza uma lista de processos seletivos
 export default function ProcessesList({ selectionProcesses }) {
     const processesElements = selectionProcesses.map((process) => {
         return (
@@ -74,8 +85,8 @@ export default function ProcessesList({ selectionProcesses }) {
                     <h3>{process.name}</h3>
                     <div>
                         <BoldInfo>{process.miniDescription}</BoldInfo>
-                        <p><BoldInfo>Data de início:</BoldInfo> {formatFirestoreDate(process.startDate)}</p>
-                        <p><BoldInfo>Data limite:</BoldInfo> {formatFirestoreDate(process.endDate)}</p> 
+                        <p><BoldInfo>Início das inscrições:</BoldInfo> {formatFirestoreDate(process.startDate)}</p>
+                        <p><BoldInfo>Fim das inscrições:</BoldInfo> {formatFirestoreDate(process.endDate)}</p> 
                     </div>
                 </ListItem>
             </Link>

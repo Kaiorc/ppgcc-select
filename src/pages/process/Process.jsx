@@ -1,17 +1,27 @@
 import React from "react"
-import DOMPurify from "dompurify"
-import { Link, useParams, useLocation, Outlet } from "react-router-dom"
+import ReactLoading from 'react-loading'
+import { Link, NavLink, useParams, useLocation, Outlet } from "react-router-dom"
 import { loadProcess, userHasApplication } from "../../../services/firebase/firebase-firestore"
 import { formatFirestoreDate, formatProcessDescription } from "../../../formatters/formatters"
 import styled from "styled-components"
+import DOMPurify from "dompurify"
 import useAuth from "../../hooks/useAuth"
 import useRole from "../../hooks/useRole"
 import Button from "../../components/Button"
 
+const LoaderContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    margin: 5em; 
+`
+
 const ProcessDetailContainer = styled.div`
     display: flex;
     justify-content: center;
-    padding: 1rem;
+    margin: 1rem;
 `
 
 const ProcessDetailBox = styled.div`
@@ -19,7 +29,6 @@ const ProcessDetailBox = styled.div`
     flex-direction: column;
     align-items: flex-start;
     margin: 2em;
-    padding: 1em;
     border-radius: 8px;
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
     max-width: 900px; /* Para evitar que fique muito largo em telas grandes */
@@ -27,12 +36,10 @@ const ProcessDetailBox = styled.div`
 
     @media (max-width: 768px) {
         margin: 1em;
-        padding: 1em;
     }
 
     @media (max-width: 480px) {
         margin: 0.5em;
-        padding: 0.8em;
     }
 `
 
@@ -40,11 +47,22 @@ const TitleContainer = styled.div`
     display: flex;
     align-items: center;
     justify-content: ${({ isCentered }) => (isCentered ? "center" : "space-between")};
+    padding: 1rem;
     width: 100%;
+    border-radius: 8px 8px 0 0;
     flex-wrap: wrap;
+    background-color: #008442;
 
     h1 {
         text-transform: uppercase;
+        color: white;
+    }
+
+    @media (max-width: 768px) {
+        flex-wrap: no-wrap;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
     }
 
     @media (max-width: 600px) {
@@ -65,44 +83,46 @@ const TitleButtonContainer = styled.div`
     }
 `
 
-const InfoGrid = styled.div`
+const ListNav = styled.nav`
     display: flex;
-    flex-direction: column;
-    align-items: center;
+    flex-direction: row;
     justify-content: center;
-    gap: 1rem;
-    width: 100%;
-
-    @media (min-width: 768px) {
-        display: grid;
-        grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
-    }
-`
-
-const InfoContainer = styled.div`
-    display: flex;
-    flex-direction: column;
     align-items: center;
     width: 100%;
+    color: white;
+    background-color: #008442;
+    flex-wrap: no-wrap;
 
-    h3 {
-        margin-bottom: 0;
-        font-size: 1.2rem;
-    }
+    a {
+        text-decoration: none;
+        text-align: center;
+        font-weight: bold;
+        padding: 1rem;   
+        width: 100%;
+        background-color: #006734;
+        border-right: 2px solid #F0852E;
+        border-left: 2px solid #F0852E;
 
-    p {
-        margin-top: 0.3rem;
-        font-size: 1.2rem;
-    }
-
-    @media (max-width: 768px) {
-        h3 {
-            font-size: 1rem;
+        &:hover {
+            background-color: #F0852E;
+            transition-duration: 0.2s;
         }
+        &:active {
+            background-color: #A45516;
+        }
+    }
 
-        p {
-            font-size: 1rem;
+    a.active {
+        color: white;
+        background-color: #F0852E;
+    }
+
+    @media (max-width: 320px) {
+        a {
+            padding: 0.5rem;
+            border-right: none;
+            border-left: none;
+            border-bottom: 2px solid #F0852E;
         }
     }
 `
@@ -111,7 +131,7 @@ const RegisteredMessage = styled.p`
     color: white;
     font-weight: bold;
     font-size: 1.1rem;
-    background-color: #006734;
+    background-color: #F0852E;
     padding: 0.8rem;
     border-radius: 20px;
 
@@ -126,10 +146,10 @@ function isWithinApplicationPeriod(startDate, endDate) {
     return now >= new Date(startDate) && now <= new Date(endDate)
 }
 
-export default function ProcessDetail() {
+export default function Process() {
     const [selectionProcess, setSelectionProcess] = React.useState(null)
     const [isUserRegistered, setIsUserRegistered] = React.useState(false)
-    // const [loading, setLoading] = React.useState(false)
+    const [loading, setLoading] = React.useState(true)
     // const [error, setError] = React.useState(null)
 
     const { id } = useParams()
@@ -141,10 +161,11 @@ export default function ProcessDetail() {
         async function loadData() {
             const process = await loadProcess(id)
             setSelectionProcess(process)
-            if (uid) {
+            if (!isAdmin && uid) {
                 const registered = await userHasApplication(id, uid)
                 setIsUserRegistered(registered)
             }
+            setLoading(false)
         }
         loadData()
     }, [id, uid])
@@ -164,13 +185,13 @@ export default function ProcessDetail() {
     console.log("hasUserButton: ", hasUserButton)
     console.log("shouldCenterTitle: ", shouldCenterTitle)
 
-    console.log(selectionProcess)
+    console.log("Process.jsx - selectionProcess", selectionProcess)
     console.log(location)
     console.log(id)
     
     return (
         <ProcessDetailContainer>
-            {selectionProcess && (
+            {selectionProcess ? (
                 <ProcessDetailBox>
                     <TitleContainer $isCentered={shouldCenterTitle}>
                         <h1>{selectionProcess.name}</h1>
@@ -201,34 +222,35 @@ export default function ProcessDetail() {
                             )
                         }
                     </TitleContainer>
-                    <InfoGrid>
-                        <InfoContainer>
-                            <h3>Número de vagas:</h3>
-                            <p> {selectionProcess.places}</p>
-                        </InfoContainer>
-                        <InfoContainer>
-                            <h3>Data de início de inscrições:</h3>
-                            <p> {formatFirestoreDate(selectionProcess.startDate)}</p>
-                        </InfoContainer>
-                        <InfoContainer>
-                            <h3>Data de encerramento de inscrições:</h3>
-                            <p> {formatFirestoreDate(selectionProcess.endDate)}</p>
-                        </InfoContainer>
-                        <InfoContainer>
-                            <h3>Data de encerramento de análise de inscrições:</h3>
-                            <p> {formatFirestoreDate(selectionProcess.endAnalysisDate)}</p>
-                        </InfoContainer>
-                    </InfoGrid>
-                    <InfoContainer>
-                        <h3>Descrição:</h3>
-                        <p 
-                            dangerouslySetInnerHTML={{ 
-                                __html: DOMPurify.sanitize(formatProcessDescription(selectionProcess.description)) 
-                            }} 
-                        />
-                    </InfoContainer>
+                    <ListNav>
+                        <NavLink
+                            to={`/processes/${id}`}
+                            end
+                            className={({ isActive }) => (isActive ? "active" : "")}
+                        >
+                            INFORMAÇÕES
+                        </NavLink>
+                        <NavLink
+                            to={`/processes/${id}/news`}
+                            className={({ isActive }) => (isActive ? "active" : "")}
+                        >
+                            ATUALIZAÇÕES
+                        </NavLink>
+                    </ListNav>
+                    <Outlet context={{ selectionProcess }}/>
                 </ProcessDetailBox>
-            )}
+                ) : ( loading && (
+                        <LoaderContainer>
+                            <ReactLoading 
+                                type={"spinningBubbles"}
+                                color={"#008442"}
+                                height={"10%"}
+                                width={"10%"}
+                            />
+                        </LoaderContainer>
+                    )
+                )
+            }
         </ProcessDetailContainer>
     )
 }

@@ -6,7 +6,6 @@ import { formatFirestoreDate } from "../../../formatters/formatters"
 import useRole from "../../hooks/useRole"
 import Box from "../../components/Box"
 import Button from "../../components/Button"
-import ProcessesList from "../../components/ProcessesList"
 
 const HomeContainer = styled.div`
     display: flex;
@@ -51,6 +50,9 @@ const ListNav = styled.nav`
         padding: 1rem;   
         width: 100%;
         background-color: #006734;
+        border-right: 2px solid #F0852E;
+        border-left: 2px solid #F0852E;
+
         &:hover {
             background-color: #F0852E;
             transition-duration: 0.2s;
@@ -61,8 +63,8 @@ const ListNav = styled.nav`
     }
 
     a.active {
-        background-color: #F0852E;
         color: white;
+        background-color: #F0852E;
     }
 `
 
@@ -70,7 +72,6 @@ export default function Processes() {
     const [selectionProcesses, setSelectionProcesses] = React.useState([])
 
     const isAdmin = useRole()
-    // console.log("Processes.jsx - isAdmin: ", isAdmin)
     
     React.useEffect(() => {
         async function loadProcesses() {
@@ -83,47 +84,7 @@ export default function Processes() {
     console.log("Processes.jsx - ", selectionProcesses)
     console.log("Processes.jsx - ", typeof selectionProcesses)
 
-    // const processesElements = selectionProcesses.map((process) => {
-    //     return (
-    //         <Link 
-    //             to={`/processes/${process.id}`}
-    //             key={process.id}
-    //             aria-label={`Processo seletivo ${process.name}`}
-    //         >
-    //             <ListItem 
-    //                 key={process.id}
-    //                 role="listitem"
-    //             >
-    //                 <h3>{process.name}</h3>
-    //                 <div>
-    //                     <BoldInfo>{process.miniDescription}</BoldInfo>
-    //                     <p><BoldInfo>Data de início:</BoldInfo> {formatFirestoreDate(process.startDate)}</p>
-    //                     <p><BoldInfo>Data limite:</BoldInfo> {formatFirestoreDate(process.endDate)}</p> 
-    //                 </div>
-    //             </ListItem>
-    //         </Link>
-    //     )
-    // })
-
     return (
-        // <HomeContainer>
-        //     <Box>
-        //         <ListHeader>
-        //             <h1>PROCESSOS SELETIVOS</h1>
-        //             {
-        //                 isAdmin ?
-        //                     <Link to="create-process">
-        //                         <Button type="button">ADICIONAR</Button>  
-        //                     </Link>
-        //                     :
-        //                     null
-        //             }
-        //         </ListHeader>
-        //         <List role="list">
-        //             {processesElements}
-        //         </List>
-        //     </Box>
-        // </HomeContainer>
         <HomeContainer>
         <Box>
             <ListHeader $isAdmin={isAdmin}>
@@ -142,27 +103,21 @@ export default function Processes() {
                 >
                     ATIVOS
                 </NavLink>
-                {isAdmin ? (
-                    <NavLink 
-                        to="/processes/inactive"
-                        className={({ isActive }) => (isActive ? "active" : "")}
-                    >
-                        INATIVOS
-                    </NavLink>
-                ) : (
+                <NavLink 
+                    to="/processes/inactive"
+                    className={({ isActive }) => (isActive ? "active" : "")}
+                >
+                    INATIVOS
+                </NavLink>
+                {!isAdmin && ( 
                     <NavLink
                         to="/processes/my-applications"
                         className={({ isActive }) => (isActive ? "active" : "")}
                     >
-                        MINHAS INSCRIÇÕES
+                        INSCRITO
                     </NavLink>
                 )}
             </ListNav>
-            {/* <List role="list">
-                {processesElements.length > 0 ? processesElements : <p>Nenhum processo seletivo disponível.</p>}
-                <Outlet />
-            </List> */}
-            {/* <ProcessesList selectionProcesses={selectionProcesses} /> */}
             <Outlet />
         </Box>
     </HomeContainer>

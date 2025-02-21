@@ -294,6 +294,7 @@ export default function EditProcess() {
                                 placeholder="Mini Descrição"
                                 value={selectionProcessData.miniDescription}
                                 aria-label="Mini Descrição"
+                                maxLength="60"
                                 required
                             />
                         </BoldLabel>

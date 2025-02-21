@@ -55,79 +55,100 @@ export async function getProcesses() {
     return processes 
 }
 
-// Função para obter todos os processos seletivos que não estão no período de inscrição
+// Função para obter os processos que já terminaram ou ainda não começaram
 export async function getInactiveProcesses() {
-    // Função para verificar se um processo está fora do período de inscrição
-    function isOutsideApplicationPeriod(startDate, endDate) {
-        const now = new Date()
-        return now < new Date(startDate) || now > new Date(endDate)
-    }
-
     try {
-        const processes = await getProcesses()
-        const inactiveProcesses = processes.filter(process => 
-            isOutsideApplicationPeriod(process.startDate, process.endDate)
-        )
-        return inactiveProcesses
+        const today = new Date().toISOString().split('T')[0]; // Formato "YYYY-MM-DD"
+
+        // 1ª Query: Processos que já terminaram
+        const endedQuery = query(processesCollectionRef, where("endDate", "<", today));
+        
+        // 2ª Query: Processos que ainda não começaram
+        const notStartedQuery = query(processesCollectionRef, where("startDate", ">", today));
+
+        // Executa ambas as consultas
+        const [endedSnapshot, notStartedSnapshot] = await Promise.all([
+            getDocs(endedQuery),
+            getDocs(notStartedQuery)
+        ]);
+
+        // Junta os resultados
+        const closedProcesses = [
+            ...endedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() })),
+            ...notStartedSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }))
+        ];
+
+        return closedProcesses;
     } catch (error) {
-        console.error("Erro ao obter processos inativos:", error)
-        throw error
+        console.error("Erro ao obter processos fora do período de inscrição:", error);
+        throw error;
     }
 }
 
-// Função para obter os processos que já terminaram ou ainda não começaram
 // export async function getInactiveProcesses() {
+//     // Função para verificar se um processo está fora do período de inscrição
+//     function isOutsideApplicationPeriod(startDate, endDate) {
+//         const now = new Date()
+//         return now < new Date(startDate) || now > new Date(endDate)
+//     }
+
 //     try {
-//         const today = new Date()
-
-//         // Formata a data para YYYY-MM-DD, que o Firestore utiliza
-//         // const formattedToday = today.toISOString().split('T')[0]
-
-//         // Query para buscar processos fora do período de inscrição
-//         const q = query(
-//             processesCollectionRef,
-//             where("endDate", "<", today), // Processos que já terminaram
-//             where("startDate", ">", today) // Ou que ainda não começaram
-//             // where("endDate", "<", formattedToday),
-//             // where("startDate", ">", formattedToday) 
+//         const processes = await getProcesses()
+//         const inactiveProcesses = processes.filter(process => 
+//             isOutsideApplicationPeriod(process.startDate, process.endDate)
 //         )
-
-//         console.log("today: ", today)
-
-//         const snapshot = await getDocs(q);
-
-//         // Mapeia os documentos encontrados
-//         const closedProcesses = snapshot.docs.map(doc => ({
-//             ...doc.data(),
-//             id: doc.id
-//         }))
-
-//         return closedProcesses;
+//         return inactiveProcesses
 //     } catch (error) {
-//         console.error("Erro ao obter processos fora do período de inscrição:", error);
-//         throw error;
+//         console.error("Erro ao obter processos inativos:", error)
+//         throw error
 //     }
 // }
 
 // Função para obter todos os processos ativos
 export async function getActiveProcesses() {
-    // Função para verificar se um processo está dentro do período de inscrição
-    function isWithinApplicationPeriod(startDate, endDate) {
-        const now = new Date()
-        return now >= new Date(startDate) && now <= new Date(endDate)
-    }
-
     try {
-        const processes = await getProcesses()
-        const activeProcesses = processes.filter(process => 
-            isWithinApplicationPeriod(process.startDate, process.endDate)
-        )
-        return activeProcesses
+        const today = new Date().toISOString().split('T')[0]; // Formato "YYYY-MM-DD"
+
+        // Query para buscar processos dentro do período de inscrição
+        const activeQuery = query(
+            processesCollectionRef,
+            where("startDate", "<=", today), // Início já ocorreu ou está acontecendo
+            where("endDate", ">=", today)    // Ainda não terminou
+        );
+
+        const snapshot = await getDocs(activeQuery);
+
+        // Mapeia os processos ativos encontrados
+        const activeProcesses = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data(),
+        }));
+
+        return activeProcesses;
     } catch (error) {
-        console.error("Erro ao obter processos ativos:", error)
-        throw error
+        console.error("Erro ao obter processos ativos:", error);
+        throw error;
     }
 }
+
+// export async function getActiveProcesses() {
+//     // Função para verificar se um processo está dentro do período de inscrição
+//     function isWithinApplicationPeriod(startDate, endDate) {
+//         const now = new Date()
+//         return now >= new Date(startDate) && now <= new Date(endDate)
+//     }
+
+//     try {
+//         const processes = await getProcesses()
+//         const activeProcesses = processes.filter(process => 
+//             isWithinApplicationPeriod(process.startDate, process.endDate)
+//         )
+//         return activeProcesses
+//     } catch (error) {
+//         console.error("Erro ao obter processos ativos:", error)
+//         throw error
+//     }
+// }
 
 // Função para carregar um processo pelo ID e atualizar o estado no componente em
 // que é chamada
