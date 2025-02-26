@@ -8,6 +8,7 @@ import DOMPurify from "dompurify"
 import useAuth from "../../hooks/useAuth"
 import useRole from "../../hooks/useRole"
 import Button from "../../components/Button"
+import Box from "../../components/Box"
 
 const LoaderContainer = styled.div`
     display: flex;
@@ -50,7 +51,7 @@ const TitleContainer = styled.div`
     padding: 1rem;
     width: 100%;
     border-radius: 8px 8px 0 0;
-    flex-wrap: wrap;
+    flex-wrap: no-wrap;
     background-color: #008442;
 
     h1 {
@@ -80,6 +81,7 @@ const TitleButtonContainer = styled.div`
     @media (max-width: 600px) {
         flex-direction: column;
         width: 100%;
+        gap: 0.4em;
     }
 `
 
@@ -188,10 +190,25 @@ export default function Process() {
     console.log("Process.jsx - selectionProcess", selectionProcess)
     console.log(location)
     console.log(id)
+
+    if(loading){
+        return (
+            <Box>
+                <LoaderContainer>
+                    <ReactLoading 
+                        type={"spinningBubbles"}
+                        color={"#008442"}
+                        height={"10%"}
+                        width={"10%"}
+                    />
+                </LoaderContainer>
+            </Box>
+        )
+    }
     
     return (
         <ProcessDetailContainer>
-            {selectionProcess ? (
+            {selectionProcess && (
                 <ProcessDetailBox>
                     <TitleContainer $isCentered={shouldCenterTitle}>
                         <h1>{selectionProcess.name}</h1>
@@ -200,6 +217,9 @@ export default function Process() {
                                 <TitleButtonContainer>
                                     <Link to="applications">
                                         <Button>INSCRIÇÕES</Button>
+                                    </Link>
+                                    <Link to="create-news">
+                                        <Button>+ATUALIZAÇÃO</Button>
                                     </Link>
                                     <Link to="edit-process">
                                         <Button>EDITAR</Button>
@@ -239,16 +259,6 @@ export default function Process() {
                     </ListNav>
                     <Outlet context={{ selectionProcess }}/>
                 </ProcessDetailBox>
-                ) : ( loading && (
-                        <LoaderContainer>
-                            <ReactLoading 
-                                type={"spinningBubbles"}
-                                color={"#008442"}
-                                height={"10%"}
-                                width={"10%"}
-                            />
-                        </LoaderContainer>
-                    )
                 )
             }
         </ProcessDetailContainer>

@@ -1,4 +1,5 @@
-import { styled } from "styled-components";
+import React from "react"
+import { styled } from "styled-components"
 
 const StyledTextArea = styled.textarea`
     background-color: #f5f5f5;
@@ -17,15 +18,35 @@ const StyledTextArea = styled.textarea`
     }
 `
 
-export default function TextArea({ name, onChange, type, placeholder, value }) {
+// Define o TextArea usando React.forwardRef() para que o ref possa ser passado para o <input>
+// e o React Hook Form possa acessar o <textarea> diretamente
+const TextArea = React.forwardRef(
+    ({ name, onChange, type, placeholder, value, ...rest  }, ref) => {
+        return (
+            <StyledTextArea
+                name={name}
+                onChange={onChange}
+                type={type}
+                placeholder={placeholder}
+                value={value}
+                ref={ref} // Passa o ref para o <input>
+                {...rest} // Passa outras props adicionais
+            />
+        )
+    }
+)
+
+export default TextArea
+
+// export default function TextArea({ name, onChange, type, placeholder, value }) {
     
-    return (
-        <StyledTextArea
-            name={name}
-            onChange={onChange}
-            type={type}
-            placeholder={placeholder}
-            value={value}
-        />
-    )
-}
+//     return (
+//         <StyledTextArea
+//             name={name}
+//             onChange={onChange}
+//             type={type}
+//             placeholder={placeholder}
+//             value={value}
+//         />
+//     )
+// } 

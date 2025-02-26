@@ -355,6 +355,98 @@ export async function getUserApplication(processId, uid) {
     }
 }
 
+// Função para adicionar um aviso a um processo
+export async function addProcessNews(processId, publisherName, data) {
+    try {
+        const newsCollectionRef = collection(db, `processes/${processId}/news`);
+        await addDoc(newsCollectionRef, { ...data, publisherName: publisherName, createdAt: serverTimestamp() });
+    } catch (error) {
+        console.error("Erro ao adicionar aviso:", error);
+        throw error;
+    }
+}
+
+// Função para atualizar um aviso de um processo
+export async function updateProcessNews(processId, newsId, data) {
+    try {
+        const newsDocRef = doc(db, `processes/${processId}/news`, newsId);
+        await updateDoc(newsDocRef, { ...data });
+    } catch (error) {
+        console.error("Erro ao atualizar aviso:", error);
+        throw error;
+    }
+}
+
+// Função para deletar um aviso de um processo
+export async function deleteProcessNews(processId, newsId) {
+    try {
+        const newsDocRef = doc(db, `processes/${processId}/news`, newsId);
+        await deleteDoc(newsDocRef);
+    } catch (error) {
+        console.error("Erro ao deletar aviso:", error);
+        throw error;
+    }
+}
+
+// Função para obter um aviso específico de um processo
+export async function getSpecificProcessNews(processId, newsId) {
+    try {
+        const newsDocRef = doc(db, `processes/${processId}/news`, newsId);
+        const snapshot = await getDoc(newsDocRef);
+        if (!snapshot.exists()) {
+            throw new Error("Aviso não encontrados");
+        }
+        return {
+            ...snapshot.data(),
+            id: snapshot.id
+        };
+    } catch (error) {
+        console.error("Erro ao obter aviso:", error);
+        throw error;
+    }
+}
+
+// Função para obter todos os avisos de um processo
+export async function getProcessNews(processId) {
+    try {
+        const newsCollectionRef = collection(db, `processes/${processId}/news`)
+        const snapshot = await getDocs(newsCollectionRef)
+        // Filtra os documentos para remover o "placeholder" e mapeia os dados
+        const news = snapshot.docs
+            .filter(doc => doc.id !== "placeholder")
+            .map(doc => ({
+                ...doc.data(),
+                id: doc.id
+            }))
+        return news
+    } catch (error) {
+        console.error("Erro ao obter avisos:", error)
+        throw error
+    }
+}
+
+// Função para obter todos os avisos de um processo
+// export async function getProcessNews(processId) {
+//     try {
+//         const newsCollectionRef = collection(db, `processes/${processId}/news`)
+//         const snapshot = await getDocs(newsCollectionRef)
+//         const news = snapshot.docs.map(doc => ({
+//             ...doc.data(),
+//             id: doc.id
+//         }))
+//         return news
+//     } catch (error) {
+//         console.error("Erro ao obter avisos:", error)
+//         throw error
+//     }
+// }
+
+export async function loadProcessNews(id) {
+    const data = await getProcessNews(id)
+    return data
+}
+
+
 // Function to get all processes using Mirage.js
 // export async function getProcess(id) {
 //     const url = id ? `/api/processes/${id}` : "/api/processes"

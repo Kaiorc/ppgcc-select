@@ -11,8 +11,11 @@ import MyApplicationsProcesses from './src/pages/processes/MyApplicationsProcess
 import Process from './src/pages/process/Process'
 import ProcessDetail from './src/pages/process/ProcessDetail'
 import ProcessNews from './src/pages/process/ProcessNews'
+import ProcessNewsDetail from './src/pages/process/ProcessNewsDetail'
 import CreateProcess from './src/pages/CreateProcess'
 import EditProcess from './src/pages/EditProcess'
+import CreateNews from './src/pages/CreateNews'
+import EditNews from './src/pages/EditNews'
 import Login from './src/pages/Login'
 import Signin from './src/pages/Signin'
 import NotAuthorized from './src/pages/NotAuthorized'
@@ -68,11 +71,14 @@ export default function App() {
                   <Route index element={<ProcessDetail />} />
                   <Route path="news" element={<ProcessNews />} />
                 </Route>
+                <Route path="/processes/:id/news/:newsId" element={<ProcessNewsDetail />} />
                 <Route path="/processes/:id/application" element={<Application />} />
               </Route>
               <Route element={<AuthRequired requiredRole="administrador"/>}>
                 <Route path="/processes/create-process" element={<CreateProcess />} />
                 <Route path="/processes/:id/edit-process" element={<EditProcess />} />
+                <Route path="/processes/:id/create-news" element={<CreateNews />} />
+                <Route path="/processes/:id/news/:newsId/edit-news" element={<EditNews />} />
                 <Route path="/processes/:id/applications" element={<Applications />} />
                 <Route path="/processes/:processId/applications/evaluate/:uid" element={<EvaluateApplication />} />
               </Route>

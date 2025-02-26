@@ -35,6 +35,7 @@ const InfoContainer = styled.div`
     width: 100%;
 
     h3 {
+        text-align: center;
         margin-bottom: 0;
         font-size: 1.2rem;
         padding: 0 1em 0 1em;

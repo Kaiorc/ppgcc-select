@@ -127,17 +127,16 @@ export default function Applications() {
     React.useEffect(() => {
         async function loadData() {
             const applications = await getApplications(id)
+            console.log("applications", applications)
             const formattedApplications = formatCreatedAt(applications)
+            console.log("formattedApplications", formattedApplications)
             setApplications(formattedApplications)
             const process = await loadProcess(id)
+            console.log("process", process)
             setSelectionProcess(process)
         }
         loadData()
     }, [id])
-
-    console.log("applications", applications)
-
-    const groupedApplications = groupByResearchArea(applications)
 
     const isApplicationsEmpty = isApplicationsStateEmpty(applications)
 
@@ -146,17 +145,18 @@ export default function Applications() {
         navigate(`evaluate/${uid}`)
     }
 
+    const isGrouped = selectionProcess?.researchFieldRequired;
+    const groupedApplications = isGrouped ? groupByResearchArea(applications) : { "": applications };
+
     const tablesElements = Object.keys(groupedApplications).map(researchArea => (
-        <>
-            <h2>{researchArea.toLocaleUpperCase()}</h2>
-            <div key={researchArea}>
-                <ApplicationsTable 
-                    columnsNames={["NOME", "EMAIL DO USUÁRIO", "DATA DE CRIAÇÃO", "STATUS"]} 
-                    data={formatApplicationData(groupedApplications[researchArea])}
-                    onEvaluate={handleEvaluate}
-                />
-            </div>
-        </>
+        <div key={researchArea}>
+            {researchArea && <h2>{researchArea}</h2>}
+            <ApplicationsTable 
+                columnsNames={["NOME", "EMAIL DO USUÁRIO", "DATA DE CRIAÇÃO", "STATUS"]} 
+                data={formatApplicationData(groupedApplications[researchArea])}
+                onEvaluate={handleEvaluate}
+            />
+        </div>
     ))
 
     return (

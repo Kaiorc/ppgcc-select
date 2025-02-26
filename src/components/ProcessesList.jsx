@@ -13,6 +13,11 @@ const ListItem = styled.li`
     gap: 2em;
     border-bottom: 2px solid #E5E5E5;
 
+    h3 {
+        text-transform: uppercase;
+        text-align: center;
+    }
+
     p { 
         font-weight: bold;
         margin: 0.5em 0;
