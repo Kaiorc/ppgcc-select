@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
-import Button from './Button';
-import { getProcesses } from "../../services/firebase/firebase-firestore";
+import React from 'react'
+import ReactLoading from 'react-loading'
+import styled from 'styled-components'
+import Button from './Button'
+import { getProcesses } from "../../services/firebase/firebase-firestore"
 
 const ModalBackground = styled.div`
   position: fixed;
@@ -12,21 +13,71 @@ const ModalBackground = styled.div`
   background-color: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
-  align-items: center;
-`;
+  align-items: flex-start;
+  padding-top: 2em;
+`
 
 const ModalContainer = styled.div`
   background-color: white;
-  padding: 2em;
   border-radius: 8px;
   width: 500px;
-`;
+  max-height: 90vh;
+  overflow-y: auto;
+  & h2 {
+    text-align: center;
+  }
+`
+
+const TitleContainer = styled.div`
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0 0 1em 0;
+    border-radius: 8px 8px 0 0;
+    background-color: #008442;
+
+    & h1 {
+        text-transform: uppercase;
+        text-align: center;
+    }
+`
+
+const ButtonContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    gap: 1em;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+    }
+`
+
+const ContentContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  margin: 0 1em 1em 1em;
+  overflow-y: auto;
+`
+
+const LoaderContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    margin: 1em 0 1em 0;
+`
 
 const List = styled.ul`
   list-style: none;
   padding: 0;
   margin: 0;
-`;
+  overflow-y: auto;
+`
 
 const ListItem = styled.li`
   padding: 1em;
@@ -36,18 +87,20 @@ const ListItem = styled.li`
   &:hover {
     background-color: #f0f0f0;
   }
-`;
+`
 
 export default function ImportProcessFieldModal({ onClose, onImport }) {
-  const [processes, setProcesses] = useState([]);
+  const [processes, setProcesses] = React.useState([])
+  const [loading, setLoading] = React.useState(true)
 
-  useEffect(() => {
-    async function loadProcesses() {
-      const data = await getProcesses();
-      setProcesses(data);
+  React.useEffect(() => {
+    async function loadData() {
+      const data = await getProcesses()
+      setProcesses(data)
+      setLoading(false)
     }
-    loadProcesses();
-  }, []);
+    loadData()
+  }, [])
 
   const processesElements = processes.map((process) => {
     return (
@@ -61,12 +114,29 @@ export default function ImportProcessFieldModal({ onClose, onImport }) {
   return (
     <ModalBackground>
       <ModalContainer>
-        <h1>Importar Campos de Processo Seletivo</h1>
-        <h2>Selecione um processo para importar os campos</h2>
-        <List>
-          { processesElements }
-        </List>
-        <Button onClick={onClose} type="button">FECHAR</Button>
+        <TitleContainer>
+          <h1>IMPORTAR CAMPOS</h1>
+        </TitleContainer>
+        <ContentContainer>
+          <ButtonContainer>
+            <Button onClick={onClose} type="button">FECHAR</Button>
+          </ButtonContainer>
+          <h2>SELECIONE UM DOS PROCESSOS SELETIVOS PARA IMPORTAR OS CAMPOS</h2>
+          { loading ?
+              <LoaderContainer>
+                  <ReactLoading 
+                      type={"spinningBubbles"}
+                      color={"#008442"}
+                      height={"10%"}
+                      width={"10%"}
+                  />
+              </LoaderContainer>
+            : 
+              <List>
+                {processesElements}
+              </List>
+          }
+        </ContentContainer>
       </ModalContainer>
     </ModalBackground>
   );

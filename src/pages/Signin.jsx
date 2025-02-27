@@ -55,6 +55,7 @@ const ButtonContainer = styled.div`
     flex-wrap: wrap;
     margin-top: 1em;
     width: 100%;
+    
     @media (max-width: 768px) {
         flex-wrap: wrap-reverse;
     }

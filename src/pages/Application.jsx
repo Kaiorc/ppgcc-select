@@ -1,4 +1,5 @@
 import React from "react"
+import ReactLoading from 'react-loading'
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { styled } from "styled-components"
@@ -11,6 +12,15 @@ import Select from "../components/Select"
 import Button from "../components/Button"
 import Box from "../components/Box"
 
+const LoaderContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    padding: 2em;
+`
+
 const ApplicationContainer = styled.div`
     display: flex;
     flex-direction: column;
@@ -18,8 +28,24 @@ const ApplicationContainer = styled.div`
     padding: 1em;
 `
 
+const TitleContainer = styled.div`
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 1em 4em;
+    border-radius: 8px 8px 0 0;
+    background-color: #008442;
+
+    & h1 {
+        text-transform: uppercase;
+        text-align: center;
+    }
+`
+
 const ApplicationFormContainer = styled.form`
-    padding: 1em;
+    padding: 0 1em 1em 1em;
 `
 
 const InputContainer = styled.div`
@@ -106,12 +132,14 @@ function isWithinApplicationPeriod(startDate, endDate) {
 }
 
 export default function Application() {
-    const { register, handleSubmit, watch, resetField, formState: { errors } } = useForm()
+    const [selectionProcess, setSelectionProcess] = React.useState()
+    const [loading, setLoading] = React.useState(true)
+    const [error, setError] = React.useState(null)
+    
+    const { register, handleSubmit, watch, resetField, formState: { errors } } = useForm({ defaultValues: { researchArea: "" } })
     const { displayName, uid, userEmail } = useAuth()
 
-    const [selectionProcess, setSelectionProcess] = React.useState()
-    // const [loading, setLoading] = React.useState(false)
-    const [error, setError] = React.useState(null)
+
 
     const { id } = useParams()
     const location = useLocation()
@@ -134,12 +162,15 @@ export default function Application() {
                 alert("Você já está inscrito neste processo.");
                 navigate(`/processes/${id}`);
             }
+
+            setLoading(false)
         }
         loadData()
     }, [id, navigate, uid])
 
     function isResearchAreaSelected() {
-        return watch("researchArea") !== ""
+        const value = watch("researchArea");
+        return value !== undefined && value !== "";
     }
 
     // console.log(isResearchAreaSelected())
@@ -210,78 +241,87 @@ export default function Application() {
                 {info.required && <RedSpan>*Obrigatório</RedSpan>}
     
                 {isFile ? (
-                    <FileInputContainer className={isModified ? "with-file" : ""}>
+                        <FileInputContainer className={isModified ? "with-file" : ""}>
+                            <Input
+                                {...register(info.name, validationRules)}
+                                name={info.name}
+                                type="file"
+                                aria-label={info.name}
+                                required={info.required}
+                            />
+                            {isModified && (
+                                <RedButton type="button" onClick={() => resetField(info.name)}>
+                                    LIMPAR
+                                </RedButton>
+                            )}
+                        </FileInputContainer>
+                    ) : (
                         <Input
                             {...register(info.name, validationRules)}
                             name={info.name}
-                            type="file"
+                            type={info.type}
+                            placeholder={info.name}
                             aria-label={info.name}
                             required={info.required}
                         />
-                        {isModified && (
-                            <RedButton type="button" onClick={() => resetField(info.name)}>
-                                LIMPAR
-                            </RedButton>
-                        )}
-                    </FileInputContainer>
-                ) : (
-                    <Input
-                        {...register(info.name, validationRules)}
-                        name={info.name}
-                        type={info.type}
-                        placeholder={info.name}
-                        aria-label={info.name}
-                        required={info.required}
-                    />
-                )}
+                    )
+                }
     
                 {errors[info.name] && <RedSpan>{errors[info.name].message}</RedSpan>}
             </BoldLabel>
-        );
-    });
-    
-
-    if (!selectionProcess) {
-        return <p>Carregando...</p>
-    }
+        )
+    })
 
     return (
         <ApplicationContainer>
             <Box>
-                <h1>INSCRIÇÃO</h1>
-                <ApplicationFormContainer onSubmit={handleSubmit(onSubmit)}>
-                    <h2>DADOS DO CANDIDATO</h2>
-                        <InputContainer>
-                        {selectionProcess?.researchFieldRequired ? (
-                            <BoldLabel htmlFor="researchArea">
-                                Linha de Pesquisa
-                                <Select
-                                    optionPlaceholder="Selecione a linha de pesquisa desejada"
-                                    optionsArray={researchAreas}
-                                    {...register("researchArea", { required: "Linha de pesquisa é obrigatória." })}
-                                    name="researchArea"
-                                    required
-                                />
-                            </BoldLabel>
-                            ) : (
-                                inputElements
-                            )}
-                            {selectionProcess?.researchFieldRequired && isResearchAreaSelected() && inputElements}
-                        </InputContainer>
-                        {(!selectionProcess?.researchFieldRequired || isResearchAreaSelected()) && (
-                            <ButtonContainer>
-                                <Link to="/processes">
-                                    <Button type="button">
-                                        CANCELAR
-                                    </Button>
-                                </Link>
-                                <Button type="submit">
-                                    ENVIAR
-                                </Button>
-                            </ButtonContainer>
-                            )
-                        }
-                </ApplicationFormContainer>
+                <TitleContainer>
+                    <h1>INSCRIÇÃO</h1>
+                </TitleContainer>
+                { loading ? 
+                        <LoaderContainer>
+                            <ReactLoading 
+                                type={"spinningBubbles"}
+                                color={"#008442"}
+                                height={"40%"}
+                                width={"40%"}
+                            />
+                        </LoaderContainer>
+                    :
+                        <ApplicationFormContainer onSubmit={handleSubmit(onSubmit)}>
+                            <h2>DADOS DO CANDIDATO</h2>
+                                <InputContainer>
+                                {selectionProcess?.researchFieldRequired ? (
+                                    <BoldLabel htmlFor="researchArea">
+                                        Linha de Pesquisa
+                                        <Select
+                                            optionPlaceholder="Selecione a linha de pesquisa desejada"
+                                            optionsArray={researchAreas}
+                                            {...register("researchArea", { required: "Linha de pesquisa é obrigatória." })}
+                                            name="researchArea"
+                                            required
+                                        />
+                                    </BoldLabel>
+                                    ) : (
+                                        inputElements
+                                    )}
+                                    {selectionProcess?.researchFieldRequired && isResearchAreaSelected() && inputElements}
+                                </InputContainer>
+                                {(!selectionProcess?.researchFieldRequired || isResearchAreaSelected()) && (
+                                    <ButtonContainer>
+                                        <Link to="/processes">
+                                            <Button type="button">
+                                                CANCELAR
+                                            </Button>
+                                        </Link>
+                                        <Button type="submit">
+                                            ENVIAR
+                                        </Button>
+                                    </ButtonContainer>
+                                    )
+                                }
+                        </ApplicationFormContainer>
+                }       
             </Box>
         </ApplicationContainer>
     )

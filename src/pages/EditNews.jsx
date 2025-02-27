@@ -1,4 +1,5 @@
 import React from 'react'
+import ReactLoading from 'react-loading'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useForm } from "react-hook-form"
 import { getSpecificProcessNews, updateProcessNews } from '../../services/firebase/firebase-firestore'
@@ -7,6 +8,15 @@ import Input from '../components/Input'
 import TextArea from '../components/TextArea'
 import Box from '../components/Box'
 import Button from '../components/Button'
+
+const LoaderContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    margin: 5em; 
+`
 
 const TitleContainer = styled.div`
     color: white;
@@ -78,6 +88,8 @@ const ButtonContainer = styled.div`
 `
 
 export default function EditNews() {
+    const [loading, setLoading] = React.useState(true)
+
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm()
 
     const { id, newsId } = useParams()
@@ -92,6 +104,7 @@ export default function EditNews() {
                     setValue("title", news.title || "")
                     setValue("body", news.body || "")
                 }
+                setLoading(false)
             }
             catch (error) {
                 console.error(error)
@@ -108,6 +121,21 @@ export default function EditNews() {
         catch (error) {
             console.error(error)
         }
+    }
+
+    if(loading){
+        return (
+            <Box>
+                <LoaderContainer>
+                    <ReactLoading 
+                        type={"spinningBubbles"}
+                        color={"#008442"}
+                        height={"10%"}
+                        width={"10%"}
+                    />
+                </LoaderContainer>
+            </Box>
+        )
     }
 
     return (

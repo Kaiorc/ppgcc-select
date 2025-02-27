@@ -18,13 +18,71 @@ const ModalBackground = styled.div`
 
 const ModalContainer = styled.div`
   background-color: white;
-  padding: 2em;
   border-radius: 8px;
   width: 300px;
 `
 
+const TitleContainer = styled.div`
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  margin: 0 0 1em 0;
+  border-radius: 8px 8px 0 0;
+  background-color: #008442;
+
+  & h1 {
+      text-transform: uppercase;
+      text-align: center;
+  }
+`
+
+const SettingsContainer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 0 1em 1em 1em;
+  & input, select {
+      margin-top: 0;
+  }
+`
+
+const BoldLabel = styled.label`
+  font-weight: bold;
+  & p {
+      margin: 0;
+      font-weight: normal;
+      font-size: 1em;
+      color: #008442;
+  }
+`
+
+const RequiredLabel = styled(BoldLabel)`
+  display: flex;
+  align-items: center;
+  gap: 5px;
+`
+
 const CheckboxContainer = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
   margin-bottom: 1em;
+  & input[type="checkbox"] {
+      margin: 0;
+  }
+`
+
+const ButtonContainer = styled.div`
+    display: flex;
+    justify-content: space-between;
+    gap: 1em;
+    flex-wrap: wrap;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        align-items: center;
+    }
 `
 
 export default function RegistrationFieldModal({ onClose, onSave, fieldToEdit }) {
@@ -61,49 +119,61 @@ export default function RegistrationFieldModal({ onClose, onSave, fieldToEdit })
   return (
     <ModalBackground>
       <ModalContainer>
-        <h2>{ fieldToEdit ? 'EDITAR CAMPO' : 'ADICIONAR CAMPO' }</h2>
-        <Input
-          type="text"
-          name="name"
-          placeholder="Nome do Campo"
-          value={fieldData.name}
-          onChange={handleChange}
-        />
-        <Select
-          name="type"
-          value={fieldData.type}
-          onChange={handleChange}
-        >
-          <option value="text">Texto</option>
-          <option value="number">Número</option>
-          <option value="date">Data</option>
-          <option value="email">Email</option>
-          <option value="file">Arquivo</option>
-        </Select>
-        <CheckboxContainer>
-          <label>
-            <input
-              name="required"
-              type="checkbox"
-              checked={fieldData.required}
+        <TitleContainer>
+          <h2>{ fieldToEdit ? 'EDITAR CAMPO' : 'ADICIONAR CAMPO' }</h2>
+        </TitleContainer>
+        <SettingsContainer>
+          <BoldLabel htmlFor='name'>
+            Nome do campo:
+            <Input
+              type="text"
+              name="name"
+              placeholder="Nome do Campo"
+              value={fieldData.name}
               onChange={handleChange}
             />
-            Obrigatório
-          </label>
-        </CheckboxContainer>
-        <Button 
-          type="button"
-          onClick={onClose}
-        >
-          CANCELAR
-        </Button>
-        <Button
-          type="button"
-          onClick={handleSave}
-        >
-          SALVAR
-        </Button>
+          </BoldLabel>
+          <BoldLabel htmlFor='type'>
+            Tipo de entrada do campo:
+            <Select
+              name="type"
+              value={fieldData.type}
+              onChange={handleChange}
+            >
+              <option value="text">Texto</option>
+              <option value="number">Número</option>
+              <option value="date">Data</option>
+              <option value="email">Email</option>
+              <option value="file">Arquivo</option>
+            </Select>
+          </BoldLabel>
+          <CheckboxContainer>
+            <RequiredLabel htmlFor='required'>
+              <Input
+                name="required"
+                type="checkbox"
+                checked={fieldData.required}
+                onChange={handleChange}
+              />
+              Obrigatório
+            </RequiredLabel>
+          </CheckboxContainer>
+          <ButtonContainer>
+            <Button 
+              type="button"
+              onClick={onClose}
+            >
+              CANCELAR
+            </Button>
+            <Button
+              type="button"
+              onClick={handleSave}
+            >
+              SALVAR
+            </Button>
+          </ButtonContainer>
+        </SettingsContainer>
       </ModalContainer>
     </ModalBackground>
-  );
+  )
 }

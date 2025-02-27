@@ -1,5 +1,5 @@
 import React from 'react'
-import { useParams, useNavigate } from 'react-router-dom'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useForm } from "react-hook-form"
 import { addProcessNews } from '../../services/firebase/firebase-firestore'
 import styled from 'styled-components'
@@ -66,6 +66,18 @@ const BoldLabel = styled.label`
     }
 `
 
+const ButtonContainer = styled.div`
+    display: flex;
+    justify-content: space-evenly;
+    align-items: stretch;
+    gap: 1em;
+    margin: 0.5em 1em 0.5 1em;
+    flex-wrap: wrap;
+    @media (max-width: 768px) {
+        flex-wrap: wrap-reverse;
+    }
+`
+
 export default function CreateNews() {
     const { register, handleSubmit, watch, formState: { errors } } = useForm()
 
@@ -116,7 +128,14 @@ export default function CreateNews() {
                         required
                     />
                 </BoldLabel>
-                <Button type="submit">ADICIONAR ATUALIZAÇÃO</Button>
+                <ButtonContainer>
+                    <Link to={`/processes/${id}/news`}>
+                        <Button type="button">
+                            CANCELAR
+                        </Button>
+                    </Link>
+                    <Button type="submit">ADICIONAR ATUALIZAÇÃO</Button>
+                </ButtonContainer>
             </NewsFormContainer>
         </Box>
     )

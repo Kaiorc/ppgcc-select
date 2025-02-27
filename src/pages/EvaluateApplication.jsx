@@ -1,4 +1,5 @@
 import React from "react"
+import ReactLoading from 'react-loading'
 import { useParams } from "react-router-dom"
 import { getUserApplication, updateApplicationStatus } from "../../services/firebase/firebase-firestore"
 import { formatTimestamp, formatFirestoreDate } from "../../formatters/formatters"
@@ -8,6 +9,15 @@ import Input from "../components/Input"
 import Box from "../components/Box"
 import Button from "../components/Button"
 import ViewDocumentButton from "../components/ViewDocumentButton"
+
+const LoaderContainer = styled.div`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    margin: 5em; 
+`
 
 const EvaluateApplicationContainer = styled.div`
     display: flex;
@@ -20,6 +30,22 @@ const EvaluateApplicationBox = styled(Box)`
     width: 100%;
     max-width: 1500px;
     min-width: 300px; 
+`
+
+const TitleContainer = styled.div`
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0 0 1em 0;
+    border-radius: 8px 8px 0 0;
+    background-color: #008442;
+
+    & h1 {
+        text-transform: uppercase;
+        text-align: center;
+    }
 `
 
 const Title = styled.h1`
@@ -200,8 +226,10 @@ function formatValue(key, value) {
 
 export default function EvaluateApplication() {
     const [application, setApplication] = React.useState(null)
-    const [checkboxes, setCheckboxes] = React.useState({})
+    const [loading, setLoading] = React.useState(true)
     const [selectedStatus, setSelectedStatus] = React.useState("")
+    const [checkboxes, setCheckboxes] = React.useState({})
+
     const { processId, uid } = useParams()
 
     const hiddenTableFields = ["uid", "id", "status", "createdAt", "name", "userEmail", "researchArea"]
@@ -223,6 +251,7 @@ export default function EvaluateApplication() {
                         return acc
                     }, {})
                 setCheckboxes(initialCheckboxes)
+                setLoading(false)
             } catch (error) {
                 console.error("Erro ao carregar a inscrição: ", error)
             }
@@ -238,7 +267,7 @@ export default function EvaluateApplication() {
     }
     
     function areAllChecked() {
-        console.log("Checkboxes:", checkboxes) // Debug
+        console.log("Checkboxes:", checkboxes)
         return Object.values(checkboxes).every(checked => checked === true)
     }
     
@@ -254,8 +283,19 @@ export default function EvaluateApplication() {
         }
     }
 
-    if (!application) {
-        return <p>Carregando...</p>
+    if(loading){
+        return (
+            <Box>
+                <LoaderContainer>
+                    <ReactLoading 
+                        type={"spinningBubbles"}
+                        color={"#008442"}
+                        height={"10%"}
+                        width={"10%"}
+                    />
+                </LoaderContainer>
+            </Box>
+        )
     }
 
     const applicationElements = Object.entries(application)
@@ -277,7 +317,9 @@ export default function EvaluateApplication() {
     return (
         <EvaluateApplicationContainer>
             <EvaluateApplicationBox>
-                <Title>DETALHES DA INSCRIÇÃO</Title>
+                <TitleContainer>
+                    <Title>DETALHES DA INSCRIÇÃO</Title>
+                </TitleContainer>
                 <InfoGrid>
                     <InfoContainer>
                         <h3>Nome do Candidato:</h3>

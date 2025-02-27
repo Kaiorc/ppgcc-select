@@ -60,26 +60,6 @@ const InfoContainer = styled.div`
     }   
 `
 
-const StyledTableContainer = styled.div`
-    width: 100%;
-    padding: 0 1rem 1rem 1rem;
-    overflow-x: auto; 
-    isolation: isolate;
-
-    &::-webkit-scrollbar {
-        height: 8px;
-    }
-
-    &::-webkit-scrollbar-track {
-        background: #f0f0f0;
-    }
-
-    &::-webkit-scrollbar-thumb {
-        background: #008442;
-        border-radius: 10px;
-    }
-`
-
 const TablesContainer = styled.div`
     padding: 0 1em 1em 1em;
     & h2 {
@@ -145,12 +125,9 @@ export default function Applications() {
     React.useEffect(() => {
         async function loadData() {
             const applications = await getApplications(id)
-            console.log("applications", applications)
             const formattedApplications = formatCreatedAt(applications)
-            console.log("formattedApplications", formattedApplications)
             setApplications(formattedApplications)
             const process = await loadProcess(id)
-            console.log("process", process)
             setSelectionProcess(process)
         }
         loadData()
@@ -167,7 +144,7 @@ export default function Applications() {
         navigate(`evaluate/${uid}`)
     }
 
-    // Função para exportar o resultado em PDF
+    // Função para exportar a lista das inscrições deferidas em PDF
     function handleExportResult() {
         if (!selectionProcess) return
 
@@ -176,7 +153,7 @@ export default function Applications() {
 
         // Desenha um header com fundo verde
         doc.setFillColor(0, 132, 66) // cor verde (#008442) em RGB
-        doc.rect(0, 0, pageWidth, 35, "F") // retângulo preenchido com altura de 35
+        doc.rect(0, 0, pageWidth, 30, "F") // retângulo preenchido com altura de 35
 
         // Define texto em branco, negrito e centralizado no header
         doc.setTextColor(255, 255, 255)
@@ -186,13 +163,13 @@ export default function Applications() {
         doc.text(selectionProcess.name.toUpperCase(), pageWidth / 2, 15, { align: "center" })
 
         doc.setFontSize(16)
-        doc.text("CLASSIFICADOS PARA A PRÓXIMA FASE", pageWidth / 2, 30, { align: "center" })
+        doc.text("CLASSIFICADOS PARA A PRÓXIMA FASE", pageWidth / 2, 25, { align: "center" })
 
         // Reseta a cor do texto para preto para o restante do documento
         doc.setTextColor(0, 0, 0)
 
         // Inicia abaixo do header
-        let yPosition = 40
+        let yPosition = 35
 
         // Filtra os candidatos com inscrição deferida
         const deferredCandidates = applications.filter(app => app.status === "Deferida")
@@ -296,12 +273,13 @@ export default function Applications() {
                         </InfoGrid>
                         <InfoMessage>INSCRIÇÕES</InfoMessage>
                         { isApplicationsEmpty ? (
-                            <BoldGreenMessage>AINDA NÃO HÁ INSCRIÇÕES NESSE PROCESSO SELETIVO</BoldGreenMessage>
-                        ) : (
-                            <TablesContainer>
-                                {tablesElements}
-                            </TablesContainer>
-                        )}
+                                <BoldGreenMessage>AINDA NÃO HÁ INSCRIÇÕES NESSE PROCESSO SELETIVO</BoldGreenMessage>
+                            ) : (
+                                <TablesContainer>
+                                    {tablesElements}
+                                </TablesContainer>
+                            )
+                        }
                         </>
                     )}
             </Box>

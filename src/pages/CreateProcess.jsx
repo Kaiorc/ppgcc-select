@@ -11,7 +11,6 @@ import ImportProcessFieldModal from "../components/ImportProcessFieldModal"
 import { createProcess } from "../../services/firebase/firebase-firestore"
 
 const CreateProcessBox = styled(Box)`
-    padding: 1em;
     min-width: 300px; // Adicionando min-width
     
     @media (max-width: 1024px) {
@@ -30,6 +29,22 @@ const CreateProcessBox = styled(Box)`
     @media (max-width: 345px) {
         padding: 0.25em;
         margin: 1em 0.5em; // Ajustando a margem para telas menores
+    }
+`
+
+const TitleContainer = styled.div`
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin: 0 0 1em 0;
+    border-radius: 8px 8px 0 0;
+    background-color: #008442;
+
+    & h1 {
+        text-transform: uppercase;
+        text-align: center;
     }
 `
 
@@ -236,7 +251,9 @@ export default function CreateProcess() {
 
     return (
         <CreateProcessBox>
-            <h1>CRIAR PROCESSO SELETIVO</h1>
+            <TitleContainer>
+                <h1>CRIAR PROCESSO SELETIVO</h1>
+            </TitleContainer>
             <CreateProcessFormContainer onSubmit={handleSubmit}>
                 <h2>DADOS MÍNIMOS OBRIGATÓRIOS</h2>
                     <InputContainer>

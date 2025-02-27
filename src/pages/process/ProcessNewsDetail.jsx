@@ -8,6 +8,7 @@ import styled from "styled-components"
 import useRole from "../../hooks/useRole"
 import Button from "../../components/Button"
 import Box from "../../components/Box"
+import DeleteModal from "../../components/DeleteModal"
 
 const LoaderContainer = styled.div`
     display: flex;
@@ -168,8 +169,10 @@ const RedButton = styled(Button)`
 `
 
 export default function ProcessNewsDetail() {
-    const [loading, setLoading] = React.useState(true)
     const [news, setNews] = React.useState(null)
+
+    const [loading, setLoading] = React.useState(true)
+    const [isModalOpen, setIsModalOpen] = React.useState(false)
 
     const { id, newsId } = useParams()
     const navigate = useNavigate()
@@ -225,7 +228,7 @@ export default function ProcessNewsDetail() {
                     <ProcessName>{id}</ProcessName>
                     {hasAdminButtons && (
                             <ButtonContainer>
-                                <RedButton onClick={handleDelete}>EXCLUIR</RedButton>
+                                <RedButton onClick={() => setIsModalOpen(true)}>EXCLUIR</RedButton>
                                 <Link to={`/processes/${id}/news/${newsId}/edit-news`}>
                                     <Button>EDITAR</Button>
                                 </Link>
@@ -251,6 +254,12 @@ export default function ProcessNewsDetail() {
                     />
                 </AllInfoContainer>
             </Box>
+            {isModalOpen && (
+                <DeleteModal 
+                    setIsModalOpen={setIsModalOpen}
+                    handleDelete={handleDelete}
+                />
+            )}
         </NewsContainer>
     )
 }
