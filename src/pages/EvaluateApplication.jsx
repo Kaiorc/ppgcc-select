@@ -7,6 +7,7 @@ import Select from "../components/Select"
 import Input from "../components/Input"
 import Box from "../components/Box"
 import Button from "../components/Button"
+import ViewDocumentButton from "../components/ViewDocumentButton"
 
 const EvaluateApplicationContainer = styled.div`
     display: flex;
@@ -163,24 +164,39 @@ const BoldGreenMessage = styled.p`
     }   
 `
 
-function formatValue (key, value) {
+function formatValue(key, value) {
     if (typeof value === 'string' && value.startsWith("https://cloud.appwrite.io/v1/storage/buckets/")) {
-        return (
-            <Button onClick={() => window.open(value, "_blank")}>
-                VISUALIZAR DOCUMENTO
-            </Button>
-        )
+      return <ViewDocumentButton url={value} />;
     } else if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
-        // Verifica se o valor é uma string no formato de data YYYY-MM-DD
-        return formatFirestoreDate(value)
+      // Verifica se o valor é uma string no formato de data YYYY-MM-DD
+      return formatFirestoreDate(value);
     } else if (typeof value === 'object' && value !== null) {
-        if (value.seconds && value.nanoseconds) {
-            formatTimestamp(value)
-        }
-        return JSON.stringify(value)
+      if (value.seconds && value.nanoseconds) {
+        formatTimestamp(value);
+      }
+      return JSON.stringify(value);
     }
-    return value
+    return value;
 }
+
+// function formatValue (key, value) {
+//     if (typeof value === 'string' && value.startsWith("https://cloud.appwrite.io/v1/storage/buckets/")) {
+//         return (
+//             <Button onClick={() => window.open(value, "_blank")}>
+//                 VISUALIZAR DOCUMENTO
+//             </Button>
+//         )
+//     } else if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+//         // Verifica se o valor é uma string no formato de data YYYY-MM-DD
+//         return formatFirestoreDate(value)
+//     } else if (typeof value === 'object' && value !== null) {
+//         if (value.seconds && value.nanoseconds) {
+//             formatTimestamp(value)
+//         }
+//         return JSON.stringify(value)
+//     }
+//     return value
+// }
 
 export default function EvaluateApplication() {
     const [application, setApplication] = React.useState(null)

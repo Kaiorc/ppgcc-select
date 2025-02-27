@@ -17,3 +17,14 @@ export async function uploadFileToStorage(file) {
         throw error
     }
 }
+
+// Função para obter a URL de visualização de um arquivo existente pelo fileId
+export async function getFileForViewing(fileId) {
+    try {
+        const fileUrl = storage.getFileView(bucketId, fileId)
+        return fileUrl
+    } catch (error) {
+        console.error("Erro ao buscar arquivo para visualização:", error)
+        throw error
+    }
+}

@@ -22,6 +22,7 @@ import NotAuthorized from './src/pages/NotAuthorized'
 import NotFound from './src/pages/NotFound'
 import Applications from './src/pages/Applications'
 import Application from './src/pages/Application'
+import ViewDocument from './src/pages/ViewDocument'
 import EvaluateApplication from './src/pages/EvaluateApplication'
 
 const GlobalStyle = createGlobalStyle`
@@ -80,6 +81,7 @@ export default function App() {
                 <Route path="/processes/:id/create-news" element={<CreateNews />} />
                 <Route path="/processes/:id/news/:newsId/edit-news" element={<EditNews />} />
                 <Route path="/processes/:id/applications" element={<Applications />} />
+                <Route path="/processes/:processId/applications/evaluate/:uid/view-document" element={<ViewDocument />} />
                 <Route path="/processes/:processId/applications/evaluate/:uid" element={<EvaluateApplication />} />
               </Route>
               <Route path="/not-authorized" element={<NotAuthorized />} />
