@@ -6,7 +6,7 @@ import PpgccelectLogoTop from "../assets/images/logo-ppgccelect-top-cropped.png"
 import { styled } from "styled-components"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { authLogOut } from "../../services/firebase/firebase-authentication"
-import { formatFirstTwoNames } from "../../formatters/formatters"
+import { formatFirstTwoNames } from "../utils/formatters/formatters"
 import useAuth from "../hooks/useAuth"
 import Button from "./Button"
 

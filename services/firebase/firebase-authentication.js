@@ -28,6 +28,7 @@ export function authListener(setIsLoggedIn, setUserRole, setDisplayName, setUid,
             // console.log("api.js - authListener() - ", user)
             const role = await getUserRole(user)
             setUserRole(role)
+            console.log("api.js - authListener() - Papel do usuário: ", role)
             setDisplayName(user.displayName)
         } else {
             setIsLoggedIn(false)
@@ -50,7 +51,6 @@ export async function authCreateAccountWithEmail(name, email, password) {
         throw error
     }
 }
-
  
 export async function authLogInWithEmail(email, password, setIsLoggedIn) { 
     try{

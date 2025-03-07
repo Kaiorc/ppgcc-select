@@ -17,6 +17,6 @@ export default function Footer() {
 
 
     return (
-        <StyledFooter>&#169; 2024 PPGCCELECT</StyledFooter>
+        <StyledFooter>&#169; 2024 PPGCCelect</StyledFooter>
     )
 }

@@ -38,38 +38,38 @@ const TableCell = styled.td`
 export default function ApplicationsTable({ columnsNames, data, onEvaluate }) {
   return (
     <StyledTableContainer>
-    <StyledTable>
-        <TableHead>
-            <TableRow>
-                {columnsNames.map((column, index) => (
-                    <TableHeader key={index}>
-                        {column}
-                    </TableHeader>
-                ))}
-                <TableHeader>
-                    AÇÕES
-                </TableHeader>
-            </TableRow>
-        </TableHead>
-        <tbody>
-            {data.map((row, rowIndex) => (
-                <TableRow key={rowIndex}>
-                    {columnsNames.map((col, colIndex) => (
-                        <TableCell key={colIndex}>
-                            {row[col]}
-                        </TableCell>
-                    ))}
-                    <TableCell>
-                        <Button 
-                          type="button"
-                          onClick={() => onEvaluate(row.uid)}>
-                            AVALIAR
-                        </Button>
-                    </TableCell>
-                </TableRow>
-            ))}
-        </tbody>
-    </StyledTable>
+      <StyledTable>
+          <TableHead>
+              <TableRow>
+                  {columnsNames.map((column, index) => (
+                      <TableHeader key={index}>
+                          {column}
+                      </TableHeader>
+                  ))}
+                  <TableHeader>
+                      AÇÕES
+                  </TableHeader>
+              </TableRow>
+          </TableHead>
+          <tbody>
+              {data.map((row, rowIndex) => (
+                  <TableRow key={rowIndex}>
+                      {columnsNames.map((col, colIndex) => (
+                          <TableCell key={colIndex}>
+                              {row[col]}
+                          </TableCell>
+                      ))}
+                      <TableCell>
+                          <Button 
+                            type="button"
+                            onClick={() => onEvaluate(row.uid)}>
+                              AVALIAR
+                          </Button>
+                      </TableCell>
+                  </TableRow>
+              ))}
+          </tbody>
+      </StyledTable>
     </StyledTableContainer>
   )
 }

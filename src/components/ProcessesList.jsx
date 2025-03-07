@@ -1,7 +1,7 @@
 import React from "react"
 import { styled } from "styled-components"
 import { Link } from "react-router-dom"
-import { formatFirestoreDate } from "../../formatters/formatters"
+import { formatFirestoreDate } from "../utils/formatters/formatters"
 
 const ListItem = styled.li`
     display: flex;

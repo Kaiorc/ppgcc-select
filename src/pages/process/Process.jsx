@@ -1,14 +1,13 @@
 import React from "react"
 import ReactLoading from 'react-loading'
-import { Link, NavLink, useParams, useLocation, Outlet } from "react-router-dom"
-import { loadProcess, userHasApplication } from "../../../services/firebase/firebase-firestore"
-import { formatFirestoreDate, formatProcessDescription } from "../../../formatters/formatters"
+import { Link, NavLink, useNavigate, useParams, useLocation, Outlet } from "react-router-dom"
+import { loadProcess, userHasApplication, deleteProcess, deleteApplication } from "../../../services/firebase/firebase-firestore"
 import styled from "styled-components"
-import DOMPurify from "dompurify"
 import useAuth from "../../hooks/useAuth"
 import useRole from "../../hooks/useRole"
 import Button from "../../components/Button"
 import Box from "../../components/Box"
+import DeleteModal from "../../components/DeleteModal"
 
 const LoaderContainer = styled.div`
     display: flex;
@@ -74,11 +73,25 @@ const TitleContainer = styled.div`
 `
 
 const TitleButtonContainer = styled.div`
-    display: flex;
+    display: ${({ $gridLayout }) => $gridLayout ? 'grid' : 'flex'};
+    ${({ $gridLayout }) => $gridLayout && `
+        grid-template-columns: repeat(2, auto);
+        grid-template-rows: repeat(2, auto);
+        gap: 1em;
+        justify-items: center;
+        align-items: center;
+    `}
     align-items: center;
     gap: 1em;
 
     @media (max-width: 600px) {
+        flex-direction: column;
+        width: 100%;
+        gap: 0.4em;
+    }
+
+    @media (max-width: 320px) {
+        display: flex;
         flex-direction: column;
         width: 100%;
         gap: 0.4em;
@@ -129,8 +142,18 @@ const ListNav = styled.nav`
     }
 `
 
+const RedButton = styled(Button)`
+  background-color: red;
+  color: white;
+
+  &:hover {
+    background-color: darkred;
+  }
+`
+
 const RegisteredMessage = styled.p`
     color: white;
+    text-align: center;
     font-weight: bold;
     font-size: 1.1rem;
     background-color: #F0852E;
@@ -151,11 +174,15 @@ function isWithinApplicationPeriod(startDate, endDate) {
 export default function Process() {
     const [selectionProcess, setSelectionProcess] = React.useState(null)
     const [isUserRegistered, setIsUserRegistered] = React.useState(false)
+
     const [loading, setLoading] = React.useState(true)
+    const [isModalOpen, setIsModalOpen] = React.useState(false)
     // const [error, setError] = React.useState(null)
+    const [deleteError, setDeleteError] = React.useState(null);
 
     const { id } = useParams()
     const location = useLocation()
+    const navigate = useNavigate()
     const isAdmin = useRole()
     const { uid } = useAuth()
 
@@ -181,15 +208,28 @@ export default function Process() {
     const hasUserButton = !isAdmin && !isUserRegistered && checkSelectionProcessAndApplicationPeriod()
     const shouldCenterTitle = !hasAdminButtons && !hasUserButton && !isUserRegistered
 
-    console.log("hasAdminButtons: ", hasAdminButtons)
-    console.log("isUserRegistered: ", isUserRegistered)
-    console.log("checkSelectionProcessAndApplicationPeriod: ", checkSelectionProcessAndApplicationPeriod())
-    console.log("hasUserButton: ", hasUserButton)
-    console.log("shouldCenterTitle: ", shouldCenterTitle)
+    // Função para deleção do processo
+    async function handleDeleteProcess() {
+        try {
+            await deleteProcess(id)
+            // Após a deleção, você pode redirecionar o usuário para outra rota, se necessário
+            navigate("/processes")
+        } catch (error) {
+            setDeleteError(error.message);
+            console.error("Erro ao deletar processo:", error)
+        }
+    }
 
-    console.log("Process.jsx - selectionProcess", selectionProcess)
-    console.log(location)
-    console.log(id)
+    async function handleDeleteApplication() {
+        try {
+            await deleteApplication(id, uid)
+            // Após a deleção, você pode redirecionar o usuário para outra rota, se necessário
+            navigate("/processes")
+        } catch (error) {
+            setDeleteError(error.message);
+            console.error("Erro ao deletar inscrição:", error)
+        }
+    }
 
     if(loading){
         return (
@@ -214,7 +254,7 @@ export default function Process() {
                         <h1>{selectionProcess.name}</h1>
                         {
                             hasAdminButtons ? (
-                                <TitleButtonContainer>
+                                <TitleButtonContainer $gridLayout>
                                     <Link to="applications">
                                         <Button>INSCRIÇÕES</Button>
                                     </Link>
@@ -224,12 +264,16 @@ export default function Process() {
                                     <Link to="edit-process">
                                         <Button>EDITAR</Button>
                                     </Link>
+                                    <RedButton onClick={() => setIsModalOpen(true)}>EXCLUIR</RedButton>
                                 </TitleButtonContainer>
                             ) : (
                                 isUserRegistered ? (
-                                    <RegisteredMessage aria-live="polite">
-                                        VOCÊ JÁ ESTÁ INSCRITO(A)
-                                    </RegisteredMessage>
+                                    <TitleButtonContainer>
+                                        <RedButton onClick={() => setIsModalOpen(true)}>CANCELAR INSCRIÇÃO</RedButton>
+                                        <RegisteredMessage aria-live="polite">
+                                            VOCÊ JÁ ESTÁ INSCRITO(A)
+                                        </RegisteredMessage>
+                                    </TitleButtonContainer>
                                 ) : (
                                     hasUserButton && (
                                         <TitleButtonContainer>
@@ -261,6 +305,13 @@ export default function Process() {
                 </ProcessDetailBox>
                 )
             }
+            {isModalOpen && (
+                <DeleteModal 
+                    setIsModalOpen={setIsModalOpen}
+                    handleDelete={isAdmin ? handleDeleteProcess : handleDeleteApplication}
+                    error={deleteError}
+                />
+            )}
         </ProcessDetailContainer>
     )
 }

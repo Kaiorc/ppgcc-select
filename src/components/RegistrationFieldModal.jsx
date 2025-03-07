@@ -139,6 +139,7 @@ export default function RegistrationFieldModal({ onClose, onSave, fieldToEdit })
               name="type"
               value={fieldData.type}
               onChange={handleChange}
+              optionPlaceholder="Selecione o tipo de entrada"
             >
               <option value="text">Texto</option>
               <option value="number">Número</option>

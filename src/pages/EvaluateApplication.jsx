@@ -2,7 +2,7 @@ import React from "react"
 import ReactLoading from 'react-loading'
 import { useParams } from "react-router-dom"
 import { getUserApplication, updateApplicationStatus } from "../../services/firebase/firebase-firestore"
-import { formatTimestamp, formatFirestoreDate } from "../../formatters/formatters"
+import { formatTimestamp, formatFirestoreDate } from "../utils/formatters/formatters"
 import styled from "styled-components"
 import Select from "../components/Select"
 import Input from "../components/Input"

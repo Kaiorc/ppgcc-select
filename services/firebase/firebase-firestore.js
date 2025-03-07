@@ -6,7 +6,8 @@ import { firebaseConfig } from "./firebase-config"
 import { 
     getFirestore, 
     collection, 
-    doc, 
+    doc,
+    writeBatch,
     getDocs, 
     getDoc, 
     query, 
@@ -188,6 +189,12 @@ export async function createProcess(data) {
         // Cria um documento "placeholder" na sub-coleção "applications", pois o Firestore não permite
         // coleções vazias e é necessário ter pelo menos um documento para a sub-coleção existir
         await setDoc(doc(applicationsSubCollectionRef, "placeholder"), {})
+        
+        // Cria a sub-coleção "news" dentro do documento do processo
+        const newsSubCollectionRef = collection(processDocRef, "news")
+        // Cria um documento "placeholder" na sub-coleção "news", pois o Firestore não permite
+        // coleções vazias e é necessário ter pelo menos um documento para a sub-coleção existir
+        await setDoc(doc(newsSubCollectionRef, "placeholder"), {})
 
     } catch (error) {
         console.error("Erro ao criar processo:", error)
@@ -210,12 +217,61 @@ export async function updateProcess(id, data) {
 }
 
 // Função para deletar um processo pelo ID
+// export async function deleteProcess(id) {
+//     // Cria uma referência ao documento com o ID fornecido
+//     const processRef = doc(db, "processes", id) 
+//     // Deleta o documento do Firestore
+//     await deleteDoc(processRef)
+// }
+
+// Função deleteProcess que só roda se processHasApplications retornar false
 export async function deleteProcess(id) {
-    // Cria uma referência ao documento com o ID fornecido
-    const processRef = doc(db, "processes", id) 
-    // Deleta o documento do Firestore
-    await deleteDoc(processRef)
+    // Verifica se o processo possui inscrições (exceto o "placeholder")
+    const hasApplications = await processHasApplications(id);
+    if (hasApplications) {
+        throw new Error("Não é possível deletar o processo, pois ele possui inscrições");
+    }
+
+    // Se não possuir inscrições, prossegue com a deleção:
+    const processRef = doc(db, "processes", id);
+    const applicationsPlaceholderRef = doc(processRef, "applications", "placeholder");
+    const newsPlaceholderRef = doc(processRef, "news", "placeholder");
+
+    const batch = writeBatch(db);
+    batch.delete(applicationsPlaceholderRef);
+    batch.delete(newsPlaceholderRef);
+    batch.delete(processRef);
+
+    await batch.commit();
 }
+
+// async function deleteCollection(ref) {
+//     const querySnapshot = await getDocs(ref);
+//     for (const document of querySnapshot.docs) {
+//       // Se o documento tiver subcoleções, repita o processo recursivamente
+//       // Aqui você deve conhecer previamente os nomes das subcoleções ou obtê-los de alguma forma
+//       const subCollections = ['applications', 'news'];
+//       for (const subCol of subCollections) {
+//         const subColRef = collection(document.ref, subCol);
+//         await deleteCollection(subColRef);
+//       }
+//       await deleteDoc(document.ref);
+//     }
+// }
+  
+// export async function deleteProcess(id) {
+//     const processRef = doc(db, "processes", id);
+
+//     // Deletar subcoleções do processo
+//     const subCollections = ['applications', 'news'];
+//     for (const subCol of subCollections) {
+//         const subColRef = collection(processRef, subCol);
+//         await deleteCollection(subColRef);
+//     }
+
+//     // Agora, deleta o documento principal
+//     await deleteDoc(processRef);
+// }
 
 // Função para adicionar os dados do candidato a um doc na coleção "applications"
 export async function addApplication(id, data, name, uid, userEmail) {

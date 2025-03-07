@@ -1,7 +1,7 @@
 import React from "react"
 import ReactLoading from 'react-loading'
 import { useOutletContext } from "react-router-dom"
-import { formatFirestoreDate, formatProcessDescription } from "../../../formatters/formatters"
+import { formatFirestoreDate, formatProcessDescription } from "../../utils/formatters/formatters"
 import DOMPurify from "dompurify"
 import styled from "styled-components"
 
@@ -24,7 +24,6 @@ const InfoGrid = styled.div`
     @media (min-width: 768px) {
         display: grid;
         grid-template-columns: repeat(2, 1fr);
-        gap: 2rem;
     }
 `
 

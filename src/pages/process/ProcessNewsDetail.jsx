@@ -1,7 +1,7 @@
 import React from "react"
 import ReactLoading from 'react-loading'
 import { Link, useParams, useNavigate } from "react-router-dom"
-import { formatTimestamp, formatProcessDescription } from "../../../formatters/formatters"
+import { formatTimestamp, formatProcessDescription } from "../../utils/formatters/formatters"
 import { getSpecificProcessNews, deleteProcessNews } from "../../../services/firebase/firebase-firestore"
 import DOMPurify from "dompurify"
 import styled from "styled-components"
@@ -173,6 +173,7 @@ export default function ProcessNewsDetail() {
 
     const [loading, setLoading] = React.useState(true)
     const [isModalOpen, setIsModalOpen] = React.useState(false)
+    const [deleteError, setDeleteError] = React.useState(null);
 
     const { id, newsId } = useParams()
     const navigate = useNavigate()
@@ -258,6 +259,7 @@ export default function ProcessNewsDetail() {
                 <DeleteModal 
                     setIsModalOpen={setIsModalOpen}
                     handleDelete={handleDelete}
+                    error={deleteError}
                 />
             )}
         </NewsContainer>

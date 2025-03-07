@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactLoading from 'react-loading'
-import { useParams, useNavigate } from 'react-router-dom'
-import styled from 'styled-components'
+import { Link, useParams, useNavigate } from 'react-router-dom'
 import { getProcess, updateProcess, processHasApplications } from "../../services/firebase/firebase-firestore"
-import { Link } from "react-router-dom"
+import { validateProcessForm, sanitizeInput } from "../utils/validators/processFormsValidators"
+import styled from 'styled-components'
 import Input from "../components/Input"
 import TextArea from "../components/TextArea"
 import Button from "../components/Button"
@@ -11,6 +11,7 @@ import Box from "../components/Box"
 import Table from "../components/Table"
 import RegistrationFieldModal from "../components/RegistrationFieldModal"
 import ImportProcessFieldModal from "../components/ImportProcessFieldModal"
+import AlertBox from "../components/AlertBox"
 
 const EditProcessBox = styled(Box)`
     margin: 1em;
@@ -95,7 +96,7 @@ const ResearchFieldRequiredLabel = styled(BoldLabel)`
 
 const ButtonContainer = styled.div`
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     gap: 1em;
     flex-wrap: wrap;
 
@@ -135,6 +136,9 @@ const ResearchFieldMessage = styled.p`
 
 const ErrorMessage = styled.p`
     color: red;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2em;
 `
 
 function mapFieldType(type) {
@@ -167,6 +171,13 @@ export default function EditProcess() {
         registrationFieldsInfo: []
     })
 
+    const [error, setError] = React.useState(null)
+
+    const [isImportModalOpen, setIsImportModalOpen] = React.useState(false)
+    const [isRegistrationModalOpen, setIsRegistrationModalOpen] = React.useState(false)
+    const [fieldBeingEdited, setFieldBeingEdited] = React.useState(null)
+    const [isEditModalOpen, setIsEditModalOpen] = React.useState(false)
+
     const [loading, setLoading] = React.useState(true)
 
     const [hasApplications, setHasApplications] = React.useState(false)
@@ -197,33 +208,83 @@ export default function EditProcess() {
         }
     }, [selectionProcessData.endDate])
 
-    const [isImportModalOpen, setIsImportModalOpen] = React.useState(false)
-    const [isRegistrationModalOpen, setIsRegistrationModalOpen] = React.useState(false)
-    const [fieldBeingEdited, setFieldBeingEdited] = React.useState(null)
-    const [isEditModalOpen, setIsEditModalOpen] = React.useState(false)
+    // async function handleSubmit(event) {
+    //     event.preventDefault()
+    //     try {
+    //         // Destructuring do id do objeto do getDoc() do Firebase e 
+    //         // criando um novo objeto sem o id para evitar redundância
+    //         const { id, ...dataWithoutId } = selectionProcessData
+    //         await updateProcess(id, dataWithoutId)
+    //         console.log("Processo editado com sucesso!")
+    //         navigate(`/processes/${id}`, { replace: true })
+    //     } catch (error) {
+    //         console.error("Erro ao editar processo: ", error)
+    //     }
+    // }
 
     async function handleSubmit(event) {
         event.preventDefault()
+        
+        // Calcula a data de hoje para a validação
+        const today = new Date().toISOString().split('T')[0]
+        
+        // Valida os dados do formulário usando a função importada
+        const validationError = validateProcessForm(selectionProcessData, today);
+        if (validationError) {
+            setError({ message: validationError })
+            return
+        }
+        
+        // Sanitiza os campos de texto para prevenir entradas maliciosas
+        const sanitizedData = {
+            ...selectionProcessData,
+            name: sanitizeInput(selectionProcessData.name),
+            miniDescription: sanitizeInput(selectionProcessData.miniDescription),
+            description: sanitizeInput(selectionProcessData.description)
+        }
+        
         try {
-            // Destructuring do id do objeto do getDoc() do Firebase e 
-            // criando um novo objeto sem o id para evitar redundância
-            const { id, ...dataWithoutId } = selectionProcessData
+            // Remove o id do objeto para evitar redundância na atualização
+            const { id, ...dataWithoutId } = sanitizedData
             await updateProcess(id, dataWithoutId)
             console.log("Processo editado com sucesso!")
             navigate(`/processes/${id}`, { replace: true })
         } catch (error) {
             console.error("Erro ao editar processo: ", error)
+            setError(error)
+            alert("Erro ao editar processo: " + error.message)
         }
     }
+      
+    // function handleChange(event) {
+    //     const { name, value, type, checked } = event.target
+    //     if (name === "endDate" && new Date(value) <= new Date(selectionProcessData.startDate)) {
+    //         alert("A data de término deve ser maior que a data de início.")
+    //         return
+    //     }
+    //     setSelectionProcessData(prevSelectionProcessData => ({
+    //         ...prevSelectionProcessData,
+    //         [name]: type === 'checkbox' ? checked : value
+    //     }))
+    // }
 
     function handleChange(event) {
-        const { name, value, type, checked } = event.target
-        if (name === "endDate" && new Date(value) <= new Date(selectionProcessData.startDate)) {
-            alert("A data de término deve ser maior que a data de início.")
+        const {name, value, type, checked} = event.target
+
+        // A data de término deve ser posterior à data de início
+        if (name === "endDate" && selectionProcessData.startDate && new Date(value) <= new Date(selectionProcessData.startDate)) {
+            alert("A data de término deve ser posterior à data de início")
             return
         }
-        setSelectionProcessData(prevSelectionProcessData => ({
-            ...prevSelectionProcessData,
+
+        // A data de início deve ser anterior à data de término
+        if (name === "startDate" && selectionProcessData.endDate && new Date(value) >= new Date(selectionProcessData.endDate)) {
+            alert("A data de início deve ser anterior à data de término")
+            return
+        }
+
+        setSelectionProcessData(prev => ({
+            ...prev,
             [name]: type === 'checkbox' ? checked : value
         }))
     }
@@ -438,7 +499,9 @@ export default function EditProcess() {
                         }))}
                         onEditField={handleEditField}
                         onDeleteField={handleDeleteField}
-                        />
+                    />
+                    {error && <ErrorMessage>{error.message}</ErrorMessage>}
+                    {error && <AlertBox message={error.message} onClose={() => setError(null)} />}
                     <ButtonContainer>
                         <Link to={`/processes/${id}`}>
                             <Button type="button">
@@ -452,29 +515,29 @@ export default function EditProcess() {
                 {
                     isRegistrationModalOpen && (
                         <RegistrationFieldModal 
-                        onClose={() => setIsRegistrationModalOpen(false)} 
-                        onSave={handleAddField} 
+                            onClose={() => setIsRegistrationModalOpen(false)} 
+                            onSave={handleAddField} 
                         />
                     )
                 }
                 {
                     isImportModalOpen && (
                         <ImportProcessFieldModal 
-                        onClose={() => setIsImportModalOpen(false)} 
-                        onImport={handleImportFields} 
+                            onClose={() => setIsImportModalOpen(false)} 
+                            onImport={ handleImportFields } 
                         />
                     )
                 }
                 {
                     isEditModalOpen && (
                         <RegistrationFieldModal 
-                        onClose={() => setIsEditModalOpen(false)} 
-                        onSave={handleSaveEditedField} 
-                        fieldToEdit={fieldBeingEdited}
+                            onClose={() => setIsEditModalOpen(false)} 
+                            onSave={ handleSaveEditedField } 
+                            fieldToEdit={ fieldBeingEdited }
                         />
                     )
                 }
             </EditProcessFormContainer>
         </EditProcessBox>
-    );
+    )
 }

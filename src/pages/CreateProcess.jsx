@@ -1,6 +1,8 @@
 import React from "react"
+import { Link, useNavigate } from "react-router-dom"
+import { createProcess } from "../../services/firebase/firebase-firestore"
+import { validateProcessForm, sanitizeInput } from "../utils/validators/processFormsValidators"
 import { styled } from "styled-components"
-import { Link } from "react-router-dom"
 import Input from "../components/Input"
 import TextArea from "../components/TextArea"
 import Button from "../components/Button"
@@ -8,7 +10,7 @@ import Box from "../components/Box"
 import Table from "../components/Table"
 import RegistrationFieldModal from "../components/RegistrationFieldModal"
 import ImportProcessFieldModal from "../components/ImportProcessFieldModal"
-import { createProcess } from "../../services/firebase/firebase-firestore"
+import AlertBox from "../components/AlertBox"
 
 const CreateProcessBox = styled(Box)`
     min-width: 300px; // Adicionando min-width
@@ -83,7 +85,7 @@ const ResearchFieldRequiredLabel = styled(BoldLabel)`
 
 const ButtonContainer = styled.div`
     display: flex;
-    justify-content: space-between;
+    justify-content: space-evenly;
     gap: 1em;
     flex-wrap: wrap;
 
@@ -118,6 +120,9 @@ const RedButton = styled(Button)`
 
 const ErrorMessage = styled.p`
     color: red;
+    text-align: center;
+    font-weight: bold;
+    font-size: 1.2em;
 `
 
 function mapFieldType(type) {
@@ -157,22 +162,75 @@ export default function CreateProcess() {
     const [fieldBeingEdited, setFieldBeingEdited] = React.useState(null)
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false)
 
+    const navigate = useNavigate()
+
+    // Calcula a data de hoje para validação
+    const today = new Date().toISOString().split('T')[0]
+
+    // Calcula o valor mínimo para a data de término com base na data de início
+    let minEndDate = processFormData.startDate ? new Date(processFormData.startDate) : null
+    if(minEndDate) {
+        minEndDate.setDate(minEndDate.getDate() + 1)
+        minEndDate = minEndDate.toISOString().split('T')[0]
+    }
+
+    // React.useEffect(() => {
+    //     if (processFormData.endDate) {
+    //         const endDate = new Date(processFormData.endDate)
+    //         endDate.setDate(endDate.getDate() + 10)
+    //         setProcessFormData(prevProcessFormData => ({
+    //             ...prevProcessFormData,
+    //             endAnalysisDate: endDate.toISOString().split('T')[0]
+    //         }))
+    //     }
+    // }, [processFormData.endDate])
+
     React.useEffect(() => {
         if (processFormData.endDate) {
             const endDate = new Date(processFormData.endDate)
+            // Define a data limite de análise como 10 dias após o término das inscrições
             endDate.setDate(endDate.getDate() + 10)
-            setProcessFormData(prevProcessFormData => ({
-                ...prevProcessFormData,
+            setProcessFormData(prev => ({
+                ...prev,
                 endAnalysisDate: endDate.toISOString().split('T')[0]
             }))
         }
     }, [processFormData.endDate])
 
+    // async function handleSubmit(event) {
+    //     event.preventDefault()
+    //     try {
+    //         await createProcess(processFormData, processFormData.researchFieldRequired)
+    //         console.log("Processo criado com sucesso!")
+    //         navigate("/processes")
+    //     } catch (error) {
+    //         console.error("Erro ao criar processo: ", error)
+    //         setError(error)
+    //         alert("Erro ao criar processo: " + error.message)
+    //     }
+    // }
+
     async function handleSubmit(event) {
         event.preventDefault()
+
+        const validationError = validateProcessForm(processFormData, today)
+        if (validationError) {
+            setError({message: validationError})
+            return
+        }
+
+        // Sanitiza os campos de texto usando a função importada
+        const sanitizedData = {
+            ...processFormData,
+            name: sanitizeInput(processFormData.name),
+            miniDescription: sanitizeInput(processFormData.miniDescription),
+            description: sanitizeInput(processFormData.description),
+        }
+
         try {
-            await createProcess(processFormData, processFormData.researchFieldRequired)
+            await createProcess(sanitizedData, sanitizedData.researchFieldRequired)
             console.log("Processo criado com sucesso!")
+            navigate("/processes")
         } catch (error) {
             console.error("Erro ao criar processo: ", error)
             setError(error)
@@ -182,14 +240,35 @@ export default function CreateProcess() {
 
     console.log(processFormData)
 
+    // function handleChange(event) {
+    //     const {name, value, type, checked} = event.target;
+    //     if (name === "endDate" && new Date(value) <= new Date(processFormData.startDate)) {
+    //         alert("A data de término deve ser após a data de início")
+    //         return
+    //     }
+    //     setProcessFormData(prevProcessFormData => ({
+    //         ...prevProcessFormData,
+    //         [name]: type === 'checkbox' ? checked : value
+    //     }))
+    // }
+
     function handleChange(event) {
-        const {name, value, type, checked} = event.target;
-        if (name === "endDate" && new Date(value) <= new Date(processFormData.startDate)) {
-            alert("A data de término deve ser após a data de início.")
+        const {name, value, type, checked} = event.target
+
+        // A data de término deve ser posterior à data de início
+        if (name === "endDate" && processFormData.startDate && new Date(value) <= new Date(processFormData.startDate)) {
+            alert("A data de término deve ser posterior à data de início")
             return
         }
-        setProcessFormData(prevProcessFormData => ({
-            ...prevProcessFormData,
+
+        // A data de início deve ser anterior à data de término
+        if (name === "startDate" && processFormData.endDate && new Date(value) >= new Date(processFormData.endDate)) {
+            alert("A data de início deve ser anterior à data de término")
+            return
+        }
+
+        setProcessFormData(prev => ({
+            ...prev,
             [name]: type === 'checkbox' ? checked : value
         }))
     }
@@ -359,7 +438,7 @@ export default function CreateProcess() {
                     <TableHeaderContainer>
                         <h2>DADOS SOLICITADOS AO CANDIDATO</h2>
                         <ButtonContainer>
-                            <Button 
+                            <Button
                                 type="button" 
                                 onClick={() => setIsImportModalOpen(true)}
                             >
@@ -384,6 +463,7 @@ export default function CreateProcess() {
                         onDeleteField={handleDeleteField}
                     />
                     {error && <ErrorMessage>{error.message}</ErrorMessage>}
+                    {error && <AlertBox message={error.message} onClose={() => setError(null)} />}
                     <ButtonContainer>
                         <Link to="/processes">
                             <Button type="button">
@@ -421,5 +501,5 @@ export default function CreateProcess() {
                 }
             </CreateProcessFormContainer>
         </CreateProcessBox>
-    );
+    )
 }

@@ -62,7 +62,11 @@ const RedButton = styled(Button)`
   }
 `
 
-export default function DeleteModal({ setIsModalOpen, handleDelete }) {
+const ErrorMessage= styled.p`
+    color: red;
+`
+
+export default function DeleteModal({ setIsModalOpen, handleDelete, error }) {
     
     return (
         <ModalOverlay>
@@ -70,6 +74,7 @@ export default function DeleteModal({ setIsModalOpen, handleDelete }) {
                 <TitleContainer>
                     <h3>TEM CERTEZA QUE DESEJA EXCLUIR?</h3>
                 </TitleContainer>
+                {error && <ErrorMessage>{error}</ErrorMessage>}
                 <ButtonContainer>
                     <Button onClick={() => setIsModalOpen(false)}>
                         CANCELAR

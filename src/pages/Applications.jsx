@@ -4,7 +4,7 @@ import { jsPDF } from "jspdf"
 import autoTable from "jspdf-autotable"
 import styled from "styled-components"
 import { getApplications, loadProcess } from "../../services/firebase/firebase-firestore"
-import { formatFirestoreDate } from "../../formatters/formatters"
+import { formatFirestoreDate } from "../utils/formatters/formatters"
 import Box from "../components/Box"
 import Button from "../components/Button"
 import ApplicationsTable from "../components/ApplicationsTable"
@@ -62,6 +62,7 @@ const InfoContainer = styled.div`
 
 const TablesContainer = styled.div`
     padding: 0 1em 1em 1em;
+
     & h2 {
         text-align: center;
     }

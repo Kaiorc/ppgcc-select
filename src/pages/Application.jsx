@@ -2,11 +2,11 @@ import React from "react"
 import ReactLoading from 'react-loading'
 import { useParams, useLocation, Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
-import { styled } from "styled-components"
 import { loadProcess, addApplication, userHasApplication } from "../../services/firebase/firebase-firestore"
 import { uploadFileToStorage } from "../../services/appwrite/appwrite-storage"
+import { researchAreas } from "../utils/researchAreas"
 import useAuth from "../hooks/useAuth"
-import { researchAreas } from "../../config"
+import { styled } from "styled-components"
 import Input from "../components/Input"
 import Select from "../components/Select"
 import Button from "../components/Button"
@@ -139,8 +139,6 @@ export default function Application() {
     const { register, handleSubmit, watch, resetField, formState: { errors } } = useForm({ defaultValues: { researchArea: "" } })
     const { displayName, uid, userEmail } = useAuth()
 
-
-
     const { id } = useParams()
     const location = useLocation()
     const navigate = useNavigate()
@@ -152,15 +150,15 @@ export default function Application() {
 
             // Verificar se está fora do período de inscrição
             if (!isWithinApplicationPeriod(process.startDate, process.endDate)) {
-                alert("As inscrições não estão abertas no momento.");
-                navigate(`/processes/${id}`);
+                alert("As inscrições não estão abertas no momento.")
+                navigate(`/processes/${id}`)
             }
 
             // Verificar se o usuário já está inscrito
             const isRegistered = await userHasApplication(id, uid)
             if (isRegistered) {
-                alert("Você já está inscrito neste processo.");
-                navigate(`/processes/${id}`);
+                alert("Você já está inscrito neste processo.")
+                navigate(`/processes/${id}`)
             }
 
             setLoading(false)
@@ -170,7 +168,7 @@ export default function Application() {
 
     function isResearchAreaSelected() {
         const value = watch("researchArea");
-        return value !== undefined && value !== "";
+        return value !== undefined && value !== ""
     }
 
     // console.log(isResearchAreaSelected())
@@ -221,7 +219,7 @@ export default function Application() {
     // Cada campo é um label que contém um input (com validação), um botão para limpar o campo (caso seja 
     // um input do tipo file), e uma mensagem de erro (caso exista).
     const inputElements = selectionProcess?.registrationFieldsInfo?.map((info) => {
-        const isFile = info.type === "file";
+        const isFile = info.type === "file"
     
         const validationRules = isFile
             ? {
@@ -230,10 +228,10 @@ export default function Application() {
               }
             : {
                   required: info.required ? `${info.name} é obrigatório.` : false,
-              };
+              }
     
-        const fieldValue = watch(info.name);
-        const isModified = fieldValue && fieldValue.length > 0;
+        const fieldValue = watch(info.name)
+        const isModified = fieldValue && fieldValue.length > 0
     
         return (
             <BoldLabel htmlFor={info.name} key={info.name}>
