@@ -1,7 +1,7 @@
 import React from 'react'
 import { Link, useParams, useNavigate } from 'react-router-dom'
 import { useForm } from "react-hook-form"
-import { addProcessNews } from '../../services/firebase/firebase-firestore'
+import { addProcessNews, getProcess } from '../../services/firebase/firebase-firestore'
 import styled from 'styled-components'
 import useAuth from '../hooks/useAuth'
 import Input from '../components/Input'
@@ -81,17 +81,29 @@ const ButtonContainer = styled.div`
 export default function CreateNews() {
     const { register, handleSubmit, watch, formState: { errors } } = useForm()
 
-    const { id } = useParams()
+    const { processId } = useParams()
 
     const navigate = useNavigate()
 
     const { displayName } = useAuth()
 
+    // Verifica se o processo existe assim que o componente monta
+    React.useEffect(() => {
+        async function checkProcessExists() {
+            const process = await getProcess(processId)
+            // Redireciona o usuário para a página de erro se o processo não existir
+            if (!process) {
+                navigate("/not-found", { replace: true })
+            }
+        }
+        checkProcessExists()
+    }, [processId, navigate])
+
     async function onSubmit(data) {
         console.log(data)
         try {
-            await addProcessNews(id, displayName, data)
-            navigate(`/processes/${id}/news`, { replace: true })
+            await addProcessNews(processId, displayName, data)
+            navigate(`/processes/${processId}/news`, { replace: true })
         }
         catch (error) {
             console.error(error)
@@ -129,7 +141,7 @@ export default function CreateNews() {
                     />
                 </BoldLabel>
                 <ButtonContainer>
-                    <Link to={`/processes/${id}/news`}>
+                    <Link to={`/processes/${processId}/news`}>
                         <Button type="button">
                             CANCELAR
                         </Button>

@@ -34,6 +34,10 @@ export async function getProcess(id) {
     const docRef = doc(db, "processes", id) 
     // Obtém o documento do Firestore
     const snapshot = await getDoc(docRef)
+    // Retorna null caso o documento não exista
+    if (!snapshot.exists()) {
+        return null
+    }
     
     // If we dont do it this way, the object will not have the "id" property
     return {
@@ -414,33 +418,33 @@ export async function getUserApplication(processId, uid) {
 // Função para adicionar um aviso a um processo
 export async function addProcessNews(processId, publisherName, data) {
     try {
-        const newsCollectionRef = collection(db, `processes/${processId}/news`);
-        await addDoc(newsCollectionRef, { ...data, publisherName: publisherName, createdAt: serverTimestamp() });
+        const newsCollectionRef = collection(db, `processes/${processId}/news`)
+        await addDoc(newsCollectionRef, { ...data, publisherName: publisherName, createdAt: serverTimestamp() })
     } catch (error) {
-        console.error("Erro ao adicionar aviso:", error);
-        throw error;
+        console.error("Erro ao adicionar aviso:", error)
+        throw error
     }
 }
 
-// Função para atualizar um aviso de um processo
+// Função para atualizar um aviso de um processo e atualizar a data de atualização
 export async function updateProcessNews(processId, newsId, data) {
     try {
-        const newsDocRef = doc(db, `processes/${processId}/news`, newsId);
-        await updateDoc(newsDocRef, { ...data });
+        const newsDocRef = doc(db, `processes/${processId}/news`, newsId)
+        await updateDoc(newsDocRef, { ...data, updatedAt: serverTimestamp() })
     } catch (error) {
-        console.error("Erro ao atualizar aviso:", error);
-        throw error;
+        console.error("Erro ao atualizar aviso:", error)
+        throw error
     }
 }
 
 // Função para deletar um aviso de um processo
 export async function deleteProcessNews(processId, newsId) {
     try {
-        const newsDocRef = doc(db, `processes/${processId}/news`, newsId);
-        await deleteDoc(newsDocRef);
+        const newsDocRef = doc(db, `processes/${processId}/news`, newsId)
+        await deleteDoc(newsDocRef)
     } catch (error) {
-        console.error("Erro ao deletar aviso:", error);
-        throw error;
+        console.error("Erro ao deletar aviso:", error)
+        throw error
     }
 }
 

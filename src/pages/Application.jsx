@@ -139,32 +139,37 @@ export default function Application() {
     const { register, handleSubmit, watch, resetField, formState: { errors } } = useForm({ defaultValues: { researchArea: "" } })
     const { displayName, uid, userEmail } = useAuth()
 
-    const { id } = useParams()
+    const { processId } = useParams()
     const location = useLocation()
     const navigate = useNavigate()
 
     React.useEffect(() => {
         async function loadData() {
-            const process = await loadProcess(id)
+            const process = await loadProcess(processId)
+            // Se o processo não existir, o usuário é redirecionado para a página de erro
+            if (!process) {
+                navigate("/not-found")
+                return
+            }
             setSelectionProcess(process)
 
             // Verificar se está fora do período de inscrição
             if (!isWithinApplicationPeriod(process.startDate, process.endDate)) {
                 alert("As inscrições não estão abertas no momento.")
-                navigate(`/processes/${id}`)
+                navigate(`/processes/${processId}`)
             }
 
             // Verificar se o usuário já está inscrito
-            const isRegistered = await userHasApplication(id, uid)
+            const isRegistered = await userHasApplication(processId, uid)
             if (isRegistered) {
                 alert("Você já está inscrito neste processo.")
-                navigate(`/processes/${id}`)
+                navigate(`/processes/${processId}`)
             }
 
             setLoading(false)
         }
         loadData()
-    }, [id, navigate, uid])
+    }, [processId, navigate, uid])
 
     function isResearchAreaSelected() {
         const value = watch("researchArea");
@@ -206,8 +211,8 @@ export default function Application() {
             console.log(filteredData)
 
             // Envia os dados processados para a função addApplication
-            await addApplication(id, filteredData, displayName, uid, userEmail)
-            navigate(`/processes/${id}`, { replace: true })
+            await addApplication(processId, filteredData, displayName, uid, userEmail)
+            navigate(`/processes/${processId}`, { replace: true })
         } catch (error) {
             console.error("Erro fazer inscrição: ", error)
             setError(error)
@@ -302,7 +307,8 @@ export default function Application() {
                                     </BoldLabel>
                                     ) : (
                                         inputElements
-                                    )}
+                                    )
+                                }
                                     {selectionProcess?.researchFieldRequired && isResearchAreaSelected() && inputElements}
                                 </InputContainer>
                                 {(!selectionProcess?.researchFieldRequired || isResearchAreaSelected()) && (

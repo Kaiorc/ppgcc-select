@@ -183,19 +183,24 @@ export default function EditProcess() {
     const [hasApplications, setHasApplications] = React.useState(false)
 
     const navigate = useNavigate()
-    const { id } = useParams()
+    const { processId } = useParams()
 
     React.useEffect(() => {
         async function loadProcess() {
-            const data = await getProcess(id)
-            setSelectionProcessData(data)
-            const applications = await processHasApplications(id)
+            const process = await getProcess(processId)
+            setSelectionProcessData(process)
+            // Se o processo não existir, o usuário é redirecionado para a página de erro
+            if (!process) {
+                navigate("/not-found")
+                return
+            }
+            const applications = await processHasApplications(processId)
             // console.log("hasApplications", applications)
             setHasApplications(applications)
             setLoading(false)
         }
         loadProcess()
-    }, [id])
+    }, [processId])
     
     React.useEffect(() => {
         if (selectionProcessData.endDate) {
@@ -245,10 +250,10 @@ export default function EditProcess() {
         
         try {
             // Remove o id do objeto para evitar redundância na atualização
-            const { id, ...dataWithoutId } = sanitizedData
-            await updateProcess(id, dataWithoutId)
+            const { processId, ...dataWithoutId } = sanitizedData
+            await updateProcess(processId, dataWithoutId)
             console.log("Processo editado com sucesso!")
-            navigate(`/processes/${id}`, { replace: true })
+            navigate(`/processes/${processId}`, { replace: true })
         } catch (error) {
             console.error("Erro ao editar processo: ", error)
             setError(error)
@@ -503,7 +508,7 @@ export default function EditProcess() {
                     {error && <ErrorMessage>{error.message}</ErrorMessage>}
                     {error && <AlertBox message={error.message} onClose={() => setError(null)} />}
                     <ButtonContainer>
-                        <Link to={`/processes/${id}`}>
+                        <Link to={`/processes/${processId}`}>
                             <Button type="button">
                                 CANCELAR
                             </Button>

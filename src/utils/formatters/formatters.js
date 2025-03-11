@@ -1,19 +1,21 @@
 
 export function formatFirstTwoNames(fullName) {
+    if (!fullName) return ""
     const names = fullName.split(" ")
     let firstTwoNames = names[0]
-
+  
     for (let i = 1; i < names.length; i++) {
-        if (names[i].length >= 3) {
-            firstTwoNames += " " + names[i]
-            break
-        }
+      if (names[i].length >= 3) {
+        firstTwoNames += " " + names[i]
+        break
+      }
     }
-
+  
     return firstTwoNames
-}
+  }
 
 export function formatFirestoreDate(date) {
+    if (!date) return "" // ou algum valor padrão
     const [year, month, day] = date.split('-')
     return `${day}/${month}/${year}`
 }

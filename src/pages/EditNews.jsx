@@ -92,31 +92,33 @@ export default function EditNews() {
 
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm()
 
-    const { id, newsId } = useParams()
+    const { processId, newsId } = useParams()
 
     const navigate = useNavigate()
 
     React.useEffect(() => {
         async function loadData() {
             try {
-                const news = await getSpecificProcessNews(id, newsId)
-                if (news) {
-                    setValue("title", news.title || "")
-                    setValue("body", news.body || "")
-                }
+                const news = await getSpecificProcessNews(processId, newsId)
+                // Caso a função retorne com sucesso, preenche os campos do formulário
+                setValue("title", news.title || "")
+                setValue("body", news.body || "")
                 setLoading(false)
-            }
-            catch (error) {
-                console.error(error)
+            } catch (error) {
+                console.error("Erro ao carregar o aviso:", error)
+                // Se ocorrer erro (por exemplo, aviso não encontrado), redireciona para a página de erro
+                navigate("/not-found", { replace: true })
+            } finally {
+                setLoading(false)
             }
         }
         loadData()
-    }, [id, newsId, setValue])
+    }, [processId, newsId, setValue, navigate])
 
     async function onSubmit(data) {
         try {
-            await updateProcessNews(id, newsId, data)
-            navigate(`/processes/${id}/news/${newsId}`, { replace: true })
+            await updateProcessNews(processId, newsId, data)
+            navigate(`/processes/${processId}/news/${newsId}`, { replace: true })
         }
         catch (error) {
             console.error(error)
@@ -169,7 +171,7 @@ export default function EditNews() {
                     />
                 </BoldLabel>
                 <ButtonContainer>
-                    <Link to={`/processes/${id}/news/${newsId}`}>
+                    <Link to={`/processes/${processId}/news/${newsId}`}>
                         <Button type="button">
                             CANCELAR
                         </Button>

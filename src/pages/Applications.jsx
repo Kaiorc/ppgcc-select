@@ -120,19 +120,24 @@ export default function Applications() {
     const [applications, setApplications] = React.useState([])
     const [selectionProcess, setSelectionProcess] = React.useState(null)
 
-    const { id } = useParams()
+    const { processId } = useParams()
     const navigate = useNavigate()
 
     React.useEffect(() => {
         async function loadData() {
-            const applications = await getApplications(id)
+            const process = await loadProcess(processId)
+            setSelectionProcess(process)
+            // Se o processo não existir, o usuário é redirecionado para a página de erro
+            if (!process) {
+                navigate("/not-found")
+                return
+            }
+            const applications = await getApplications(processId)
             const formattedApplications = formatCreatedAt(applications)
             setApplications(formattedApplications)
-            const process = await loadProcess(id)
-            setSelectionProcess(process)
         }
         loadData()
-    }, [id])
+    }, [processId])
 
     // Verifica se não há inscrições no processo seletivo
     const isApplicationsEmpty = isApplicationsStateEmpty(applications)

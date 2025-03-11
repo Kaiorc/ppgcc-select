@@ -175,7 +175,7 @@ export default function ProcessNewsDetail() {
     const [isModalOpen, setIsModalOpen] = React.useState(false)
     const [deleteError, setDeleteError] = React.useState(null);
 
-    const { id, newsId } = useParams()
+    const { processId, newsId } = useParams()
     const navigate = useNavigate()
 
     const isAdmin = useRole()
@@ -183,21 +183,23 @@ export default function ProcessNewsDetail() {
     React.useEffect(() => {
         async function loadData() {
             try {
-                const newsData = await getSpecificProcessNews(id, newsId)
+                const newsData = await getSpecificProcessNews(processId, newsId)
                 setNews(newsData)
-                setLoading(false)
             } catch (error) {
                 console.error("Erro ao obter detalhes do aviso:", error)
+                // Redireciona para a página de erro se o processo ou o aviso não existir
+                navigate("/not-found", { replace: true })
+            } finally {
                 setLoading(false)
             }
         }
         loadData()
-    }, [id, newsId])
-
+    }, [processId, newsId, navigate])
+    
     async function handleDelete() {
         try {
-            await deleteProcessNews(id, newsId)
-            navigate(`/processes/${id}/news`, { replace: true })
+            await deleteProcessNews(processId, newsId)
+            navigate(`/processes/${processId}/news`, { replace: true })
         } catch (error) {
             console.error("Erro ao excluir aviso:", error)
         }
@@ -226,11 +228,11 @@ export default function ProcessNewsDetail() {
                 <TitleContainer>
                     <News>AVISO</News>
                     <Title>{news.title}</Title>
-                    <ProcessName>{id}</ProcessName>
+                    <ProcessName>{processId}</ProcessName>
                     {hasAdminButtons && (
                             <ButtonContainer>
                                 <RedButton onClick={() => setIsModalOpen(true)}>EXCLUIR</RedButton>
-                                <Link to={`/processes/${id}/news/${newsId}/edit-news`}>
+                                <Link to={`/processes/${processId}/news/${newsId}/edit-news`}>
                                     <Button>EDITAR</Button>
                                 </Link>
                             </ButtonContainer>
@@ -243,6 +245,12 @@ export default function ProcessNewsDetail() {
                             <h3>Publicado em:</h3>
                             <Info>{formatTimestamp(news.createdAt)}</Info>
                         </InfoContainer>
+                        {news.updatedAt && (
+                            <InfoContainer>
+                                <h3>Editado em:</h3>
+                                <Info>{formatTimestamp(news.updatedAt)}</Info>
+                            </InfoContainer>
+                        )}
                         <InfoContainer>
                             <h3>Publicado por:</h3>
                             <Info>{news.publisherName}</Info>

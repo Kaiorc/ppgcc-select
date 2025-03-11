@@ -180,7 +180,7 @@ export default function Process() {
     // const [error, setError] = React.useState(null)
     const [deleteError, setDeleteError] = React.useState(null);
 
-    const { id } = useParams()
+    const { processId } = useParams()
     const location = useLocation()
     const navigate = useNavigate()
     const isAdmin = useRole()
@@ -188,16 +188,22 @@ export default function Process() {
 
     React.useEffect(() => {
         async function loadData() {
-            const process = await loadProcess(id)
+            const process = await loadProcess(processId)
+            // Se o processo não existir, o usuário é redirecionado para a página de erro
+            if (!process) {
+                navigate("/not-found")
+                return
+            }
             setSelectionProcess(process)
             if (!isAdmin && uid) {
-                const registered = await userHasApplication(id, uid)
+                const registered = await userHasApplication(processId, uid)
                 setIsUserRegistered(registered)
             }
             setLoading(false)
+            console.log("Processo carregado:", process)
         }
         loadData()
-    }, [id, uid])
+    }, [processId, uid])
 
     function checkSelectionProcessAndApplicationPeriod() {
         if (!selectionProcess) return false
@@ -222,8 +228,8 @@ export default function Process() {
 
     async function handleDeleteApplication() {
         try {
-            await deleteApplication(id, uid)
-            // Após a deleção, você pode redirecionar o usuário para outra rota, se necessário
+            await deleteApplication(processId, uid)
+            // Após a deleção,o usuário é redirecionado para outra rota
             navigate("/processes")
         } catch (error) {
             setDeleteError(error.message);
@@ -269,7 +275,12 @@ export default function Process() {
                             ) : (
                                 isUserRegistered ? (
                                     <TitleButtonContainer>
-                                        <RedButton onClick={() => setIsModalOpen(true)}>CANCELAR INSCRIÇÃO</RedButton>
+                                        <RedButton 
+                                            type="button"
+                                            onClick={() => setIsModalOpen(true)}
+                                        >
+                                            DESINSCREVER-SE
+                                        </RedButton>
                                         <RegisteredMessage aria-live="polite">
                                             VOCÊ JÁ ESTÁ INSCRITO(A)
                                         </RegisteredMessage>
@@ -288,14 +299,14 @@ export default function Process() {
                     </TitleContainer>
                     <ListNav>
                         <NavLink
-                            to={`/processes/${id}`}
+                            to={`/processes/${processId}`}
                             end
                             className={({ isActive }) => (isActive ? "active" : "")}
                         >
                             INFORMAÇÕES
                         </NavLink>
                         <NavLink
-                            to={`/processes/${id}/news`}
+                            to={`/processes/${processId}/news`}
                             className={({ isActive }) => (isActive ? "active" : "")}
                         >
                             ATUALIZAÇÕES
