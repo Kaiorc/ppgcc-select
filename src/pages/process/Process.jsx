@@ -1,7 +1,8 @@
 import React from "react"
 import ReactLoading from 'react-loading'
 import { Link, NavLink, useNavigate, useParams, useLocation, Outlet } from "react-router-dom"
-import { loadProcess, userHasApplication, deleteProcess, deleteApplication } from "../../../services/firebase/firebase-firestore"
+import { loadProcess, getUserApplication, userHasApplication, deleteProcess, deleteApplication } from "../../../services/firebase/firebase-firestore"
+import { deleteFile } from "../../../services/appwrite/appwrite-storage"
 import styled from "styled-components"
 import useAuth from "../../hooks/useAuth"
 import useRole from "../../hooks/useRole"
@@ -228,12 +229,26 @@ export default function Process() {
 
     async function handleDeleteApplication() {
         try {
-            await deleteApplication(processId, uid)
-            // Após a deleção,o usuário é redirecionado para outra rota
-            navigate("/processes")
+          // Busca os dados da inscrição do candidato
+          const applicationInfo = await getUserApplication(processId, uid)
+          
+          // Itera por cada campo da inscrição
+          for (const [key, value] of Object.entries(applicationInfo)) {
+            // Se o campo for um objeto que contém os dados do arquivo
+            if (value && typeof value === 'object' && value.format && value.id) {
+              // Tenta deletar o arquivo no Appwrite usando o id
+              await deleteFile(value.id)
+            }
+          }
+          
+          // Deleta a inscrição do Firebase
+          await deleteApplication(processId, uid)
+          
+          // Redireciona o candidato após a deleção
+          navigate("/processes")
         } catch (error) {
-            setDeleteError(error.message);
-            console.error("Erro ao deletar inscrição:", error)
+          setDeleteError(error.message)
+          console.error("Erro ao deletar inscrição:", error)
         }
     }
 
@@ -255,65 +270,65 @@ export default function Process() {
     return (
         <ProcessDetailContainer>
             {selectionProcess && (
-                <ProcessDetailBox>
-                    <TitleContainer $isCentered={shouldCenterTitle}>
-                        <h1>{selectionProcess.name}</h1>
-                        {
-                            hasAdminButtons ? (
-                                <TitleButtonContainer $gridLayout>
-                                    <Link to="applications">
-                                        <Button>INSCRIÇÕES</Button>
-                                    </Link>
-                                    <Link to="create-news">
-                                        <Button>+ATUALIZAÇÃO</Button>
-                                    </Link>
-                                    <Link to="edit-process">
-                                        <Button>EDITAR</Button>
-                                    </Link>
-                                    <RedButton onClick={() => setIsModalOpen(true)}>EXCLUIR</RedButton>
-                                </TitleButtonContainer>
-                            ) : (
-                                isUserRegistered ? (
-                                    <TitleButtonContainer>
-                                        <RedButton 
-                                            type="button"
-                                            onClick={() => setIsModalOpen(true)}
-                                        >
-                                            DESINSCREVER-SE
-                                        </RedButton>
-                                        <RegisteredMessage aria-live="polite">
-                                            VOCÊ JÁ ESTÁ INSCRITO(A)
-                                        </RegisteredMessage>
+                    <ProcessDetailBox>
+                        <TitleContainer $isCentered={shouldCenterTitle}>
+                            <h1>{selectionProcess.name}</h1>
+                            {
+                                hasAdminButtons ? (
+                                    <TitleButtonContainer $gridLayout>
+                                        <Link to="applications">
+                                            <Button>INSCRIÇÕES</Button>
+                                        </Link>
+                                        <Link to="create-news">
+                                            <Button>+ATUALIZAÇÃO</Button>
+                                        </Link>
+                                        <Link to="edit-process">
+                                            <Button>EDITAR</Button>
+                                        </Link>
+                                        <RedButton onClick={() => setIsModalOpen(true)}>EXCLUIR</RedButton>
                                     </TitleButtonContainer>
                                 ) : (
-                                    hasUserButton && (
+                                    isUserRegistered ? (
                                         <TitleButtonContainer>
-                                            <Link to="application">
-                                                <Button>INSCREVER-SE</Button>
-                                            </Link>
+                                            <RedButton 
+                                                type="button"
+                                                onClick={() => setIsModalOpen(true)}
+                                            >
+                                                DESINSCREVER-SE
+                                            </RedButton>
+                                            <RegisteredMessage aria-live="polite">
+                                                VOCÊ JÁ ESTÁ INSCRITO(A)
+                                            </RegisteredMessage>
                                         </TitleButtonContainer>
+                                    ) : (
+                                        hasUserButton && (
+                                            <TitleButtonContainer>
+                                                <Link to="application">
+                                                    <Button>INSCREVER-SE</Button>
+                                                </Link>
+                                            </TitleButtonContainer>
+                                        )
                                     )
                                 )
-                            )
-                        }
-                    </TitleContainer>
-                    <ListNav>
-                        <NavLink
-                            to={`/processes/${processId}`}
-                            end
-                            className={({ isActive }) => (isActive ? "active" : "")}
-                        >
-                            INFORMAÇÕES
-                        </NavLink>
-                        <NavLink
-                            to={`/processes/${processId}/news`}
-                            className={({ isActive }) => (isActive ? "active" : "")}
-                        >
-                            ATUALIZAÇÕES
-                        </NavLink>
-                    </ListNav>
-                    <Outlet context={{ selectionProcess }}/>
-                </ProcessDetailBox>
+                            }
+                        </TitleContainer>
+                        <ListNav>
+                            <NavLink
+                                to={`/processes/${processId}`}
+                                end
+                                className={({ isActive }) => (isActive ? "active" : "")}
+                            >
+                                INFORMAÇÕES
+                            </NavLink>
+                            <NavLink
+                                to={`/processes/${processId}/news`}
+                                className={({ isActive }) => (isActive ? "active" : "")}
+                            >
+                                ATUALIZAÇÕES
+                            </NavLink>
+                        </ListNav>
+                        <Outlet context={{ selectionProcess }}/>
+                    </ProcessDetailBox>
                 )
             }
             {isModalOpen && (

@@ -129,7 +129,7 @@ export default function Applications() {
             setSelectionProcess(process)
             // Se o processo não existir, o usuário é redirecionado para a página de erro
             if (!process) {
-                navigate("/not-found")
+                navigate("/not-found", { replace: true })
                 return
             }
             const applications = await getApplications(processId)

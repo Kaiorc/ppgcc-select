@@ -174,17 +174,6 @@ export default function CreateProcess() {
         minEndDate = minEndDate.toISOString().split('T')[0]
     }
 
-    // React.useEffect(() => {
-    //     if (processFormData.endDate) {
-    //         const endDate = new Date(processFormData.endDate)
-    //         endDate.setDate(endDate.getDate() + 10)
-    //         setProcessFormData(prevProcessFormData => ({
-    //             ...prevProcessFormData,
-    //             endAnalysisDate: endDate.toISOString().split('T')[0]
-    //         }))
-    //     }
-    // }, [processFormData.endDate])
-
     React.useEffect(() => {
         if (processFormData.endDate) {
             const endDate = new Date(processFormData.endDate)
@@ -196,19 +185,6 @@ export default function CreateProcess() {
             }))
         }
     }, [processFormData.endDate])
-
-    // async function handleSubmit(event) {
-    //     event.preventDefault()
-    //     try {
-    //         await createProcess(processFormData, processFormData.researchFieldRequired)
-    //         console.log("Processo criado com sucesso!")
-    //         navigate("/processes")
-    //     } catch (error) {
-    //         console.error("Erro ao criar processo: ", error)
-    //         setError(error)
-    //         alert("Erro ao criar processo: " + error.message)
-    //     }
-    // }
 
     async function handleSubmit(event) {
         event.preventDefault()

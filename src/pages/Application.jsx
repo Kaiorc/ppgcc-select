@@ -195,10 +195,12 @@ export default function Application() {
                     // Pega o primeiro arquivo da lista
                     const file = formData[key][0]
                     if (file) {
-                        // Upload no Appwrite Storage e obtém o fileId
+                        // Faz o upload no Appwrite Storage e retorna o id do arquivo no Appwrite
                         const fileId = await uploadFileToStorage(file)
-                        // Substitui o arquivo pelo fileId
-                        formData[key] = fileId
+                        // Define o formato: se for PDF, mantém "pdf"; se for png ou jpg, define como "image"
+                        const fileFormat = file.type === "application/pdf" ? "pdf" : "image"
+                        // Substitui o campo por um objeto contendo o formato e o id do arquivo
+                        formData[key] = { format: fileFormat, id: fileId }
                     }
                 }
             }

@@ -54,41 +54,41 @@ const GlobalStyle = createGlobalStyle`
 `
 
 export default function App() {
-  return (
-    <AuthProvider>
-      <GlobalStyle />
-        <BrowserRouter>
-          <Routes>
-            <Route path='/' element={<Layout />}>
-              <Route index element={<Login />} />
-              <Route path="/signin" element={<Signin />} />
-              <Route element={<AuthRequired />}>
-                <Route path="/processes" element={<Processes />}>
-                  <Route index element={<ActiveProcesses />} />
-                  <Route path="my-applications" element={<MyApplicationsProcesses />} />
-                  <Route path="inactive" element={<InactiveProcesses />} />
-                </Route>
-                <Route path="/processes/:processId" element={<Process />}>
-                  <Route index element={<ProcessDetail />} />
-                  <Route path="news" element={<ProcessNews />} />
-                </Route>
-                <Route path="/processes/:processId/news/:newsId" element={<ProcessNewsDetail />} />
-                <Route path="/processes/:processId/application" element={<Application />} />
-              </Route>
-              <Route element={<AuthRequired requiredRole="administrador"/>}>
-                <Route path="/processes/create-process" element={<CreateProcess />} />
-                <Route path="/processes/:processId/edit-process" element={<EditProcess />} />
-                <Route path="/processes/:processId/create-news" element={<CreateNews />} />
-                <Route path="/processes/:processId/news/:newsId/edit-news" element={<EditNews />} />
-                <Route path="/processes/:processId/applications" element={<Applications />} />
-                <Route path="/processes/:processId/applications/evaluate/:uid/view-document" element={<ViewDocument />} />
-                <Route path="/processes/:processId/applications/evaluate/:uid" element={<EvaluateApplication />} />
-              </Route>
-              <Route path="/not-authorized" element={<NotAuthorized />} />
-              <Route path="*" element={<NotFound />} /> 
-            </Route>
-          </Routes>
-        </BrowserRouter>
-    </AuthProvider>
-  )
+    return (
+        <AuthProvider>
+            <GlobalStyle />
+            <BrowserRouter>
+                <Routes>
+                    <Route path='/' element={<Layout />}>
+                        <Route index element={<Login />} />
+                        <Route path="/signin" element={<Signin />} />
+                        <Route element={<AuthRequired />}>
+                            <Route path="/processes" element={<Processes />}>
+                                <Route index element={<ActiveProcesses />} />
+                                <Route path="my-applications" element={<MyApplicationsProcesses />} />
+                                <Route path="inactive" element={<InactiveProcesses />} />
+                            </Route>
+                            <Route path="/processes/:processId" element={<Process />}>
+                                <Route index element={<ProcessDetail />} />
+                                <Route path="news" element={<ProcessNews />} />
+                            </Route>
+                            <Route path="/processes/:processId/news/:newsId" element={<ProcessNewsDetail />} />
+                            <Route path="/processes/:processId/application" element={<Application />} />
+                        </Route>
+                        <Route element={<AuthRequired requiredRole="administrador"/>}>
+                            <Route path="/processes/create-process" element={<CreateProcess />} />
+                            <Route path="/processes/:processId/edit-process" element={<EditProcess />} />
+                            <Route path="/processes/:processId/create-news" element={<CreateNews />} />
+                            <Route path="/processes/:processId/news/:newsId/edit-news" element={<EditNews />} />
+                            <Route path="/processes/:processId/applications" element={<Applications />} />
+                            <Route path="/processes/:processId/applications/evaluate/:uid/view-document" element={<ViewDocument />} />
+                            <Route path="/processes/:processId/applications/evaluate/:uid" element={<EvaluateApplication />} />
+                        </Route>
+                        <Route path="/not-authorized" element={<NotAuthorized />} />
+                        <Route path="*" element={<NotFound />} /> 
+                    </Route>
+                </Routes>
+            </BrowserRouter>
+        </AuthProvider>
+    )
 }

@@ -1,6 +1,6 @@
 import React from "react"
 import ReactLoading from 'react-loading'
-import { useParams } from "react-router-dom"
+import { useNavigate, useParams } from "react-router-dom"
 import { getUserApplication, updateApplicationStatus } from "../../services/firebase/firebase-firestore"
 import { formatTimestamp, formatFirestoreDate } from "../utils/formatters/formatters"
 import styled from "styled-components"
@@ -8,7 +8,6 @@ import Select from "../components/Select"
 import Input from "../components/Input"
 import Box from "../components/Box"
 import Button from "../components/Button"
-import ViewDocumentButton from "../components/ViewDocumentButton"
 
 const LoaderContainer = styled.div`
     display: flex;
@@ -26,7 +25,6 @@ const EvaluateApplicationContainer = styled.div`
 `
 
 const EvaluateApplicationBox = styled(Box)`
-    padding: 0 1rem;
     width: 100%;
     max-width: 1500px;
     min-width: 300px; 
@@ -190,40 +188,6 @@ const BoldGreenMessage = styled.p`
     }   
 `
 
-function formatValue(key, value) {
-    if (typeof value === 'string' && value.startsWith("https://cloud.appwrite.io/v1/storage/buckets/")) {
-      return <ViewDocumentButton url={value} />;
-    } else if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
-      // Verifica se o valor é uma string no formato de data YYYY-MM-DD
-      return formatFirestoreDate(value);
-    } else if (typeof value === 'object' && value !== null) {
-      if (value.seconds && value.nanoseconds) {
-        formatTimestamp(value);
-      }
-      return JSON.stringify(value);
-    }
-    return value;
-}
-
-// function formatValue (key, value) {
-//     if (typeof value === 'string' && value.startsWith("https://cloud.appwrite.io/v1/storage/buckets/")) {
-//         return (
-//             <Button onClick={() => window.open(value, "_blank")}>
-//                 VISUALIZAR DOCUMENTO
-//             </Button>
-//         )
-//     } else if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
-//         // Verifica se o valor é uma string no formato de data YYYY-MM-DD
-//         return formatFirestoreDate(value)
-//     } else if (typeof value === 'object' && value !== null) {
-//         if (value.seconds && value.nanoseconds) {
-//             formatTimestamp(value)
-//         }
-//         return JSON.stringify(value)
-//     }
-//     return value
-// }
-
 export default function EvaluateApplication() {
     const [application, setApplication] = React.useState(null)
     const [loading, setLoading] = React.useState(true)
@@ -231,6 +195,7 @@ export default function EvaluateApplication() {
     const [checkboxes, setCheckboxes] = React.useState({})
 
     const { processId, uid } = useParams()
+    const navigate = useNavigate()
 
     const hiddenTableFields = ["uid", "id", "status", "createdAt", "name", "userEmail", "researchArea"]
 
@@ -238,6 +203,11 @@ export default function EvaluateApplication() {
         async function loadData() {
             try {
                 const applicationInfo = await getUserApplication(processId, uid)
+                if (!applicationInfo) {
+                    // Se não houver inscrição (ou processo inexistente), redireciona para a página de erro
+                    navigate("/not-found", { replace: true })
+                    return
+                }
                 setApplication(applicationInfo)
                 // Inicializa o estado selectedStatus com o valor do status atual da inscrição no Firestore
                 setSelectedStatus(applicationInfo.status)
@@ -254,10 +224,37 @@ export default function EvaluateApplication() {
                 setLoading(false)
             } catch (error) {
                 console.error("Erro ao carregar a inscrição: ", error)
+                navigate("/not-found", { replace: true })
             }
         }
         loadData()
     }, [processId, uid])
+
+    function formatValue(key, value) {
+        if (value && typeof value === 'object' && value.format && value.id) {
+            return (
+                <Button 
+                    onClick={() => handleViewDocument(value.format, value.id)}
+                >
+                    VISUALIZAR DOCUMENTO
+                </Button>
+            )
+        } else if (typeof value === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(value)) {
+            // Verifica se o valor é uma string no formato de data YYYY-MM-DD
+            return formatFirestoreDate(value)
+        } else if (typeof value === 'object' && value !== null) {
+            if (value.seconds && value.nanoseconds) {
+            formatTimestamp(value)
+            }
+            return JSON.stringify(value)
+        }
+        return value
+    }
+
+    function handleViewDocument(fileFormat, fileId) {
+        // Redireciona para a rota '/viewdocument' passando a URL via state
+        navigate(`/processes/${processId}/applications/evaluate/${uid}/view-document`, { state: { fileFormat: fileFormat, fileId: fileId } })
+    }
     
     function handleCheckboxChange(key) {
         setCheckboxes(prevCheckboxes => ({
