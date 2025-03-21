@@ -55,6 +55,9 @@ const CreateProcessFormContainer = styled.form`
     flex-direction: column;
     gap: 1em;
     padding: 0 1em 1em 1em;
+    & h2 {
+        margin: 0;
+    }
 `
 
 const InputContainer = styled.div`

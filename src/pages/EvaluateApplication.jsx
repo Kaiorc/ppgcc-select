@@ -197,7 +197,7 @@ export default function EvaluateApplication() {
     const { processId, uid } = useParams()
     const navigate = useNavigate()
 
-    const hiddenTableFields = ["uid", "id", "status", "createdAt", "name", "userEmail", "researchArea"]
+    const hiddenTableField = ["researchArea"]
 
     React.useEffect(() => {
         async function loadData() {
@@ -214,8 +214,8 @@ export default function EvaluateApplication() {
     
                 // Filtra apenas os campos visíveis para criar checkboxes e inicializa 
                 // checkboxes com todos os valores como false
-                const initialCheckboxes = Object.keys(applicationInfo)
-                    .filter(key => !hiddenTableFields.includes(key))
+                const initialCheckboxes = Object.keys(applicationInfo.candidateProvidedData)
+                    .filter(key => !hiddenTableField.includes(key))
                     .reduce((acc, key) => {
                         acc[key] = false
                         return acc
@@ -295,8 +295,8 @@ export default function EvaluateApplication() {
         )
     }
 
-    const applicationElements = Object.entries(application)
-        .filter(([key]) => !hiddenTableFields.includes(key))
+    const applicationElements = Object.entries(application.candidateProvidedData)
+        .filter(([key]) => !hiddenTableField.includes(key))
         .map(([key, value]) => (
             <TableRow key={key}>
                 <TableCell>{key}</TableCell>

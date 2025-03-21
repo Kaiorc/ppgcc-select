@@ -287,7 +287,7 @@ export async function addApplication(id, data, name, uid, userEmail) {
         const applicationDocRef = doc(db, `processes/${id}/applications`, applicationId)
     
         // Adiciona o documento com os dados do candidato
-        await setDoc(applicationDocRef, { ...data, name:name, uid: applicationId, userEmail: userEmail, status: "Não analisada", createdAt: serverTimestamp() })
+        await setDoc(applicationDocRef, { candidateProvidedData: data, name: name, uid: applicationId, userEmail: userEmail, status: "Não analisada", createdAt: serverTimestamp() })
     } catch (error) {
         console.error("Erro ao adicionar aplicação:", error)
         throw error

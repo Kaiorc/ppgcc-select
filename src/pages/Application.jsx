@@ -4,9 +4,10 @@ import { useParams, useLocation, Link, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
 import { loadProcess, addApplication, userHasApplication } from "../../services/firebase/firebase-firestore"
 import { uploadFileToStorage } from "../../services/appwrite/appwrite-storage"
+import { getApplicationValidationRules } from "../utils/validators/applicationFormValidators"
+import { styled } from "styled-components"
 import { researchAreas } from "../utils/researchAreas"
 import useAuth from "../hooks/useAuth"
-import { styled } from "styled-components"
 import Input from "../components/Input"
 import Select from "../components/Select"
 import Button from "../components/Button"
@@ -109,22 +110,10 @@ const RedSpan = styled.span`
     margin-left: 40px;
 `
 
-function validateFile(value) {
-    if (!value || !value[0]) return true
-    const file = value[0]
-    const allowedTypes = ["image/jpeg", "image/png", "application/pdf"]
-    const maxSize = 2 * 1024 * 1024 // "O arquivo deve ter no máximo 2MB."
-    
-    if (!allowedTypes.includes(file.type)) {
-        return "Tipo de arquivo não suportado."
-    }
-    
-    if (file.size > maxSize) {
-        return "O arquivo deve ter no máximo 2MB."
-    }
-    
-    return true
-}
+const ErrorMessage = styled.p`
+    color: red;
+    margin: 0 0 0.5rem 0;
+`
 
 function isWithinApplicationPeriod(startDate, endDate) {
     const now = new Date()
@@ -163,7 +152,7 @@ export default function Application() {
             const isRegistered = await userHasApplication(processId, uid)
             if (isRegistered) {
                 alert("Você já está inscrito neste processo.")
-                navigate(`/processes/${processId}`)
+                navigate(`/processes/${processId}`, { replace: true, state: "Você já está inscrito neste processo seletivo"})
             }
 
             setLoading(false)
@@ -188,20 +177,34 @@ export default function Application() {
         try {
             // Cria uma cópia dos dados do formulário
             const formData = { ...data }
+            console.log("Form data: ", formData)
+
             // Verifica se o valor é uma lista de arquivos
             for (const key in formData) {
                 // Verifica se o valor associado à chave é uma lista de arquivos (FileList)
                 if (formData[key] instanceof FileList) {
-                    // Pega o primeiro arquivo da lista
-                    const file = formData[key][0]
-                    if (file) {
-                        // Faz o upload no Appwrite Storage e retorna o id do arquivo no Appwrite
-                        const fileId = await uploadFileToStorage(file)
-                        // Define o formato: se for PDF, mantém "pdf"; se for png ou jpg, define como "image"
-                        const fileFormat = file.type === "application/pdf" ? "pdf" : "image"
-                        // Substitui o campo por um objeto contendo o formato e o id do arquivo
-                        formData[key] = { format: fileFormat, id: fileId }
+                    // Se o FileList estiver vazio, atribui null
+                    if (formData[key].length === 0) {
+                        formData[key] = null
+                    } else {
+                        // Pega o primeiro arquivo da lista
+                        const file = formData[key][0]
+                        if (file) {
+                            // Faz o upload no Appwrite Storage e retorna o id do arquivo no Appwrite
+                            const fileId = await uploadFileToStorage(file)
+                            // Define o formato: se for PDF, mantém "pdf"; se for png ou jpg, define como "image"
+                            const fileFormat = file.type === "application/pdf" ? "pdf" : "image"
+                            // Substitui o campo por um objeto contendo o formato e o id do arquivo
+                            formData[key] = { format: fileFormat, id: fileId }
+                        }
                     }
+                }
+            }
+
+            // Para todos os campos que forem strings vazias, atribui null
+            for (const key in formData) {
+                if (typeof formData[key] === "string" && formData[key].trim() === "") {
+                    formData[key] = null;
                 }
             }
 
@@ -222,21 +225,10 @@ export default function Application() {
         }
     }
 
-    // Array de JSX.Element que contém os campos do formulário de inscrição de um processo.
-    // Cada campo é um label que contém um input (com validação), um botão para limpar o campo (caso seja 
-    // um input do tipo file), e uma mensagem de erro (caso exista).
     const inputElements = selectionProcess?.registrationFieldsInfo?.map((info) => {
-        const isFile = info.type === "file"
-    
-        const validationRules = isFile
-            ? {
-                  required: info.required ? `${info.name} é obrigatório.` : false,
-                  validate: validateFile,
-              }
-            : {
-                  required: info.required ? `${info.name} é obrigatório.` : false,
-              }
-    
+        // Obtém as regras de validação de forma dinâmica
+        const validationRules = getApplicationValidationRules(info)
+        
         const fieldValue = watch(info.name)
         const isModified = fieldValue && fieldValue.length > 0
     
@@ -245,34 +237,33 @@ export default function Application() {
                 {info.name}
                 {info.required && <RedSpan>*Obrigatório</RedSpan>}
     
-                {isFile ? (
-                        <FileInputContainer className={isModified ? "with-file" : ""}>
-                            <Input
-                                {...register(info.name, validationRules)}
-                                name={info.name}
-                                type="file"
-                                aria-label={info.name}
-                                required={info.required}
-                            />
-                            {isModified && (
-                                <RedButton type="button" onClick={() => resetField(info.name)}>
-                                    LIMPAR
-                                </RedButton>
-                            )}
-                        </FileInputContainer>
-                    ) : (
+                {info.type === "file" ? (
+                    <FileInputContainer className={isModified ? "with-file" : ""}>
                         <Input
                             {...register(info.name, validationRules)}
                             name={info.name}
-                            type={info.type}
-                            placeholder={info.name}
+                            type="file"
                             aria-label={info.name}
                             required={info.required}
                         />
-                    )
-                }
+                        {isModified && (
+                            <RedButton type="button" onClick={() => resetField(info.name)}>
+                                LIMPAR
+                            </RedButton>
+                        )}
+                    </FileInputContainer>
+                ) : (
+                    <Input
+                        {...register(info.name, validationRules)}
+                        name={info.name}
+                        type={info.type}
+                        placeholder={info.name}
+                        aria-label={info.name}
+                        required={info.required}
+                    />
+                )}
     
-                {errors[info.name] && <RedSpan>{errors[info.name].message}</RedSpan>}
+                {errors[info.name] && <ErrorMessage>{errors[info.name].message}</ErrorMessage>}
             </BoldLabel>
         )
     })

@@ -66,6 +66,9 @@ const EditProcessFormContainer = styled.form`
     flex-direction: column;
     gap: 1em;
     padding: 0 1em 1em 1em;
+    & h2 {
+        margin: 0;
+    }
 `
 
 const InputContainer = styled.div`
@@ -213,20 +216,6 @@ export default function EditProcess() {
         }
     }, [selectionProcessData.endDate])
 
-    // async function handleSubmit(event) {
-    //     event.preventDefault()
-    //     try {
-    //         // Destructuring do id do objeto do getDoc() do Firebase e 
-    //         // criando um novo objeto sem o id para evitar redundância
-    //         const { id, ...dataWithoutId } = selectionProcessData
-    //         await updateProcess(id, dataWithoutId)
-    //         console.log("Processo editado com sucesso!")
-    //         navigate(`/processes/${id}`, { replace: true })
-    //     } catch (error) {
-    //         console.error("Erro ao editar processo: ", error)
-    //     }
-    // }
-
     async function handleSubmit(event) {
         event.preventDefault()
         
@@ -234,7 +223,7 @@ export default function EditProcess() {
         const today = new Date().toISOString().split('T')[0]
         
         // Valida os dados do formulário usando a função importada
-        const validationError = validateProcessForm(selectionProcessData, today);
+        const validationError = validateProcessForm(selectionProcessData, today)
         if (validationError) {
             setError({ message: validationError })
             return
@@ -250,8 +239,9 @@ export default function EditProcess() {
         
         try {
             // Remove o id do objeto para evitar redundância na atualização
-            const { processId, ...dataWithoutId } = sanitizedData
-            await updateProcess(processId, dataWithoutId)
+            // const { processId, ...dataWithoutId } = sanitizedData
+            // await updateProcess(processId, dataWithoutId)
+            await updateProcess(processId, sanitizedData)
             console.log("Processo editado com sucesso!")
             navigate(`/processes/${processId}`, { replace: true })
         } catch (error) {
@@ -260,18 +250,6 @@ export default function EditProcess() {
             alert("Erro ao editar processo: " + error.message)
         }
     }
-      
-    // function handleChange(event) {
-    //     const { name, value, type, checked } = event.target
-    //     if (name === "endDate" && new Date(value) <= new Date(selectionProcessData.startDate)) {
-    //         alert("A data de término deve ser maior que a data de início.")
-    //         return
-    //     }
-    //     setSelectionProcessData(prevSelectionProcessData => ({
-    //         ...prevSelectionProcessData,
-    //         [name]: type === 'checkbox' ? checked : value
-    //     }))
-    // }
 
     function handleChange(event) {
         const {name, value, type, checked} = event.target
