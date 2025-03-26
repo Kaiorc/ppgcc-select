@@ -123,6 +123,7 @@ function isWithinApplicationPeriod(startDate, endDate) {
 export default function Application() {
     const [selectionProcess, setSelectionProcess] = React.useState()
     const [loading, setLoading] = React.useState(true)
+    const [submitLoading, setSubmitLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
     
     const { register, handleSubmit, watch, resetField, formState: { errors } } = useForm({ defaultValues: { researchArea: "" } })
@@ -175,6 +176,7 @@ export default function Application() {
     // ao serviço de cloud).
     async function onSubmit(data) {
         try {
+            setSubmitLoading(true)
             // Cria uma cópia dos dados do formulário
             const formData = { ...data }
             console.log("Form data: ", formData)
@@ -222,6 +224,8 @@ export default function Application() {
             console.error("Erro fazer inscrição: ", error)
             setError(error)
             alert("Erro ao fazer inscrição: " + error.message)
+        } finally {
+            setSubmitLoading(false)
         }
     }
 
@@ -311,7 +315,7 @@ export default function Application() {
                                                 CANCELAR
                                             </Button>
                                         </Link>
-                                        <Button type="submit">
+                                        <Button type="submit" loading={submitLoading}>
                                             ENVIAR
                                         </Button>
                                     </ButtonContainer>

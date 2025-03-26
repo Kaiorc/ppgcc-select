@@ -44,7 +44,9 @@ export async function getFileForViewing(fileId) {
 // Função para deletar um arquivo do Appwrite Storage
 export async function deleteFile(fileId) {
     try {
+        console.log("Tentando deletar arquivo com id:", fileId)
         await storage.deleteFile(bucketId, fileId)
+        console.log("Arquivo deletado com sucesso!")
     } catch (error) {
         console.error("Erro ao deletar arquivo:", error)
         throw error

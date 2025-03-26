@@ -82,6 +82,7 @@ export default function Signin() {
 
     // const [signinFormData, setSigninFormData] = React.useState({ name: "", email: "", password: "", confirmPassword: "" })
     // const [status, setStatus] = React.useState("idle")
+    const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
 
     const navigate = useNavigate()
@@ -102,6 +103,7 @@ export default function Signin() {
     async function onSubmit(data) {
         console.log(data)
         try{
+            setLoading(true)
             await authCreateAccountWithEmail(data.name, data.email, data.password)
             navigate("/processes")
         } catch(error) {
@@ -112,6 +114,8 @@ export default function Signin() {
             }
             console.error(error.message)
             // setError(error.message)	
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -221,7 +225,7 @@ export default function Signin() {
                                 CANCELAR
                             </Button>
                         </Link>
-                        <Button type="submit">
+                        <Button type="submit" loading={loading}>
                             CRIAR CONTA
                         </Button>
                     </ButtonContainer>

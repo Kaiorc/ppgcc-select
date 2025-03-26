@@ -43,12 +43,12 @@ function validateDescription(description) {
 // Função para validar a data de início. Converte startDate e today para objetos Date. Compara as
 // datas. Se startDate for anterior a today, retorna "A data de início não pode ser no passado". Caso
 // contrário, retorna null
-function validateStartDate(startDate, today) {
-    if (startDate && new Date(startDate) < new Date(today)) {
-        return "A data de início não pode ser no passado"
-    }
-    return null
-}
+// function validateStartDate(startDate, today) {
+//     if (startDate && new Date(startDate) < new Date(today)) {
+//         return "A data de início não pode ser no passado"
+//     }
+//     return null
+// }
 
 // Função para validar a data de término. Converte startDate e endDate para objetos Date. Compara as
 // datas. Se endDate for anterior ou igual a startDate, retorna "A data de término deve ser posterior
@@ -56,7 +56,7 @@ function validateStartDate(startDate, today) {
 function validateEndDate(startDate, endDate) {
     if (startDate && endDate) {
         if (new Date(endDate) <= new Date(startDate)) {
-        return "A data de término deve ser posterior à data de início"
+            return "A data de término deve ser posterior à data de início"
         }
     }
     return null
@@ -70,7 +70,7 @@ export function validateProcessForm(processFormData, today) {
         validateMiniDescription(processFormData.miniDescription) ||
         validateDescription(processFormData.description) ||
         validatePlaces(processFormData.places) ||
-        validateStartDate(processFormData.startDate, today) ||
+        // validateStartDate(processFormData.startDate, today) ||
         validateEndDate(processFormData.startDate, processFormData.endDate)
     )
 }

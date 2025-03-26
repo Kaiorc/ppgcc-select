@@ -158,6 +158,7 @@ export default function CreateProcess() {
         registrationFieldsInfo: []
     })
 
+    const [submitLoading, setSubmitLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
 
     const [isRegistrationModalOpen, setIsRegistrationModalOpen] = React.useState(false)
@@ -207,6 +208,7 @@ export default function CreateProcess() {
         }
 
         try {
+            setSubmitLoading(true)
             await createProcess(sanitizedData, sanitizedData.researchFieldRequired)
             console.log("Processo criado com sucesso!")
             navigate("/processes")
@@ -214,6 +216,8 @@ export default function CreateProcess() {
             console.error("Erro ao criar processo: ", error)
             setError(error)
             alert("Erro ao criar processo: " + error.message)
+        } finally {
+            setSubmitLoading(false)
         }
     }
 
@@ -449,7 +453,7 @@ export default function CreateProcess() {
                                 CANCELAR
                             </Button>
                         </Link>
-                        <Button type="submit">
+                        <Button type="submit" loading={submitLoading}>
                             CRIAR
                         </Button>
                     </ButtonContainer>

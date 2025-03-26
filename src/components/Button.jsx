@@ -1,4 +1,6 @@
-import { styled } from "styled-components";
+import React from "react"
+import ReactLoading from 'react-loading'
+import { styled } from "styled-components"
 
 const StyledButton = styled.button`
     background-color: #006734;
@@ -20,11 +22,20 @@ const StyledButton = styled.button`
     };
 `
 
-export default function Button({ children, onClick, type, className }) {   
+export default function Button({ children, onClick, type, className, loading }) {   
 
     return(
-        <StyledButton onClick={onClick} type={type} className={className}>
-            {children}
+        <StyledButton onClick={onClick} type={type} className={className} disabled={loading}>
+            {loading ? (
+                <ReactLoading 
+                    type="spinningBubbles"
+                    color="#FFF"
+                    height={20}
+                    width={20}
+                />
+            ) : (
+                children
+            )}
         </StyledButton>
     )
 }

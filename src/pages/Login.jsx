@@ -62,6 +62,7 @@ export default function Login() {
 
     // const [loginFormData, setLoginFormData] = React.useState({ email: "", password: "" })
     // const [status, setStatus] = React.useState("idle")
+    const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
 
     const navigate = useNavigate()
@@ -75,13 +76,17 @@ export default function Login() {
 
     async function onSubmit(data) {
         console.log(data)
+        console.log("clicked")
         try {
+            setLoading(true)
             await authLogInWithEmail(data.email, data.password, setIsLoggedIn)
             // await authLogInWithEmail(data.email, data.password, navigate, setIsLoggedIn)
             navigate("/processes", { replace: true })
         } catch(error) {
             setError("Falha ao fazer login. Verifique suas credenciais.")
             console.error(error.message);
+        } finally {
+            setLoading(false)
         }
     }
 
@@ -128,7 +133,7 @@ export default function Login() {
                                 CRIAR CONTA
                             </Button>
                         </Link>
-                        <Button type="submit">
+                        <Button type="submit" loading={loading}>
                             ENTRAR
                         </Button>
                     </ButtonContainer>

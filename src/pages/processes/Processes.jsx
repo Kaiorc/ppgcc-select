@@ -17,7 +17,7 @@ const HomeContainer = styled.div`
 const ListHeader = styled.div`
     display: flex;
     flex-direction: row;
-    justify-content: ${({ $isAdmin }) => ($isAdmin ? 'space-between' : 'center')};
+    justify-content: ${({ $isAdmin }) => ($isAdmin ? 'space-evenly' : 'center')};
     gap: 5em;
     align-items: center;
     width: 100%;

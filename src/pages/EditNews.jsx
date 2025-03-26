@@ -89,6 +89,7 @@ const ButtonContainer = styled.div`
 
 export default function EditNews() {
     const [loading, setLoading] = React.useState(true)
+    const [submitLoading, setSubmitLoading] = React.useState(false)
 
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm()
 
@@ -99,6 +100,7 @@ export default function EditNews() {
     React.useEffect(() => {
         async function loadData() {
             try {
+                // Busca o aviso específico
                 const news = await getSpecificProcessNews(processId, newsId)
                 // Caso a função retorne com sucesso, preenche os campos do formulário
                 setValue("title", news.title || "")
@@ -117,11 +119,14 @@ export default function EditNews() {
 
     async function onSubmit(data) {
         try {
+            setSubmitLoading(true)
             await updateProcessNews(processId, newsId, data)
             navigate(`/processes/${processId}/news/${newsId}`, { replace: true })
         }
         catch (error) {
             console.error(error)
+        } finally {
+            setSubmitLoading(false)
         }
     }
 
@@ -176,7 +181,9 @@ export default function EditNews() {
                             CANCELAR
                         </Button>
                     </Link>
-                    <Button type="submit">EDITAR ATUALIZAÇÃO</Button>
+                    <Button type="submit" loading={submitLoading}>
+                        EDITAR ATUALIZAÇÃO
+                    </Button>
                 </ButtonContainer>
             </NewsFormContainer>
         </Box>

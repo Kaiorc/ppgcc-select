@@ -10,12 +10,13 @@ const ListItem = styled.li`
     align-items: center;
     padding: 1em 2em;
     width: 100%;
-    gap: 2em;
+    gap: 0.5em;
     border-bottom: 2px solid #E5E5E5;
 
     h3 {
         text-transform: uppercase;
         text-align: center;
+        width: 50%;
     }
 
     p { 
@@ -66,7 +67,7 @@ const List = styled.ul`
 const BoldInfo = styled.b`
     color: grey;
     font-size: 1rem;
-
+    text-transform: uppercase;
     text-align: center;
 
     @media (max-width: 768px) {

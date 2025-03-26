@@ -81,6 +81,8 @@ const ButtonContainer = styled.div`
 export default function CreateNews() {
     const { register, handleSubmit, watch, formState: { errors } } = useForm()
 
+    const [submitLoading, setSubmitLoading] = React.useState(false)
+
     const { processId } = useParams()
 
     const navigate = useNavigate()
@@ -102,11 +104,14 @@ export default function CreateNews() {
     async function onSubmit(data) {
         console.log(data)
         try {
+            setSubmitLoading(true)
             await addProcessNews(processId, displayName, data)
             navigate(`/processes/${processId}/news`, { replace: true })
         }
         catch (error) {
             console.error(error)
+        } finally {
+            setSubmitLoading(false)
         }
     }
 
@@ -146,7 +151,9 @@ export default function CreateNews() {
                             CANCELAR
                         </Button>
                     </Link>
-                    <Button type="submit">ADICIONAR ATUALIZAÇÃO</Button>
+                    <Button type="submit" loading={submitLoading}>
+                        ADICIONAR ATUALIZAÇÃO
+                    </Button>
                 </ButtonContainer>
             </NewsFormContainer>
         </Box>

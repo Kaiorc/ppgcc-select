@@ -67,6 +67,19 @@ const ErrorMessage= styled.p`
 `
 
 export default function DeleteModal({ setIsModalOpen, handleDelete, error }) {
+    const [deletionLoading, setDeletionLoading] = React.useState(false)
+
+    async function handleDeletion() {
+        try {
+            setDeletionLoading(true)
+            await handleDelete()
+        }
+        catch (error) {
+            console.error(error)
+        } finally {
+            setDeletionLoading(false)
+        }
+    }
     
     return (
         <ModalOverlay>
@@ -79,7 +92,7 @@ export default function DeleteModal({ setIsModalOpen, handleDelete, error }) {
                     <Button onClick={() => setIsModalOpen(false)}>
                         CANCELAR
                     </Button>
-                    <RedButton onClick={handleDelete}>
+                    <RedButton onClick={handleDeletion} loading={deletionLoading}>
                         CONFIRMAR
                     </RedButton>
                 </ButtonContainer>

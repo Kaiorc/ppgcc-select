@@ -218,7 +218,7 @@ export default function Process() {
     // Função para deleção do processo
     async function handleDeleteProcess() {
         try {
-            await deleteProcess(id)
+            await deleteProcess(processId)
             // Após a deleção, você pode redirecionar o usuário para outra rota, se necessário
             navigate("/processes")
         } catch (error) {
@@ -227,30 +227,37 @@ export default function Process() {
         }
     }
 
+    // Função para deleção da inscrição do candidato
     async function handleDeleteApplication() {
         try {
-          // Busca os dados da inscrição do candidato
-          const applicationInfo = await getUserApplication(processId, uid)
-          
-          // Itera por cada campo da inscrição
-          for (const [key, value] of Object.entries(applicationInfo)) {
-            // Se o campo for um objeto que contém os dados do arquivo
-            if (value && typeof value === 'object' && value.format && value.id) {
-              // Tenta deletar o arquivo no Appwrite usando o id
-              await deleteFile(value.id)
+            // Busca os dados da inscrição do candidato
+            const applicationInfo = await getUserApplication(processId, uid)
+            console.log("Dados da inscrição:", applicationInfo)
+        
+            // Acessa os arquivos enviados dentro de candidateProvidedData
+            const candidateData = applicationInfo.candidateProvidedData
+        
+            // Verifica se é um objeto (se for, significa que é um arquivo que foi enviado na inscrição) e
+            // deleta o arquivo do armazenamento do Appwrite
+            if (candidateData && typeof candidateData === 'object') {
+                for (const [field, fileData] of Object.entries(candidateData)) {
+                    // Ignora campos que não sejam objetos com "format" e "id"
+                    if (fileData && typeof fileData === 'object' && fileData.format && fileData.id) {
+                        console.log(`Tentando deletar arquivo para o campo "${field}" com id: ${fileData.id}`)
+                        await deleteFile(fileData.id)
+                        console.log(`Arquivo para o campo "${field}" deletado com sucesso!`)
+                    }
+                }
             }
-          }
-          
-          // Deleta a inscrição do Firebase
-          await deleteApplication(processId, uid)
-          
-          // Redireciona o candidato após a deleção
-          navigate("/processes")
+        
+            // Deleta a inscrição do Firebase somente após a exclusão dos arquivos
+            await deleteApplication(processId, uid)
+            navigate("/processes")
         } catch (error) {
-          setDeleteError(error.message)
-          console.error("Erro ao deletar inscrição:", error)
+            console.error("Erro ao deletar inscrição:", error)
+            setDeleteError(error.message)
         }
-    }
+    } 
 
     if(loading){
         return (
@@ -285,7 +292,9 @@ export default function Process() {
                                         <Link to="edit-process">
                                             <Button>EDITAR</Button>
                                         </Link>
-                                        <RedButton onClick={() => setIsModalOpen(true)}>EXCLUIR</RedButton>
+                                        <RedButton onClick={() => setIsModalOpen(true)}>
+                                            EXCLUIR
+                                        </RedButton>
                                     </TitleButtonContainer>
                                 ) : (
                                     isUserRegistered ? (

@@ -173,15 +173,15 @@ export default function EditProcess() {
         endAnalysisDate: "", 
         registrationFieldsInfo: []
     })
-
+    
+    const [loading, setLoading] = React.useState(true)
+    const [submitLoading, setSubmitLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
 
     const [isImportModalOpen, setIsImportModalOpen] = React.useState(false)
     const [isRegistrationModalOpen, setIsRegistrationModalOpen] = React.useState(false)
     const [fieldBeingEdited, setFieldBeingEdited] = React.useState(null)
-    const [isEditModalOpen, setIsEditModalOpen] = React.useState(false)
-
-    const [loading, setLoading] = React.useState(true)
+    const [isEditModalOpen, setIsEditModalOpen] = React.useState(false) 
 
     const [hasApplications, setHasApplications] = React.useState(false)
 
@@ -238,6 +238,7 @@ export default function EditProcess() {
         }
         
         try {
+            setSubmitLoading(true)
             // Remove o id do objeto para evitar redundância na atualização
             // const { processId, ...dataWithoutId } = sanitizedData
             // await updateProcess(processId, dataWithoutId)
@@ -248,6 +249,8 @@ export default function EditProcess() {
             console.error("Erro ao editar processo: ", error)
             setError(error)
             alert("Erro ao editar processo: " + error.message)
+        } finally {
+            setSubmitLoading(false)
         }
     }
 
@@ -491,7 +494,7 @@ export default function EditProcess() {
                                 CANCELAR
                             </Button>
                         </Link>
-                        <Button type="submit">
+                        <Button type="submit" loading={submitLoading}>
                             CONFIRMAR
                         </Button>
                     </ButtonContainer>
