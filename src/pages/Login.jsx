@@ -1,13 +1,14 @@
 import React from "react"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { useForm } from "react-hook-form"
+import { authLogInWithEmail, authSignInWithGoogle } from "../../services/firebase/firebase-authentication"
 import { styled } from "styled-components"
 import useAuth from "../hooks/useAuth"
 import PpgccSymbol from "../assets/images/symbol-ppgcc.png"
+import GoogleIcon from "../assets/images/icon-google.png"
 import Box from "../components/Box"
 import Input from "../components/Input"
 import Button from "../components/Button"
-import { authLogInWithEmail } from "../../services/firebase/firebase-authentication"
 
 const LoginContainer = styled.div`
     display: flex;
@@ -53,6 +54,40 @@ const PpgccSymbolImg = styled.img`
     }
 `
 
+const Hr = styled.hr`
+    width: 100%;
+    height: 2px;
+    border: none;
+    border-radius: 20px;
+    background-color: #F0852E;
+`
+
+const GoogleButton = styled(Button)`
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 0.5em;
+    width: 100%;
+`
+
+const GoogleIconImg = styled.img`
+  width: clamp(16px, 1.8vw, 20px);
+  height: auto;   
+  margin-bottom: 0.2em; 
+`
+
+const ForgottenPassword = styled.p`
+    color: #008442;
+    text-align: center;
+    margin-top: 1em;
+    font-size: 0.9em;
+    font-weight: bold;
+    cursor: pointer;
+    &:hover {
+        text-decoration: underline;
+    }
+`
+
 const ErrorMessage= styled.p`
     color: red;
 `
@@ -73,6 +108,17 @@ export default function Login() {
             navigate("/processes", { replace: true })
         }
     }, [isLoggedIn, navigate])
+
+    async function handleGoogleLogin() {
+        try {
+            const user = await authSignInWithGoogle()
+            console.log("Usuário logado:", user)
+            setIsLoggedIn(true)
+            navigate("/processes", { replace: true })
+        } catch (error) {
+            console.error("Erro no login com Google:", error)
+        }
+    }
 
     async function onSubmit(data) {
         console.log(data)
@@ -137,6 +183,19 @@ export default function Login() {
                             ENTRAR
                         </Button>
                     </ButtonContainer>
+                    <Hr />
+                    <GoogleButton
+                        type="button"
+                        onClick={handleGoogleLogin}
+                    >
+                        <GoogleIconImg src={GoogleIcon} alt="Google" />
+                        ENTRAR COM O GOOGLE
+                    </GoogleButton>
+                    <Link to="/forgotten-password">
+                        <ForgottenPassword>
+                            ESQUECI MINHA SENHA
+                        </ForgottenPassword>
+                    </Link>
                 </LoginFormContainer>
             </Box>
         </LoginContainer>

@@ -18,6 +18,8 @@ import CreateNews from './src/pages/CreateNews'
 import EditNews from './src/pages/EditNews'
 import Login from './src/pages/Login'
 import Signin from './src/pages/Signin'
+import ForgottenPassword from './src/pages/ForgottenPassword'
+import VerifyYourEmail from './src/pages/VerifyYourEmail'
 import NotAuthorized from './src/pages/NotAuthorized'
 import NotFound from './src/pages/NotFound'
 import Applications from './src/pages/Applications'
@@ -62,6 +64,8 @@ export default function App() {
                     <Route path='/' element={<Layout />}>
                         <Route index element={<Login />} />
                         <Route path="/signin" element={<Signin />} />
+                        <Route path="/forgotten-password" element={<ForgottenPassword />} />
+                        <Route path="/email-verification" element={<VerifyYourEmail />} />
                         <Route element={<AuthRequired />}>
                             <Route path="/processes" element={<Processes />}>
                                 <Route index element={<ActiveProcesses />} />

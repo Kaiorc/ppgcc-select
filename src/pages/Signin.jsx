@@ -119,38 +119,6 @@ export default function Signin() {
         }
     }
 
-    // function validateForm() {
-    //     if (!signinFormData.name || !signinFormData.email || !signinFormData.password || !signinFormData.confirmPassword) {
-    //         setError("Todos os campos são obrigatórios.")
-    //         return false
-    //     }
-    //     if (signinFormData.password !== signinFormData.confirmPassword) {
-    //         setError("As senhas não coincidem.")
-    //         return false
-    //     }
-    //     setError(null)
-    //     return true
-    // }
-
-    // function handleSubmit(event) {
-    //     event.preventDefault()
-    //     if (validateForm()) {
-    //         authCreateAccountWithEmail(signinFormData.name, signinFormData.email, signinFormData.password, navigate)
-    //             .catch((error) => {
-    //                 setError("Falha ao fazer o cadastro. Verifique suas credenciais.")
-    //                 console.error(error.message)
-    //             });
-    //     }
-    // }
-
-    // function handleChange(event) {
-    //     const {name, value} = event.target
-    //     setSigninFormData(prevSigninFormData => ({
-    //         ...prevSigninFormData,
-    //         [name]: value
-    //     }))
-    // }
-
     return (
         <SigninContainer>
             <Box>
@@ -165,7 +133,10 @@ export default function Signin() {
                 <SigninFormContainer onSubmit={handleSubmit(onSubmit)}>
                     <InputContainer>
                         <Input
-                            {...register("name", { required: "Nome é obrigatório." })}
+                            {...register("name", { 
+                                required: "Nome é obrigatório.",
+                                validate: value => value.trim().split(" ").length > 1 || "Por favor, insira seu nome completo."
+                            })}
                             name="name"
                             // onChange={handleChange}
                             type="text"

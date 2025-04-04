@@ -5,8 +5,12 @@ import {
     getAuth, 
     onAuthStateChanged, 
     createUserWithEmailAndPassword, 
-    signInWithEmailAndPassword, 
-    signOut, 
+    signInWithEmailAndPassword,
+    GoogleAuthProvider,
+    signInWithPopup,
+    signOut,
+    sendEmailVerification,
+    sendPasswordResetEmail,
     getIdTokenResult,
     updateProfile
 } from "firebase/auth"
@@ -17,15 +21,21 @@ const app = initializeApp(firebaseConfig)
 // Initialize Firebase Auth
 const auth = getAuth(app)
 
+// Initialize Google Auth Provider
+const provider = new GoogleAuthProvider()
+
 // Função para configurar o listener de autenticação
-export function authListener(setIsLoggedIn, setUserRole, setDisplayName, setUid, setUserEmail) {
+export function authListener(setIsLoggedIn, setIsEmailVerified, setUserRole, setDisplayName, setUid, setUserEmail) {
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             setIsLoggedIn(true)
             setUid(user.uid)
             setUserEmail(user.email)
             console.log("api.js - authListener() - User is logged in")
+            setIsEmailVerified(user.emailVerified)
+            console.log("api.js - authListener() - Email verified: ", user.emailVerified)
             // console.log("api.js - authListener() - ", user)
+            // Captura o resultado do redirecionamento
             const role = await getUserRole(user)
             setUserRole(role)
             console.log("api.js - authListener() - Papel do usuário: ", role)
@@ -33,6 +43,7 @@ export function authListener(setIsLoggedIn, setUserRole, setDisplayName, setUid,
         } else {
             setIsLoggedIn(false)
             setUid(null)
+            setIsEmailVerified(false)
             console.log("api.js - authListener() - User is logged out")
             setUserRole(null);
             setDisplayName(null);
@@ -46,6 +57,8 @@ export async function authCreateAccountWithEmail(name, email, password) {
         await createUserWithEmailAndPassword(auth, email, password)
         await updateProfile(auth.currentUser, { displayName: name })
         // console.log("Profile updated")
+        // Envia o email de verificação
+        await sendEmailVerification(auth.currentUser)
     } catch(error) {
         console.error(error.message)
         throw error
@@ -62,6 +75,17 @@ export async function authLogInWithEmail(email, password, setIsLoggedIn) {
     }
 }
 
+export async function authSignInWithGoogle() {
+    try {
+        const result = await signInWithPopup(auth, provider)
+        // Retorna o resultado ou o usuário logado, conforme sua necessidade
+        return result.user
+    } catch (error) {
+        console.error("Erro ao fazer login com o Google:", error)
+        throw error
+    }
+}
+
 export async function authLogOut(setIsLoggedIn) {
     try {
         await signOut(auth)
@@ -71,16 +95,27 @@ export async function authLogOut(setIsLoggedIn) {
     }
 }
 
+// Função para enviar o e-mail de recuperação de senha
+export async function authSendPasswordResetEmail(email) {
+    try {
+        await sendPasswordResetEmail(auth, email)
+    } catch (error) {
+        console.error("Erro ao enviar e-mail de recuperação:", error)
+        throw error
+    }
+}
+
 // Função para obter o papel do usuário
 export async function getUserRole(user) {
-    if (!user) return null;
+    if (!user) return null
     try {
-        const tokenResult = await getIdTokenResult(user);
-        // console.log("api.js - getUserRole() - Papel do usuário: ", tokenResult.claims.role);
-        return tokenResult.claims.role || null; // Retorna "role" ou null
+        const tokenResult = await getIdTokenResult(user)
+        // console.log("api.js - getUserRole() - Papel do usuário: ", tokenResult.claims.role)
+        // Retorna "role" ou null
+        return tokenResult.claims.role || null 
     } catch (error) {
-        console.error("api.js - getUserRole() - Erro ao obter o papel do usuário:", error);
-        return null;
+        console.error("api.js - getUserRole() - Erro ao obter o papel do usuário:", error)
+        return null
     }
 }
 

@@ -47,6 +47,9 @@ const TitleContainer = styled.div`
 
 const ApplicationFormContainer = styled.form`
     padding: 0 1em 1em 1em;
+    & h2 {
+        text-align: center;
+    }
 `
 
 const InputContainer = styled.div`

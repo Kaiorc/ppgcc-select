@@ -162,13 +162,13 @@ const NavigationButtonsContainer = styled.div`
 
 function shouldShowNavigationButtons(location) {
     // return location.pathname !== "/" && location.pathname !== "/processes" && location.pathname !== "/signin"
-    const hiddenPaths = ["/", "/processes", "/signin", "/processes/active", "/processes/inactive", "/processes/my-applications"]
+    const hiddenPaths = ["/", "/signin", "/forgotten-password", "/email-verification", "/processes", "/processes/active", "/processes/inactive", "/processes/my-applications"]
     return !hiddenPaths.includes(location.pathname)
 }
 
 function shouldShowInfoArea(isLoggedIn, location) {
     // return isLoggedIn && location.pathname !== "/" && location.pathname !== "/signin"
-    const hiddenPaths = ["/", "/signin"]
+    const hiddenPaths = ["/", "/signin", "/forgotten-password"]
     return isLoggedIn && !hiddenPaths.includes(location.pathname)
 }
 

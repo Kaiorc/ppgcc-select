@@ -15,7 +15,7 @@ const LoaderContainer = styled.div`
 
 export default function AuthRequired({requiredRole}) {
   
-  const { isLoggedIn, userRole } = useAuth()
+  const { isLoggedIn, isEmailVerified, userRole } = useAuth()
 
   // console.log("AuthRequired.jsx - ", isLoggedIn)
 
@@ -36,8 +36,12 @@ export default function AuthRequired({requiredRole}) {
     return <Navigate to="/" />
   }
 
+  if (!isEmailVerified) {
+    return <Navigate to="/email-verification" replace />
+  }
+
   if (requiredRole && userRole !== requiredRole) {
-    return <Navigate to="/not-authorized" />;
+    return <Navigate to="/not-authorized" replace />;
   }
 
   return <Outlet />

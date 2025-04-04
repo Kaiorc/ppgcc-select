@@ -90,25 +90,6 @@ export async function getInactiveProcesses() {
     }
 }
 
-// export async function getInactiveProcesses() {
-//     // Função para verificar se um processo está fora do período de inscrição
-//     function isOutsideApplicationPeriod(startDate, endDate) {
-//         const now = new Date()
-//         return now < new Date(startDate) || now > new Date(endDate)
-//     }
-
-//     try {
-//         const processes = await getProcesses()
-//         const inactiveProcesses = processes.filter(process => 
-//             isOutsideApplicationPeriod(process.startDate, process.endDate)
-//         )
-//         return inactiveProcesses
-//     } catch (error) {
-//         console.error("Erro ao obter processos inativos:", error)
-//         throw error
-//     }
-// }
-
 // Função para obter todos os processos ativos
 export async function getActiveProcesses() {
     try {
@@ -119,7 +100,7 @@ export async function getActiveProcesses() {
             processesCollectionRef,
             where("startDate", "<=", today), // Início já ocorreu ou está acontecendo
             where("endDate", ">=", today)    // Ainda não terminou
-        );
+        )
 
         const snapshot = await getDocs(activeQuery);
 
@@ -135,25 +116,6 @@ export async function getActiveProcesses() {
         throw error;
     }
 }
-
-// export async function getActiveProcesses() {
-//     // Função para verificar se um processo está dentro do período de inscrição
-//     function isWithinApplicationPeriod(startDate, endDate) {
-//         const now = new Date()
-//         return now >= new Date(startDate) && now <= new Date(endDate)
-//     }
-
-//     try {
-//         const processes = await getProcesses()
-//         const activeProcesses = processes.filter(process => 
-//             isWithinApplicationPeriod(process.startDate, process.endDate)
-//         )
-//         return activeProcesses
-//     } catch (error) {
-//         console.error("Erro ao obter processos ativos:", error)
-//         throw error
-//     }
-// }
 
 // Função para carregar um processo pelo ID e atualizar o estado no componente em
 // que é chamada
@@ -206,12 +168,6 @@ export async function createProcess(data) {
     }
 }
 
-// Função para criar um novo processo com id gerado automaticamente pelo Firebase
-// export async function createProcess(data) {
-//     // Adiciona um novo documento à coleção "processes" com os dados fornecidos
-//     await addDoc(processesCollectionRef, data)
-// }
-
 // Função para atualizar um processo existente pelo ID
 export async function updateProcess(id, data) {
     // Função para atualizar um processo existente pelo ID
@@ -219,14 +175,6 @@ export async function updateProcess(id, data) {
     // Atualiza o documento no Firestore com os novos dados
     await updateDoc(docRef, data) 
 }
-
-// Função para deletar um processo pelo ID
-// export async function deleteProcess(id) {
-//     // Cria uma referência ao documento com o ID fornecido
-//     const processRef = doc(db, "processes", id) 
-//     // Deleta o documento do Firestore
-//     await deleteDoc(processRef)
-// }
 
 // Função deleteProcess que só roda se processHasApplications retornar false
 export async function deleteProcess(id) {
@@ -248,34 +196,6 @@ export async function deleteProcess(id) {
 
     await batch.commit();
 }
-
-// async function deleteCollection(ref) {
-//     const querySnapshot = await getDocs(ref);
-//     for (const document of querySnapshot.docs) {
-//       // Se o documento tiver subcoleções, repita o processo recursivamente
-//       // Aqui você deve conhecer previamente os nomes das subcoleções ou obtê-los de alguma forma
-//       const subCollections = ['applications', 'news'];
-//       for (const subCol of subCollections) {
-//         const subColRef = collection(document.ref, subCol);
-//         await deleteCollection(subColRef);
-//       }
-//       await deleteDoc(document.ref);
-//     }
-// }
-  
-// export async function deleteProcess(id) {
-//     const processRef = doc(db, "processes", id);
-
-//     // Deletar subcoleções do processo
-//     const subCollections = ['applications', 'news'];
-//     for (const subCol of subCollections) {
-//         const subColRef = collection(processRef, subCol);
-//         await deleteCollection(subColRef);
-//     }
-
-//     // Agora, deleta o documento principal
-//     await deleteDoc(processRef);
-// }
 
 // Função para adicionar os dados do candidato a um doc na coleção "applications"
 export async function addApplication(id, data, name, uid, userEmail) {
@@ -466,7 +386,9 @@ export async function getSpecificProcessNews(processId, newsId) {
     }
 }
 
-// Função para obter todos os avisos de um processo
+// Função para obter todos os avisos de um processo.
+// Usar query pode ser mais eficiente quando se trata de grandes volumes de
+// dados, pois a ordenação é feita no servidor e reduz o processamento no cliente
 export async function getProcessNews(processId) {
     try {
         const newsCollectionRef = collection(db, `processes/${processId}/news`)
@@ -478,6 +400,8 @@ export async function getProcessNews(processId) {
                 ...doc.data(),
                 id: doc.id
             }))
+            // Ordena os avisos para que o mais recente venha primeiro
+            .sort((a, b) => new Date(b.date) - new Date(a.date))
         return news
     } catch (error) {
         console.error("Erro ao obter avisos:", error)
