@@ -1,11 +1,11 @@
 # PPGCC Select - Sistema de Gerenciamento de Processos Seletivos do PPGCC
 
-![PPGCC Select](https://github.com/Kaiorc/ppgccelect/blob/master/src/assets/images/logo-ppgcc-select-side-cropped.png?raw=true)
+![PPGCC Select](https://github.com/Kaiorc/ppgcc-select/blob/master/src/assets/images/logo-ppgcc-select-side-cropped.png?raw=true)
 
 Este projeto é uma aplicação web desenvolvida em **React** com **Vite** e **Firebase** para gerenciamento de processos seletivos do Programa de Pós-Graduação em Ciência da Computação (PPGCC) da Universidade Estadual do Ceará (UECE). Ele permite que administradores criem, editem e gerenciem processos seletivos, enquanto candidatos podem criar contas utilizando e-mail e senha ou autenticação com o Google, se inscrever e acompanhar atualizações sobre os processos seletivos.
 
 ## 💻 Acesso
-**[Clique aqui para acessar o PPGCC Select](https://ppgccselect.netlify.app/)**
+**[Clique aqui para acessar o PPGCC Select](https://ppgcc-select.netlify.app/)**
 
 ## 💥 Funcionalidades
 
