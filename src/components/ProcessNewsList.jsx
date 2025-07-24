@@ -78,12 +78,15 @@ const BoldInfo = styled.b`
     }
 `
 
-// Componente que renderiza uma lista de notícias do processo
+// Componente que renderiza a lista de avisos do processo
 export default function ProcessNewsList({ news }) {
+    // Mapeamento dos avisos recebidos como props e renderização de um item de lista para cada aviso
     const newsElements = news.map((processNews) => {
+        // Extrai o título e o corpo da notícia da prop processNews
         const body = processNews.body
+        // Limita o preview do corpo da notícia a 250 caracteres e adiciona "..."
+        // no final para indicar que o texto foi truncado
         const preview = body.substring(0, 250) + "..."
-        console.log("ProcessNewsList.jsx - preview: ", preview)
 
         return (
             <Link 

@@ -25,11 +25,16 @@ const BoldGreenMessage = styled.h2`
     }   
 `
 
+// Componente que renderiza a lista de processos seletivos ativos
 export default function ActiveProcesses() {
+    // Estado para armazenar os processos seletivos ativos
     const [activeSelectionProcesses, setActiveSelectionProcesses] = React.useState([])
 
+    // Estado para controlar o carregamento dos dados, inicialmente, o
+    // estado de carregamento é verdadeiro para exibir o loader
     const [loading, setLoading] = React.useState(true)
 
+    // useEffect para carregar os processos seletivos ativos
     React.useEffect(() => {
         async function loadData() {
             const activeProcesses = await loadActiveProcesses()
@@ -39,8 +44,6 @@ export default function ActiveProcesses() {
         }
         loadData()
     }, [])
-
-    console.log("ActiveProcesses.jsx - ", activeSelectionProcesses)
 
     return (
         <>

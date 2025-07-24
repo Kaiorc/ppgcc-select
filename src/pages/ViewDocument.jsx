@@ -53,11 +53,14 @@ const ErrorMessage = styled.p`
     font-size: 1.2em;
 `
 
+// Componente principal para visualização de documentos
 export default function ViewDocument() {
+    // Estados para controle do URL do arquivo, carregamento e erro
     const [fileUrl, setFileUrl] = React.useState(null)
     const [loading, setLoading] = React.useState(true)
     const [error, setError] = React.useState(null)
 
+    // Hooks do React Router para navegação e localização
     const navigate = useNavigate()
     const { state } = useLocation()
 
@@ -65,7 +68,9 @@ export default function ViewDocument() {
     const fileFormat = state?.fileFormat
     const fileId = state?.fileId
 
+    // useEffect para buscar o URL do arquivo quando o componente é montado
     React.useEffect(() => {
+        // Função assíncrona para buscar o URL do arquivo
         async function fetchFileUrl() {
             // Se os dados não foram passados via state, indica erro
             if (!fileId || !fileFormat) {
@@ -73,6 +78,7 @@ export default function ViewDocument() {
                 setLoading(false)
                 return
             }
+            // Tenta obter o URL do arquivo
             try {
                 const url = await getFileForViewing(fileId)
                 setFileUrl(url)
@@ -87,6 +93,7 @@ export default function ViewDocument() {
         fetchFileUrl()
     }, [fileId, fileFormat])
 
+    // Renderiza um spinner de carregamento enquanto o arquivo está sendo buscado
     if(loading){
         return (
             <Box>

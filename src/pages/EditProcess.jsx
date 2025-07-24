@@ -144,6 +144,7 @@ const ErrorMessage = styled.p`
     font-size: 1.2em;
 `
 
+// Função para mapear o tipo de campo para uma string legível
 function mapFieldType(type) {
     switch(type) {
         case 'text':
@@ -161,7 +162,9 @@ function mapFieldType(type) {
     }
 }
 
+// Componente principal da página de edição do processo seletivo
 export default function EditProcess() {
+    // Estado para armazenar os dados do processo seletivo
     const [selectionProcessData, setSelectionProcessData] = React.useState({
         name: "", 
         places: "",
@@ -174,21 +177,27 @@ export default function EditProcess() {
         registrationFieldsInfo: []
     })
     
+    // Estados para controle de carregamento, envio e erros
     const [loading, setLoading] = React.useState(true)
     const [submitLoading, setSubmitLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
 
+    // Estados para controle de modais
     const [isImportModalOpen, setIsImportModalOpen] = React.useState(false)
     const [isRegistrationModalOpen, setIsRegistrationModalOpen] = React.useState(false)
     const [fieldBeingEdited, setFieldBeingEdited] = React.useState(null)
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false) 
 
+    // Estado para verificar se o processo já possui inscrições
     const [hasApplications, setHasApplications] = React.useState(false)
 
+    // Hook do React Router para navegação e obtenção de parâmetros da URL
     const navigate = useNavigate()
     const { processId } = useParams()
 
+    // useEffect para carregar os dados do processo seletivo quando o componente é montado
     React.useEffect(() => {
+        // Função assíncrona para buscar os dados do processo
         async function loadProcess() {
             const process = await getProcess(processId)
             setSelectionProcessData(process)
@@ -205,7 +214,9 @@ export default function EditProcess() {
         loadProcess()
     }, [processId])
     
+    // useEffect para atualizar a data limite de análise quando a data de término é alterada
     React.useEffect(() => {
+        // Se a data de término estiver definida, adiciona 10 dias para a data limite de análise
         if (selectionProcessData.endDate) {
             const endDate = new Date(selectionProcessData.endDate)
             endDate.setDate(endDate.getDate() + 10)
@@ -216,6 +227,7 @@ export default function EditProcess() {
         }
     }, [selectionProcessData.endDate])
 
+    // Função para lidar com o envio do formulário
     async function handleSubmit(event) {
         event.preventDefault()
         
@@ -254,6 +266,7 @@ export default function EditProcess() {
         }
     }
 
+    // Função para lidar com mudanças nos campos do formulário
     function handleChange(event) {
         const {name, value, type, checked} = event.target
 
@@ -275,6 +288,7 @@ export default function EditProcess() {
         }))
     }
 
+    // Função para lidar com a adição de um novo campo
     function handleAddField(field) {
         const isDuplicate = selectionProcessData.registrationFieldsInfo.some(existingField => existingField.name === field.name);
         if (isDuplicate) {
@@ -287,6 +301,7 @@ export default function EditProcess() {
         }));
     }
 
+    // Função para lidar com a importação de campos de outro processo
     function handleImportFields(process) {
         const newFields = process.registrationFieldsInfo.filter(importedField => 
             !selectionProcessData.registrationFieldsInfo.some(existingField => existingField.name === importedField.name)
@@ -306,6 +321,7 @@ export default function EditProcess() {
         setIsImportModalOpen(false);
     }
 
+    // Função para lidar com a exclusão de um campo
     function handleDeleteField(index) {
         setSelectionProcessData(prevSelectionProcessData => ({
             ...prevSelectionProcessData,
@@ -313,11 +329,13 @@ export default function EditProcess() {
         }))
     }
 
+    // Função para lidar com a edição de um campo
     function handleEditField(index) {
         setFieldBeingEdited({ ...selectionProcessData.registrationFieldsInfo[index], index })
         setIsEditModalOpen(true)
     }
 
+    // Função para salvar o campo editado
     function handleSaveEditedField(editedField) {
         setSelectionProcessData(prevSelectionProcessData => {
             const updatedFields = [...prevSelectionProcessData.registrationFieldsInfo]
@@ -330,6 +348,7 @@ export default function EditProcess() {
         setIsEditModalOpen(false)
     }
 
+    // Se estiver carregando, exibe um loader
     if(loading){
         return (
             <Box>

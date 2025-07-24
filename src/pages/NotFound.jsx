@@ -125,6 +125,7 @@ const ReturnButton = styled(Button)`
 	}
 `
 
+// Componente que renderiza a página de "Não Encontrado"
 export default function NotFound() {
 	return (
 		<Container>

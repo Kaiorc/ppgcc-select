@@ -7,7 +7,7 @@ import { getApplications, loadProcess } from "../../services/firebase/firebase-f
 import { formatFirestoreDate } from "../utils/formatters/formatters"
 import PpgccLogo from "../assets/images/logo-ppgcc.png"
 import UeceLogo from "../assets/images/logo-uece.png"
-import PpgccelectLogoTop from "../assets/images/logo-ppgccelect-top-cropped.png"
+import PpgccSelectLogoTop from "../assets/images/logo-ppgcc-select-top-cropped.png"
 import Box from "../components/Box"
 import Button from "../components/Button"
 import ApplicationsTable from "../components/ApplicationsTable"
@@ -87,6 +87,7 @@ const BoldGreenMessage = styled.p`
     }   
 `
 
+// Função para agrupar as inscrições por área de pesquisa
 function groupByResearchArea(data) {
     return data.reduce((acc, application) => {
         // Acessa researchArea dentro de candidateProvidedData, com fallback caso não exista
@@ -99,6 +100,7 @@ function groupByResearchArea(data) {
     }, {})
 }
 
+// Função para formatar a data de criação das inscrições
 function formatCreatedAt(data) {
     return data.map(info => ({
         ...info,
@@ -106,6 +108,7 @@ function formatCreatedAt(data) {
     }))
 }
 
+// Função para formatar os dados das inscrições para exibição na tabela
 function formatApplicationData(applications) {
     return applications.map(application => ({
         NOME: application.name,
@@ -116,18 +119,25 @@ function formatApplicationData(applications) {
     }))
 }
 
+// Função para verificar se o estado de inscrições está vazio
 function isApplicationsStateEmpty(applications) {
     return applications.length === 0 || (applications.length === 1 && applications[0].uid === "placeholder")
 }
 
+// Componente principal da página de aplicações
 export default function Applications() {
+    // Estados para armazenar as inscrições e o processo de seleção
     const [applications, setApplications] = React.useState([])
     const [selectionProcess, setSelectionProcess] = React.useState(null)
 
+    // Hooks do React Router para obter o ID do processo seletivo a partir dos parâmetros da URL
+    // e para navegação entre páginas
     const { processId } = useParams()
     const navigate = useNavigate()
 
+    // Hook do React para carregar os dados do processo seletivo e as inscrições quando o componente é montado
     React.useEffect(() => {
+        // Função assíncrona para carregar os dados do processo seletivo e as inscrições
         async function loadData() {
             const process = await loadProcess(processId)
             setSelectionProcess(process)
@@ -149,8 +159,9 @@ export default function Applications() {
     // Verifica se todas as inscrições foram avaliadas (status diferente de "Não analisada")
     const allEvaluated = applications.length > 0 && applications.every(app => app.status !== "Não analisada")
 
+    // Função para lidar com a navegação para a página de avaliação de uma inscrição
     function handleEvaluate(uid) {
-        console.log("UID recebido no handleEvaluate:", uid)
+        // console.log("UID recebido no handleEvaluate:", uid)
         navigate(`evaluate/${uid}`)
     }
 
@@ -166,7 +177,7 @@ export default function Applications() {
         
         // Largura e altura das imagens
         const ppgccWidth = 70, ppgccHeight = 22
-        const ppgccelectWidth = 70, ppgccelectHeight = 38
+        const ppgccSelectWidth = 70, ppgccSelectHeight = 38
         const ueceWidth = 65, ueceHeight = 22
       
         // Espaço entre as imagens
@@ -174,7 +185,7 @@ export default function Applications() {
       
         // Soma total das larguras das três imagens + espaços
         const totalImagesWidth =
-          ppgccWidth + ppgccelectWidth + ueceWidth +
+          ppgccWidth + ppgccSelectWidth + ueceWidth +
           spacingBetweenImages * 2
       
         // Posição X inicial para que as imagens fiquem centralizadas
@@ -185,17 +196,17 @@ export default function Applications() {
         // Adiciona as imagens individualmente, usando as larguras e alturas definidas
         doc.addImage(UeceLogo, "PNG", startX, yPos, ueceWidth, ueceHeight)
         doc.addImage(
-          PpgccelectLogoTop,
+          PpgccSelectLogoTop,
           "PNG",
           startX + ueceWidth + spacingBetweenImages,
           yPos,
-          ppgccelectWidth,
-          ppgccelectHeight
+          ppgccSelectWidth,
+          ppgccSelectHeight
         )
         doc.addImage(
           PpgccLogo,
           "PNG",
-          startX + ueceWidth + ppgccelectWidth + spacingBetweenImages * 2,
+          startX + ueceWidth + ppgccSelectWidth + spacingBetweenImages * 2,
           yPos,
           ppgccWidth,
           ppgccHeight
@@ -274,9 +285,13 @@ export default function Applications() {
         doc.save(`Resultado - Classificados da Primeira Fase - ${selectionProcess.name}.pdf`)
     }
 
-    const isGrouped = selectionProcess?.researchFieldRequired;
-    const groupedApplications = isGrouped ? groupByResearchArea(applications) : { "": applications };
+    // Verifica se o processo seletivo requer agrupamento por área de pesquisa
+    const isGrouped = selectionProcess?.researchFieldRequired
+    // Agrupa as inscrições por área de pesquisa, se necessário, caso contrário, coloca todas as inscrições
+    // em uma única chave vazia
+    const groupedApplications = isGrouped ? groupByResearchArea(applications) : { "": applications }
 
+    // Formata os dados das inscrições para exibição na tabela
     const tablesElements = Object.keys(groupedApplications).map(researchArea => (
         <div key={researchArea}>
             {researchArea && <h2>{researchArea}</h2>}
@@ -298,7 +313,7 @@ export default function Applications() {
                         </TitleContainer>
                         <h2>DETALHES</h2>
                         <BoldGreenMessage>
-                            A EXPORTAÇÃO DA LISTA DE APROVADOS SERÁ LIBERADA APENAS QUANDO TODA AS INSCRIÇÕES DO PROCESSO SELETIVO FOREM ANALISADAS 
+                            A EXPORTAÇÃO DA LISTA DE APROVADOS SERÁ LIBERADA APENAS QUANDO TODAS AS INSCRIÇÕES DO PROCESSO SELETIVO FOREM ANALISADAS 
                         </BoldGreenMessage>
                         { !isApplicationsEmpty && allEvaluated && (
                             <Button onClick={handleExportResult}>

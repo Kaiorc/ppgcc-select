@@ -89,10 +89,13 @@ const ListItem = styled.li`
   }
 `
 
+// Componente que renderiza um modal para importar campos de processos seletivos
 export default function ImportProcessFieldModal({ onClose, onImport }) {
   const [processes, setProcesses] = React.useState([])
   const [loading, setLoading] = React.useState(true)
 
+  // useEffect para carregar os processos seletivos ao montar o componente
+  // e atualizar o estado de loading
   React.useEffect(() => {
     async function loadData() {
       const data = await getProcesses()
@@ -102,6 +105,8 @@ export default function ImportProcessFieldModal({ onClose, onImport }) {
     loadData()
   }, [])
 
+  // Renderiza o modal com uma lista de processos seletivos para importar campos
+  // e um botão para fechar o modal
   const processesElements = processes.map((process) => {
     return (
       <ListItem key={process.id} onClick={() => onImport(process)}>
@@ -139,5 +144,5 @@ export default function ImportProcessFieldModal({ onClose, onImport }) {
         </ContentContainer>
       </ModalContainer>
     </ModalBackground>
-  );
+  )
 }

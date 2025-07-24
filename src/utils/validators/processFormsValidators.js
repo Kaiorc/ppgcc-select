@@ -1,3 +1,5 @@
+// Funções para validar campos de um formulário de inscrição
+
 // Função para validar o campo "name". remove espaços em branco no início e no fim
 // da string. Se o nome estiver vazio após a remoção dos espaços, retorna "O nome é
 // obrigatório". Caso contrário, retorna null

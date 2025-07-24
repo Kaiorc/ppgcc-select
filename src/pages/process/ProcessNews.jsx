@@ -26,13 +26,20 @@ const BoldGreenMessage = styled.h2`
     }   
 `
 
+// Componente que renderiza as atualizações de um processo seletivo
 export default function ProcessNews() {
+    // Estado para armazenar as atualizações do processo seletivo
     const [news, setNews] = React.useState([])
 
+    // Obtém o processo seletivo do contexto da rota
     const { selectionProcess } = useOutletContext()
 
+    // Estado para controlar o carregamento dos dados, inicialmente, o
+    // estado de carregamento é verdadeiro para exibir o loader
     const [loading, setLoading] = React.useState(true)
 
+    // useEffect para carregar as atualizações do processo seletivo ao montar o componente
+    // e sempre que o processo seletivo selecionado mudar
     React.useEffect(() => {
         async function loadData() {
             const news = await loadProcessNews(selectionProcess.id)
@@ -42,9 +49,7 @@ export default function ProcessNews() {
         loadData()
     }, [selectionProcess])
 
-    console.log("ProcessNews.jsx - selectionProcess: ", selectionProcess)
-    console.log("ProcessNews.jsx - news: ", news)
-
+    // Exibe um loader enquanto os dados estão sendo carregados
     if(loading){
         return (
             <LoaderContainer>

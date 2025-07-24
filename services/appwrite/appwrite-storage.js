@@ -1,5 +1,6 @@
 import { storage } from "./appwrite-config"
 
+// Importando o ID do bucket de armazenamento a partir das variáveis de ambiente
 const bucketId = import.meta.env.VITE_APPWRITE_STORAGE_BUCKET_ID
 
 // Função para fazer upload de um arquivo para o Appwrite Storage e retornar a

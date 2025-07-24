@@ -75,8 +75,10 @@ const BoldInfo = styled.b`
     }
 `
 
-// Componente que renderiza uma lista de processos seletivos
+// Componente que renderiza uma lista de processos seletivos e exibe informações básicas
+// sobre cada processo
 export default function ProcessesList({ selectionProcesses }) {
+    // Mapeamento dos processos seletivos recebidos como props e renderização de um item de lista para cada processo
     const processesElements = selectionProcesses.map((process) => {
         return (
             <Link 

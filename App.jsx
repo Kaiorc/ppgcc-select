@@ -27,34 +27,47 @@ import Application from './src/pages/Application'
 import ViewDocument from './src/pages/ViewDocument'
 import EvaluateApplication from './src/pages/EvaluateApplication'
 
+// Estilo global definido com styled-components que encapsula toda a aplicação
 const GlobalStyle = createGlobalStyle`
-  * {
-      box-sizing: border-box;
-  }
+    * {
+        box-sizing: border-box;
+    }
 
-  html,
-  body {
-      margin: 0;
-      padding: 0;
-      background-color: #fff;
-      font-family: "Inter", sans-serif;
-  }
+    html,
+    body {
+        margin: 0;
+        padding: 0;
+        background-color: #fff;
+        font-family: "Inter", sans-serif;
+    }
 
-  a {
-      text-decoration: unset;
-      color: unset;
-  }
+    a {
+        text-decoration: unset;
+        color: unset;
+    }
 
-  body::-webkit-scrollbar {
-      display: none;
-  }
+    body::-webkit-scrollbar {
+        display: none;
+    }
 
-  body {
-      -ms-overflow-style: none;
-      scrollbar-width: none;
-  }
+    body {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .sr-only {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        margin: -1px;
+        overflow: hidden;
+        clip: rect(0,0,0,0);
+        border: 0;
+    }
 `
 
+// Componente principal da aplicação que define as rotas e o contexto de autenticação
 export default function App() {
     return (
         <AuthProvider>

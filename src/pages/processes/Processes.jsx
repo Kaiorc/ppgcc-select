@@ -67,11 +67,16 @@ const ListNav = styled.nav`
     }
 `
 
+// Componente principal que renderiza a lista de processos seletivos
 export default function Processes() {
+    // Estado para armazenar os processos seletivos
     const [selectionProcesses, setSelectionProcesses] = React.useState([])
 
+    // Hook para verificar se o usuário é um administrador
+    // Ele retorna um booleano que indica se o usuário tem a função de administrador
     const isAdmin = useRole()
     
+    // useEffect para carregar os processos seletivos ao montar o componente
     React.useEffect(() => {
         async function loadProcesses() {
             const data = await getProcesses()
@@ -79,9 +84,6 @@ export default function Processes() {
         }
         loadProcesses()
     }, [])
-
-    console.log("Processes.jsx - ", selectionProcesses)
-    console.log("Processes.jsx - ", typeof selectionProcesses)
 
     return (
         <HomeContainer>

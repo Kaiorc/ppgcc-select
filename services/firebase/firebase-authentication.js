@@ -64,7 +64,8 @@ export async function authCreateAccountWithEmail(name, email, password) {
         throw error
     }
 }
- 
+
+// Função para logar com email e senha
 export async function authLogInWithEmail(email, password, setIsLoggedIn) { 
     try{
         await signInWithEmailAndPassword(auth, email, password)
@@ -75,6 +76,7 @@ export async function authLogInWithEmail(email, password, setIsLoggedIn) {
     }
 }
 
+// Função para logar com o Google
 export async function authSignInWithGoogle() {
     try {
         const result = await signInWithPopup(auth, provider)
@@ -86,6 +88,7 @@ export async function authSignInWithGoogle() {
     }
 }
 
+// Função para deslogar o usuário
 export async function authLogOut(setIsLoggedIn) {
     try {
         await signOut(auth)

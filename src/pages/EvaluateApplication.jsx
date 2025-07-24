@@ -174,6 +174,7 @@ const TableCell = styled.td`
     border: 1px solid #ddd;
     padding: 8px;
     text-align: center;
+    font-weight: bold;
 `
 
 const BoldGreenMessage = styled.p`
@@ -188,18 +189,24 @@ const BoldGreenMessage = styled.p`
     }   
 `
 
+// Componente principal da página de avaliação da inscrição
 export default function EvaluateApplication() {
+    // Estados para armazenar a inscrição, carregamento, status e checkboxes      
     const [application, setApplication] = React.useState(null)
     const [loading, setLoading] = React.useState(true)
     const [selectedStatus, setSelectedStatus] = React.useState("")
     const [checkboxes, setCheckboxes] = React.useState({})
 
+    // Obtém os parâmetros da URL e o hook de navegação
     const { processId, uid } = useParams()
     const navigate = useNavigate()
 
+    // Define os campos que não devem ser exibidos na tabela
     const hiddenTableField = ["researchArea"]
 
+    // useEffect para carregar os dados da inscrição quando o componente é montado
     React.useEffect(() => {
+        // Função assíncrona para carregar os dados da inscrição
         async function loadData() {
             try {
                 const applicationInfo = await getUserApplication(processId, uid)
@@ -230,6 +237,7 @@ export default function EvaluateApplication() {
         loadData()
     }, [processId, uid])
 
+    // Função para formatar o valor de cada campo
     function formatValue(key, value) {
         if (value && typeof value === 'object' && value.format && value.id) {
             return (
@@ -251,11 +259,13 @@ export default function EvaluateApplication() {
         return value
     }
 
+    // Função para lidar com a visualização de documentos
     function handleViewDocument(fileFormat, fileId) {
         // Redireciona para a rota '/viewdocument' passando a URL via state
         navigate(`/processes/${processId}/applications/evaluate/${uid}/view-document`, { state: { fileFormat: fileFormat, fileId: fileId } })
     }
     
+    // Função para lidar com mudanças nos checkboxes
     function handleCheckboxChange(key) {
         setCheckboxes(prevCheckboxes => ({
             ...prevCheckboxes,
@@ -263,11 +273,13 @@ export default function EvaluateApplication() {
         }))
     }
     
+    // Função para verificar se todos os checkboxes estão marcados
     function areAllChecked() {
         console.log("Checkboxes:", checkboxes)
         return Object.values(checkboxes).every(checked => checked === true)
     }
     
+    // Função para lidar com a atualização do status da inscrição
     async function handleUpdateStatus() {
         if (areAllChecked() && selectedStatus) {
             try {
@@ -280,6 +292,7 @@ export default function EvaluateApplication() {
         }
     }
 
+    // Se estiver carregando, exibe um loader
     if(loading){
         return (
             <Box>
@@ -295,21 +308,29 @@ export default function EvaluateApplication() {
         )
     }
 
+    // Mapeia os dados da inscrição para exibição na tabela, filtrando os campos ocultos
     const applicationElements = Object.entries(application.candidateProvidedData)
         .filter(([key]) => !hiddenTableField.includes(key))
-        .map(([key, value]) => (
+        .map(([key, value]) => {
+            const checkboxId = `checkbox-${key}`
+            return (
             <TableRow key={key}>
                 <TableCell>{key}</TableCell>
                 <TableCell>{formatValue(key, value)}</TableCell>
                 <TableCell>
                     <Input 
+                        id={checkboxId}
                         type="checkbox" 
                         checked={checkboxes[key] || false} 
                         onChange={() => handleCheckboxChange(key)} 
                     />
+                    <label htmlFor={checkboxId} style={{ marginLeft: "0.5em" }}>
+                        <span className="sr-only">{`Verificar ${key}`}</span>
+                    </label>
                 </TableCell>
             </TableRow>
-        ))
+        )
+    })
 
     return (
         <EvaluateApplicationContainer>

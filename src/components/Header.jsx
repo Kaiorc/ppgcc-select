@@ -1,8 +1,8 @@
 import React from "react"
 import PpgccLogo from "../assets/images/logo-ppgcc.png"
 import UeceLogo from "../assets/images/logo-uece.png"
-import PpgccelectLogoSide from "../assets/images/logo-ppgccelect-side-cropped.png"
-import PpgccelectLogoTop from "../assets/images/logo-ppgccelect-top-cropped.png"
+import PpgccSelectLogoSide from "../assets/images/logo-ppgcc-select-side-cropped.png"
+import PpgccSelectLogoTop from "../assets/images/logo-ppgcc-select-top-cropped.png"
 import { styled } from "styled-components"
 import { Link, useLocation, useNavigate } from "react-router-dom"
 import { authLogOut } from "../../services/firebase/firebase-authentication"
@@ -81,7 +81,7 @@ const UeceLogoImg = styled.img`
     }
 `
 
-const PpgccelectLogoSideImg = styled.img`
+const PpgccSelectLogoSideImg = styled.img`
     width: 35vw;
     max-width: 576px;
     min-width: 200px;
@@ -104,7 +104,7 @@ const PpgccelectLogoSideImg = styled.img`
     }
 `
 
-const PpgccelectLogoTopImg = styled.img`
+const PpgccSelectLogoTopImg = styled.img`
     width: 28vw;
     max-width: 576px;
     min-width: 200px;
@@ -159,27 +159,32 @@ const NavigationButtonsContainer = styled.div`
         margin: 0;
     }
 `
-
+// Função que verifica se os botões de navegação devem ser exibidos, de acordo com a rota atual
 function shouldShowNavigationButtons(location) {
     // return location.pathname !== "/" && location.pathname !== "/processes" && location.pathname !== "/signin"
     const hiddenPaths = ["/", "/signin", "/forgotten-password", "/email-verification", "/processes", "/processes/active", "/processes/inactive", "/processes/my-applications"]
     return !hiddenPaths.includes(location.pathname)
 }
 
+// Função que verifica se a área de informações deve ser exibida, de acordo com o estado de autenticação e a rota atual
 function shouldShowInfoArea(isLoggedIn, location) {
     // return isLoggedIn && location.pathname !== "/" && location.pathname !== "/signin"
     const hiddenPaths = ["/", "/signin", "/forgotten-password"]
     return isLoggedIn && !hiddenPaths.includes(location.pathname)
 }
 
+// Componente Header que renderiza o cabeçalho da aplicação
 export default function Header() {
-
-    let location = useLocation();
-
+    // O hook useLocation obtém a rota atual
+    let location = useLocation()
+    
+    // O hook useNavigate é usado para navegar entre as rotas
     const navigate = useNavigate()
-
+    
+    // O hook useAuth obtém o estado de autenticação do usuário e o nome de exibição do usuário
     const { isLoggedIn, setIsLoggedIn, displayName } = useAuth()
 
+    // Função que lida com o clique do botão de logout
     async function handleLogOutButtonClick() {
         try {
             await authLogOut(setIsLoggedIn)
@@ -192,8 +197,8 @@ export default function Header() {
     
     return(
         <HeaderContainer>
-            <PpgccelectLogoTopImg
-                src={PpgccelectLogoTop} 
+            <PpgccSelectLogoTopImg
+                src={PpgccSelectLogoTop} 
                 alt='logo' 
                 className="logo-img"
             />
@@ -220,8 +225,8 @@ export default function Header() {
                     </NavigationButtonsContainer>
                 )}
             </InfoContainer>
-            <PpgccelectLogoSideImg
-                src={PpgccelectLogoSide} 
+            <PpgccSelectLogoSideImg
+                src={PpgccSelectLogoSide} 
                 alt='logo' 
                 className="logo-img"
             />

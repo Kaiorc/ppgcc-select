@@ -9,6 +9,8 @@ const StyledBox = styled.div`
     box-shadow: 0 0 20px 0 rgba(0, 0, 0, 0.2);
 `
 
+// Componente que renderiza uma caixa estilizada, pode ser usado para agrupar outros componentes
+// e recebe os filhos e uma classe opcional para personalização
 export default function Box({ children, className }) {
 
     return(

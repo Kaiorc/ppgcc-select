@@ -25,11 +25,16 @@ const BoldGreenMessage = styled.h2`
     }   
 `
 
+// Componente que renderiza a lista de processos seletivos inativos
 export default function InactiveProcesses() {
+    // Estado para armazenar os processos seletivos inativos
     const [inactiveSelectionProcesses, setInactiveSelectionProcesses] = React.useState([])
 
+    // Estado para controlar o carregamento dos dados, inicialmente, o
+    // estado de carregamento é verdadeiro para exibir o loader
     const [loading, setLoading] = React.useState(true)
 
+    // useEffect para carregar os processos seletivos inativos
     React.useEffect(() => {
         async function loadData() {
             const inactiveProcesses = await loadInactiveProcesses()
@@ -39,8 +44,6 @@ export default function InactiveProcesses() {
         }
         loadData()
     }, [])
-
-    console.log("InactiveProcesses.jsx - ", inactiveSelectionProcesses)
 
     return (
         <>

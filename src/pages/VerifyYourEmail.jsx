@@ -127,10 +127,13 @@ const LogoutButton = styled(Button)`
 	}
 `
 
+// Componente que renderiza a página de verificação de email
 export default function VerifyYourEmail() {
 
+	// Hook do React Router para navegação
     const navigate = useNavigate()
     
+	// Hook personalizado para autenticação
     const { isLoggedIn, setIsLoggedIn, isEmailVerified } = useAuth()
 
     // Redireciona para a página inicial se estiver logado e o email estiver verificado
@@ -140,6 +143,7 @@ export default function VerifyYourEmail() {
         }
     }, [isEmailVerified, navigate])
 
+	// Função para lidar com o clique no botão de logout
     async function handleLogOutButtonClick() {
         try {
             await authLogOut(setIsLoggedIn)
@@ -155,7 +159,7 @@ export default function VerifyYourEmail() {
 			<Title>EMAIL</Title>
 			<div>
 				<Subtitle aria-label="Página não encontrada">
-					ANTES DE CONTINUAR, É NECESSÁRIO CONFIRMAR O SEU EMAIL. VERIFIQUE A CAIXA DE SPAM OU LIXO ELETRÔNICO, CASO NÃO ENCONTRE O EMAIL NA CAIXA DE ENTRADA.
+					ANTES DE CONTINUAR, É NECESSÁRIO CONFIRMAR O SEU EMAIL. VERIFIQUE A CAIXA DE SPAM OU LIXO ELETRÔNICO CASO NÃO ENCONTRE O EMAIL NA CAIXA DE ENTRADA.
 				</Subtitle>
 				<Link to="/" aria-label="Voltar para a tela inicial">
 					<LogoutButton 

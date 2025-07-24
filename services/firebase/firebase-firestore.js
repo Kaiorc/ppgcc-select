@@ -117,18 +117,19 @@ export async function getActiveProcesses() {
     }
 }
 
-// Função para carregar um processo pelo ID e atualizar o estado no componente em
-// que é chamada
+// Função para carregar um processo pelo ID
 export async function loadProcess(id) {
     const data = await getProcess(id)
     return data
 }
 
+// Função para carregar todos os processos ativos
 export async function loadActiveProcesses() {
     const data = await getActiveProcesses()
     return data
 }
 
+// Função para carregar os processos que já terminaram ou ainda não começaram
 export async function loadInactiveProcesses() {
     const data = await getInactiveProcesses()
     return data
@@ -425,6 +426,7 @@ export async function getProcessNews(processId) {
 //     }
 // }
 
+// Função para carregar um aviso específico de um processo seletivo
 export async function loadProcessNews(id) {
     const data = await getProcessNews(id)
     return data

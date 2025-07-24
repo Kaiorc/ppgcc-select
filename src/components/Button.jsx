@@ -22,6 +22,7 @@ const StyledButton = styled.button`
     };
 `
 
+// Componente de botão reutilizável que recebe filhos, função de clique, tipo, classe e estado de carregamento
 export default function Button({ children, onClick, type, className, loading }) {   
 
     return(

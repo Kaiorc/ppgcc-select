@@ -1,6 +1,6 @@
-import React from 'react';
-import styled from 'styled-components';
-import Button from './Button';
+import React from 'react'
+import styled from 'styled-components'
+import Button from './Button'
 
 const StyledTable = styled.table`
   border-collapse: collapse;
@@ -43,6 +43,7 @@ const RedButton = styled(Button)`
   }
 `
 
+// Componente que renderiza uma tabela com ações de edição e exclusão. Recebe os nomes das colunas, os dados e as funções de edição e exclusão como props.
 export default function Table({ columnsNames, data, onEditField, onDeleteField }) {
   return (
     <StyledTable>

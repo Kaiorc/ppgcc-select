@@ -168,18 +168,24 @@ const RedButton = styled(Button)`
   }
 `
 
+// Componente principal para exibir os detalhes de um aviso específico de um processo
 export default function ProcessNewsDetail() {
+    // Estado para armazenar os dados do aviso
     const [news, setNews] = React.useState(null)
 
+    // Estados para controle de carregamento e modal
     const [loading, setLoading] = React.useState(true)
     const [isModalOpen, setIsModalOpen] = React.useState(false)
     const [deleteError, setDeleteError] = React.useState(null);
 
+    // Hooks do React Router para obter parâmetros da URL e navegação
     const { processId, newsId } = useParams()
     const navigate = useNavigate()
 
+    // Hook personalizado para verificar se o usuário tem a função de administrador
     const isAdmin = useRole()
 
+    // usoEffect para carregar os dados do aviso específico quando o componente é montado
     React.useEffect(() => {
         async function loadData() {
             try {
@@ -196,6 +202,7 @@ export default function ProcessNewsDetail() {
         loadData()
     }, [processId, newsId, navigate])
     
+    // Função para lidar com a exclusão do aviso
     async function handleDelete() {
         try {
             await deleteProcessNews(processId, newsId)
@@ -205,8 +212,10 @@ export default function ProcessNewsDetail() {
         }
     }
 
+    // Verifica se o usuário é um administrador para exibir os botões de exclusão e edição
     const hasAdminButtons = isAdmin
 
+    // Exibe um spinner de carregamento enquanto os dados estão sendo carregados
     if(loading) {
         return (
             <Box>

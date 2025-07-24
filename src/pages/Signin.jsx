@@ -77,31 +77,40 @@ const ErrorMessage = styled.p`
     text-align: center;
 `
 
+// Componente que renderiza a página de criação de conta
 export default function Signin() {
+    // Hook do React Hook Form para gerenciar o formulário
     const { register, handleSubmit, watch, formState: { errors } } = useForm()
 
     // const [signinFormData, setSigninFormData] = React.useState({ name: "", email: "", password: "", confirmPassword: "" })
     // const [status, setStatus] = React.useState("idle")
+    // Estados para controle de carregamento e erro
     const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
 
+    // Hook do React Router para navegação
     const navigate = useNavigate()
+
+    // Hook personalizado para autenticação
     const { isLoggedIn } = useAuth()
 
+    // useEffect para redirecionar usuários já logados
     React.useEffect(() => {
         if (isLoggedIn) {
             navigate("/processes", { replace: true })
         }
     }, [isLoggedIn, navigate])
     
+    // Função para validar se as senhas coincidem
     function validatePasswordsMatch(value) {
         if (value !== watch("password")) {
             return "As senhas não coincidem."
         }
     }
 
+    // Função para lidar com o envio do formulário de criação de conta
     async function onSubmit(data) {
-        console.log(data)
+        // console.log(data)
         try{
             setLoading(true)
             await authCreateAccountWithEmail(data.name, data.email, data.password)

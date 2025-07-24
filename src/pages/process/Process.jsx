@@ -167,26 +167,44 @@ const RegisteredMessage = styled.p`
     }
 `
 
+// Função para verificar se o processo seletivo está dentro do período de inscrição
 function isWithinApplicationPeriod(startDate, endDate) {
     const now = new Date()
     return now >= new Date(startDate) && now <= new Date(endDate)
 }
 
+// Componente principal que renderiza os detalhes de um processo seletivo, exibindo informações,
+// botões de ação e uma lista de atualizações
 export default function Process() {
+    // Estado para armazenar o processo seletivo selecionado
     const [selectionProcess, setSelectionProcess] = React.useState(null)
+    // Estado para verificar se o usuário está registrado no processo seletivo
     const [isUserRegistered, setIsUserRegistered] = React.useState(false)
 
+    // Estado para controlar o carregamento dos dados, inicialmente, o estado de
+    // carregamento é verdadeiro para exibir o loader
     const [loading, setLoading] = React.useState(true)
+    // Estado para controlar a abertura do modal de deleção
     const [isModalOpen, setIsModalOpen] = React.useState(false)
     // const [error, setError] = React.useState(null)
+    // Estado para armazenar o erro de deleção, se ocorrer
     const [deleteError, setDeleteError] = React.useState(null);
 
+    // Obtém o ID do processo seletivo da URL
     const { processId } = useParams()
+    // Obtém a localização atual
     const location = useLocation()
+    // Hook para navegação entre rotas
     const navigate = useNavigate()
+    // Hook para verificar se o usuário tem a função de administrador
     const isAdmin = useRole()
+    // Hook para obter o ID do usuário autenticado
     const { uid } = useAuth()
 
+    // useEffect para carregar os dados do processo seletivo quando o componente é montado e sempre que o 
+    // processId ou uid mudar. Se o processo não existir, o usuário é redirecionado para a página de erro,
+    // se o usuário não for um administrador, verifica se ele já está registrado no processo seletivo, se 
+    // o processo for encontrado, o estado de carregamento é definido como falso.
     React.useEffect(() => {
         async function loadData() {
             const process = await loadProcess(processId)
@@ -206,13 +224,17 @@ export default function Process() {
         loadData()
     }, [processId, uid])
 
+    // Função para verificar se o usuário está registrado no processo seletivo e se o período de inscrição está aberto.
     function checkSelectionProcessAndApplicationPeriod() {
         if (!selectionProcess) return false
         return isWithinApplicationPeriod(selectionProcess.startDate, selectionProcess.endDate)
     }
 
+    //Variável que determina se os botões de administrador devem ser exibidos.
     const hasAdminButtons = isAdmin
+    // Variável que determina se os botões de candidato devem ser exibidos.
     const hasUserButton = !isAdmin && !isUserRegistered && checkSelectionProcessAndApplicationPeriod()
+    // Variável que determina se o título deve ser centralizado.
     const shouldCenterTitle = !hasAdminButtons && !hasUserButton && !isUserRegistered
 
     // Função para deleção do processo
@@ -259,6 +281,7 @@ export default function Process() {
         }
     } 
 
+    // Se o carregamento estiver em andamento, exibe um loader
     if(loading){
         return (
             <Box>
@@ -273,7 +296,7 @@ export default function Process() {
             </Box>
         )
     }
-    
+
     return (
         <ProcessDetailContainer>
             {selectionProcess && (
@@ -303,7 +326,7 @@ export default function Process() {
                                                 type="button"
                                                 onClick={() => setIsModalOpen(true)}
                                             >
-                                                DESINSCREVER-SE
+                                                CANCELAR INSCRIÇÃO
                                             </RedButton>
                                             <RegisteredMessage aria-live="polite">
                                                 VOCÊ JÁ ESTÁ INSCRITO(A)

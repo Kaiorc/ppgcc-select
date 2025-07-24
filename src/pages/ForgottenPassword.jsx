@@ -80,16 +80,22 @@ const ErrorMessage = styled.p`
     text-align: center;
 `
 
+// Componente que renderiza a página de recuperação de senha
 export default function ForgottenPassword() {
+    // Utiliza o hook useForm do react-hook-form para gerenciar o formulário,
+    // registra os campos do formulário e define as regras de validação
     const { register, handleSubmit, formState: { errors } } = useForm()
-
+    
     const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
     const [success, setSuccess] = React.useState(null)
-
+    
+    // Função que é chamada quando o formulário é enviado
     async function onSubmit(data) {
         setError(null)
         setSuccess(null)
+        // Envia o e-mail de recuperação utilizando a função authSendPasswordResetEmail e
+        // exibe mensagens de erro ou sucesso conforme o resultado da operação
         try {
             setLoading(true)
             // Chama a função que envia o e-mail de recuperação

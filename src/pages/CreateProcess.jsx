@@ -145,7 +145,9 @@ function mapFieldType(type) {
     }
 }
 
+// Componente principal da página de criação de processo seletivo
 export default function CreateProcess() {
+    // Estado para armazenar os dados do formulário do processo seletivo
     const [processFormData, setProcessFormData] = React.useState({
         name: "", 
         places: "",
@@ -158,14 +160,18 @@ export default function CreateProcess() {
         registrationFieldsInfo: []
     })
 
+    // Estados para controlar o carregamento do envio do formulário e erros
     const [submitLoading, setSubmitLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
 
+    // Estados para controlar a abertura dos modais de registro e importação de campos
+    // e para edição de campos
     const [isRegistrationModalOpen, setIsRegistrationModalOpen] = React.useState(false)
     const [isImportModalOpen, setIsImportModalOpen] = React.useState(false)
     const [fieldBeingEdited, setFieldBeingEdited] = React.useState(null)
     const [isEditModalOpen, setIsEditModalOpen] = React.useState(false)
 
+    // Hook do React Router para navegação
     const navigate = useNavigate()
 
     // Calcula a data de hoje para validação
@@ -178,6 +184,8 @@ export default function CreateProcess() {
         minEndDate = minEndDate.toISOString().split('T')[0]
     }
 
+    // useEffect para atualizar a data limite de análise quando a data de término é alterada e
+    // define a data limite de análise como 10 dias após o término das inscrições
     React.useEffect(() => {
         if (processFormData.endDate) {
             const endDate = new Date(processFormData.endDate)
@@ -190,10 +198,14 @@ export default function CreateProcess() {
         }
     }, [processFormData.endDate])
 
+    // Função para lidar com o envio do formulário
     async function handleSubmit(event) {
+        // Previne o comportamento padrão do formulário
         event.preventDefault()
 
+        // Valida os dados do formulário
         const validationError = validateProcessForm(processFormData, today)
+        // Se houver um erro de validação, define o erro no estado e retorna
         if (validationError) {
             setError({message: validationError})
             return
@@ -207,6 +219,7 @@ export default function CreateProcess() {
             description: sanitizeInput(processFormData.description),
         }
 
+        // Tenta criar o processo seletivo com os dados sanitizados
         try {
             setSubmitLoading(true)
             await createProcess(sanitizedData, sanitizedData.researchFieldRequired)
@@ -221,7 +234,7 @@ export default function CreateProcess() {
         }
     }
 
-    console.log(processFormData)
+    // console.log(processFormData)
 
     // function handleChange(event) {
     //     const {name, value, type, checked} = event.target;
@@ -235,7 +248,9 @@ export default function CreateProcess() {
     //     }))
     // }
 
+    // Função para lidar com as mudanças nos campos do formulário
     function handleChange(event) {
+        // Extrai o nome, valor, tipo e estado do campo do evento
         const {name, value, type, checked} = event.target
 
         // A data de término deve ser posterior à data de início
@@ -250,33 +265,42 @@ export default function CreateProcess() {
             return
         }
 
+        // Atualiza o estado do formulário com o novo valor
         setProcessFormData(prev => ({
             ...prev,
             [name]: type === 'checkbox' ? checked : value
         }))
     }
 
+    // Função para adicionar um novo campo ao formulário
     function handleAddField(field) {
+        // Verifica se o campo já existe no formulário para evitar duplicatas
         const isDuplicate = processFormData.registrationFieldsInfo.some(existingField => existingField.name === field.name)
+        // Se o campo já existir, exibe um alerta e não adiciona o campo
         if (isDuplicate) {
             alert("Um campo com esse nome já existe.")
             return
         }
+        // Se o campo não existir, adiciona-o ao estado do formulário
         setProcessFormData(prevProcessFormData => ({
             ...prevProcessFormData,
             registrationFieldsInfo: [...prevProcessFormData.registrationFieldsInfo, field]
         }))
     }
 
+    // Função para importar campos de outro processo
     function handleImportFields(process) {
+        // Verifica se o processo tem campos de registro repetidos
         const newFields = process.registrationFieldsInfo.filter(importedField => 
             !processFormData.registrationFieldsInfo.some(existingField => existingField.name === importedField.name)
         )
 
+        // Se houver campos repetidos, exibe um alerta avisando que alguns campos não foram importados
         if (newFields.length < process.registrationFieldsInfo.length) {
             alert("Alguns campos não foram importados porque já existem.")
         }
 
+        // Atualiza o estado do formulário com os novos campos importados
         setProcessFormData(prevProcessFormData => ({
             ...prevProcessFormData,
             registrationFieldsInfo: [
@@ -287,28 +311,34 @@ export default function CreateProcess() {
         setIsImportModalOpen(false)
     }
 
+    // Função para lidar com a exclusão de um campo do formulário
     function handleDeleteField(index) {
+        // Atualiza o estado do formulário removendo o campo no índice especificado
         setProcessFormData(prevProcessFormData => ({
             ...prevProcessFormData,
             registrationFieldsInfo: prevProcessFormData.registrationFieldsInfo.filter((_, i) => i !== index)
-        }));
+        }))
     }
 
+    // Função para lidar com a edição de um campo do formulário
     function handleEditField(index) {
-        setFieldBeingEdited({ ...processFormData.registrationFieldsInfo[index], index });
-        setIsEditModalOpen(true);
+        // Define o campo a ser editado e abre o modal de edição
+        setFieldBeingEdited({ ...processFormData.registrationFieldsInfo[index], index })
+        setIsEditModalOpen(true)
     }
 
+    // Função para lidar com o salvamento do campo editado
     function handleSaveEditedField(editedField) {
+        // Atualiza o campo editado no estado do formulário
         setProcessFormData(prevProcessFormData => {
-            const updatedFields = [...prevProcessFormData.registrationFieldsInfo];
-            updatedFields[editedField.index] = editedField;
+            const updatedFields = [...prevProcessFormData.registrationFieldsInfo]
+            updatedFields[editedField.index] = editedField
             return {
                 ...prevProcessFormData,
                 registrationFieldsInfo: updatedFields
-            };
-        });
-        setIsEditModalOpen(false);
+            }
+        })
+        setIsEditModalOpen(false)
     }
 
     return (

@@ -27,7 +27,7 @@ const StyledInput = styled.input`
     }
 `
 
-// Define o Input usando React.forwardRef() para que o ref possa ser passado para o <input>
+// Define o componente Input usando React.forwardRef() para que o ref possa ser passado para o <input>
 // e o React Hook Form possa acessar o <input> diretamente
 const Input = React.forwardRef(
     ({ name, onChange, type, placeholder, value, min, required, disabled, ...rest }, ref) => {

@@ -87,17 +87,22 @@ const ButtonContainer = styled.div`
     }
 `
 
+// Componente principal da página de edição de notícias
 export default function EditNews() {
+    // Estados para controle de carregamento e envio
     const [loading, setLoading] = React.useState(true)
     const [submitLoading, setSubmitLoading] = React.useState(false)
 
+    // Hook do React Hook Form para gerenciar o formulário
     const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm()
 
+    // Hooks do React Router para obter parâmetros da URL e navegação
     const { processId, newsId } = useParams()
-
     const navigate = useNavigate()
 
+    // useEffect para carregar os dados de um aviso específico quando o componente é montado
     React.useEffect(() => {
+        // Função assíncrona para buscar os dados do aviso
         async function loadData() {
             try {
                 // Busca o aviso específico
@@ -117,6 +122,7 @@ export default function EditNews() {
         loadData()
     }, [processId, newsId, setValue, navigate])
 
+    // Função para lidar com o envio do formulário
     async function onSubmit(data) {
         try {
             setSubmitLoading(true)
@@ -130,6 +136,7 @@ export default function EditNews() {
         }
     }
 
+    // Se estiver carregando, exibe um loader
     if(loading){
         return (
             <Box>

@@ -1,5 +1,5 @@
-import React from "react";
-import { styled } from "styled-components";
+import React from "react"
+import { styled } from "styled-components"
 
 const StyledSelect = styled.select`
     background-color: #f5f5f5;
@@ -19,6 +19,8 @@ const StyledSelect = styled.select`
     }
 `
 
+// Define o componente Select usando React.forwardRef para permitir que o ref seja passado para o <select>
+// e possa ser acessado diretamente pelo React Hook Form. 
 const Select = React.forwardRef(({ children, optionPlaceholder, optionsArray, ...props }, ref) => {
     return (
         <StyledSelect ref={ref} {...props}>

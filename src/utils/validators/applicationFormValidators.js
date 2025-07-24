@@ -1,3 +1,4 @@
+// Funções para validar campos de um formulário de inscrição
 
 // Função para validar o arquivo de inscrição
 function validateFile(value) {

@@ -33,8 +33,10 @@ const TableCell = styled.td`
   border: 1px solid #ddd;
   padding: 8px;
   text-align: center;
+  font-weight: bold;
 `
 
+// Componente que renderiza a tabela de inscrições, recebendo os nomes das colunas, os dados e a função de avaliação 
 export default function ApplicationsTable({ columnsNames, data, onEvaluate }) {
   return (
     <StyledTableContainer>

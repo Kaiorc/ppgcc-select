@@ -92,27 +92,36 @@ const ErrorMessage= styled.p`
     color: red;
 `
 
+// Componente que renderiza a página de login
 export default function Login() {
+    // Hook do React Hook Form para gerenciar o formulário
     const { register, handleSubmit, watch, formState: { errors } } = useForm()
 
     // const [loginFormData, setLoginFormData] = React.useState({ email: "", password: "" })
     // const [status, setStatus] = React.useState("idle")
+    // Estados para controle de carregamento e erro
     const [loading, setLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
 
+    // Hook do React Router para navegação
     const navigate = useNavigate()
+
+    // Hook personalizado para autenticação
     const { setIsLoggedIn, isLoggedIn } = useAuth()
     
+    // useEffect para redirecionar usuários já logados
     React.useEffect(() => {
         if (isLoggedIn) {
             navigate("/processes", { replace: true })
         }
     }, [isLoggedIn, navigate])
 
+    // Função para lidar com o login com Google
     async function handleGoogleLogin() {
+        // Redireciona o usuário para o login com Google
         try {
             const user = await authSignInWithGoogle()
-            console.log("Usuário logado:", user)
+            // console.log("Usuário logado:", user)
             setIsLoggedIn(true)
             navigate("/processes", { replace: true })
         } catch (error) {
@@ -120,9 +129,9 @@ export default function Login() {
         }
     }
 
+    // Função para lidar com o envio do formulário de login
     async function onSubmit(data) {
-        console.log(data)
-        console.log("clicked")
+        // Tenta fazer login com email e senha
         try {
             setLoading(true)
             await authLogInWithEmail(data.email, data.password, setIsLoggedIn)

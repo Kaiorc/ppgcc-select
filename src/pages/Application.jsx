@@ -118,26 +118,36 @@ const ErrorMessage = styled.p`
     margin: 0 0 0.5rem 0;
 `
 
+// Função que verifica se a data atual está dentro do período de inscrição
 function isWithinApplicationPeriod(startDate, endDate) {
     const now = new Date()
     return now >= new Date(startDate) && now <= new Date(endDate)
 }
 
+// Componente principal da página de inscrição
 export default function Application() {
+    // Estados locais para gerenciar o processo de seleção, carregamento, submissão e erros
     const [selectionProcess, setSelectionProcess] = React.useState()
     const [loading, setLoading] = React.useState(true)
     const [submitLoading, setSubmitLoading] = React.useState(false)
     const [error, setError] = React.useState(null)
     
+    // Hook do React Hook Form para gerenciar o formulário
     const { register, handleSubmit, watch, resetField, formState: { errors } } = useForm({ defaultValues: { researchArea: "" } })
+    // Hook do Auth para obter informações do usuário autenticado
     const { displayName, uid, userEmail } = useAuth()
 
+    // Hooks do React Router para obter parâmetros da URL e navegação
     const { processId } = useParams()
     const location = useLocation()
     const navigate = useNavigate()
 
+    // useEffect para carregar os dados do processo seletivo quando o componente é montado
+    // ou quando o processId muda
     React.useEffect(() => {
+        // Função assíncrona para carregar os dados do processo seletivo
         async function loadData() {
+            // Chamada para carregar o processo seletivo com o ID fornecido
             const process = await loadProcess(processId)
             // Se o processo não existir, o usuário é redirecionado para a página de erro
             if (!process) {
@@ -146,24 +156,26 @@ export default function Application() {
             }
             setSelectionProcess(process)
 
-            // Verificar se está fora do período de inscrição
+            // Verifica se está fora do período de inscrição
             if (!isWithinApplicationPeriod(process.startDate, process.endDate)) {
                 alert("As inscrições não estão abertas no momento.")
                 navigate(`/processes/${processId}`)
             }
 
-            // Verificar se o usuário já está inscrito
+            // Verifica se o usuário já está inscrito
             const isRegistered = await userHasApplication(processId, uid)
             if (isRegistered) {
                 alert("Você já está inscrito neste processo.")
                 navigate(`/processes/${processId}`, { replace: true, state: "Você já está inscrito neste processo seletivo"})
             }
 
+            // Seta o estado de carregamento para false após carregar os dados
             setLoading(false)
         }
         loadData()
     }, [processId, navigate, uid])
 
+    // Função que verifica se a linha de pesquisa foi selecionada
     function isResearchAreaSelected() {
         const value = watch("researchArea");
         return value !== undefined && value !== ""
@@ -231,12 +243,16 @@ export default function Application() {
             setSubmitLoading(false)
         }
     }
-
+    // Mapeamento dos campos de entrada do formulário com base nas informações do processo seletivo
+    // e as regras de validação dinâmicas obtidas da função getApplicationValidationRules
     const inputElements = selectionProcess?.registrationFieldsInfo?.map((info) => {
         // Obtém as regras de validação de forma dinâmica
         const validationRules = getApplicationValidationRules(info)
         
+        // Hook do React Hook Form para observar o valor do campo
         const fieldValue = watch(info.name)
+        // Verifica se o campo foi modificado (não está vazio), isso é usado para determinar se
+        // o botão "LIMPAR" deve ser exibido
         const isModified = fieldValue && fieldValue.length > 0
     
         return (

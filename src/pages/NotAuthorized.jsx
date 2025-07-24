@@ -125,6 +125,7 @@ const ReturnButton = styled(Button)`
 	}
 `
 
+// Componente que renderiza a página de "Não Autorizado"
 export default function NotAuthorized() {
 	return (
 		<Container>

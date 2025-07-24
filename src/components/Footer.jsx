@@ -13,10 +13,10 @@ const StyledFooter = styled.footer`
     font-weight: bold;
 `
 
+// Componente de rodapé que exibe uma mensagem de direitos autorais
 export default function Footer() {
-
-
+    
     return (
-        <StyledFooter>&#169; 2024 PPGCCelect</StyledFooter>
+        <StyledFooter>&#169; 2024 PPGCC Select</StyledFooter>
     )
 }

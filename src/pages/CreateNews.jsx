@@ -77,16 +77,18 @@ const ButtonContainer = styled.div`
         flex-wrap: wrap-reverse;
     }
 `
-
+// Componente principal da página de criação de notícias
 export default function CreateNews() {
+    // Hook do React Hook Form para gerenciar o formulário
     const { register, handleSubmit, watch, formState: { errors } } = useForm()
-
+    // Estado para controlar o carregamento do envio do formulário
     const [submitLoading, setSubmitLoading] = React.useState(false)
 
+    // Hook do React Router para obter o ID do processo a partir dos parâmetros da URL e para navegação
     const { processId } = useParams()
-
     const navigate = useNavigate()
 
+    // Hook personalizado para obter informações do usuário autenticado
     const { displayName } = useAuth()
 
     // Verifica se o processo existe assim que o componente monta
@@ -101,8 +103,11 @@ export default function CreateNews() {
         checkProcessExists()
     }, [processId, navigate])
 
+    // Função para lidar com o envio do formulário
     async function onSubmit(data) {
-        console.log(data)
+        // console.log(data)
+        // Tenta adicionar a notícia ao processo com os dados do formulário
+        // e o nome do usuário autenticado 
         try {
             setSubmitLoading(true)
             await addProcessNews(processId, displayName, data)

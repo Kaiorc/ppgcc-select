@@ -26,13 +26,18 @@ const BoldGreenMessage = styled.h2`
     }   
 `
 
+// Componente que renderiza a lista de processos seletivos em que o usuário está inscrito
 export default function MyApplicationsProcesses() {
+    // Estado para armazenar os processos seletivos em que o usuário está inscrito
     const [myApplicationsSelectionProcesses, setMyApplicationsSelectionProcesses] = React.useState([])
 
+    // Estado para controlar o carregamento dos dados
     const [loading, setLoading] = React.useState(true)
 
+    // Hook para obter o ID do usuário autenticado
     const { uid } = useAuth()
 
+    // useEffect para carregar os processos seletivos em que o usuário está inscrito
     React.useEffect(() => {
         async function loadData() {
             const myApplicationsProcesses = await getProcessesWithUserApplications(uid)
@@ -42,8 +47,6 @@ export default function MyApplicationsProcesses() {
         }
         loadData()
     }, [])
-
-    console.log("MyApplicationsProcesses.jsx - ", myApplicationsSelectionProcesses)
 
     return (
         <>

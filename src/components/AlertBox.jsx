@@ -4,8 +4,8 @@ import Button from "./Button"
 
 // Container do alerta ajustado para ter tamanho máximo e responsividade
 const AlertContainer = styled.div`
-    background-color: #f8d7da; /* Fundo vermelho claro */
-    color: #721c24; /* Texto vermelho escuro */
+    background-color: #f8d7da;
+    color: #721c24;
     padding: 1em;
     border: 1px solid #f5c6cb;
     border-radius: 4px;
@@ -14,17 +14,17 @@ const AlertContainer = styled.div`
     justify-content: space-between;
     align-items: center;
 
-    position: fixed;        /* Fixa o alerta na tela */
-    bottom: 20px;           /* Distância da parte inferior */
-    left: 50%;              /* Centraliza horizontalmente */
+    position: fixed;       
+    bottom: 20px;           
+    left: 50%;              
     transform: translateX(-50%);
-    max-width: 600px;       /* Largura máxima */
-    width: calc(100% - 40px);  /* Garante margens laterais em telas menores */
-    z-index: 9999;          /* Fica acima dos outros elementos */
+    max-width: 600px;       
+    width: calc(100% - 40px);
+    z-index: 9999;
 
     @media (max-width: 480px) {
-        padding: 0.75em;      /* Ajuste de padding para telas menores */
-        font-size: 0.9em;     /* Diminui o tamanho da fonte se necessário */
+        padding: 0.75em;     
+        font-size: 0.9em; 
     }
 `
 
@@ -36,7 +36,7 @@ const AlertMessage = styled.p`
     font-weight: bold;
 `
 
-// Botão para fechar o alerta (utilizando o Button já existente)
+// Botão para fechar o alerta (utilizando o componente Button já existente)
 const RedButton = styled(Button)`
     background-color: red;
     color: white;
@@ -46,6 +46,8 @@ const RedButton = styled(Button)`
     }
 `
 
+// Componente que recebe a mensagem, a função de fechar e nãorenderiza
+// se não houver mensagem
 export default function AlertBox({ message, onClose }) {
     // Não renderiza nada se não houver mensagem
     if (!message) return null

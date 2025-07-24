@@ -66,9 +66,14 @@ const ErrorMessage= styled.p`
     color: red;
 `
 
+// Componente de modal para confirmação de exclusão, recebe a função de exclusão e o estado do modal
+// e exibe uma mensagem de confirmação, além de um botão para cancelar ou confirmar a exclusão
 export default function DeleteModal({ setIsModalOpen, handleDelete, error }) {
+    // Estado para controlar o carregamento da exclusão
     const [deletionLoading, setDeletionLoading] = React.useState(false)
 
+    // Função que lida com a exclusão, chama a função de exclusão passada como prop e trata o estado de carregamento.
+    // Se ocorrer um erro, ele é capturado e exibido no console
     async function handleDeletion() {
         try {
             setDeletionLoading(true)

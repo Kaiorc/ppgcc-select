@@ -57,18 +57,21 @@ const InfoContainer = styled.div`
     }
 `
 
+// Componente que renderiza os detalhes de um processo seletivo
 export default function ProcessDetail() {
+    // Obtém o processo seletivo do contexto da rota
     const { selectionProcess } = useOutletContext()
 
+    // Estado para controlar o carregamento dos dados
     const [loading, setLoading] = React.useState(true)
 
+    // useEffect para definir o estado de carregamento como falso quando o processo seletivo é
+    // carregado, isso garante que o loader seja exibido até que os dados estejam prontos
     React.useEffect(() => {
         if (selectionProcess) {
             setLoading(false)
         }
     }, [selectionProcess])
-
-    console.log("ProcessDetail.jsx - selectionProcess: ", selectionProcess)
 
     return (
         <>

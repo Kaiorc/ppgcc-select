@@ -31,6 +31,7 @@ const TitleContainer = styled.div`
   margin: 0 0 1em 0;
   border-radius: 8px 8px 0 0;
   background-color: #008442;
+  padding: 1em;
 
   & h1 {
       text-transform: uppercase;
@@ -85,13 +86,17 @@ const ButtonContainer = styled.div`
     }
 `
 
+// Componente que renderiza o modal de registro de campos. Recebe as responsáveis por abrir e salvar o modal,
+// além de um campo para editar, caso exista. 
 export default function RegistrationFieldModal({ onClose, onSave, fieldToEdit }) {
+  // Estado local para armazenar os dados do campo
   const [fieldData, setFieldData] = React.useState({
     name: '',
     type: 'text',
     required: false
   })
 
+  // useEffect para inicializar os dados do campo se fieldToEdit estiver definido
   React.useEffect(() => {
     if (fieldToEdit) {
       setFieldData({
@@ -103,6 +108,7 @@ export default function RegistrationFieldModal({ onClose, onSave, fieldToEdit })
     }
   }, [fieldToEdit])
 
+  // Função para lidar com as mudanças nos campos do formulário
   function handleChange(event) {
     const { name, value, type, checked } = event.target;
     setFieldData(prevFieldData => ({
@@ -110,7 +116,8 @@ export default function RegistrationFieldModal({ onClose, onSave, fieldToEdit })
       [name]: type === 'checkbox' ? checked : value
     }))
   }
-
+  
+  // Função para salvar os dados do campo e fechar o modal
   function handleSave() {
     onSave(fieldData)
     onClose()
