@@ -161,9 +161,11 @@ const TableHead = styled.thead`
 `
 
 const TableHeader = styled.th`
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: center;
+  border: 1px solid #ddd;
+  padding: 8px;
+  text-align: center;
+  color: white;
+  background-color: #008442;
 `
 
 const TableRow = styled.tr`

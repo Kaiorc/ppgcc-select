@@ -75,20 +75,72 @@ const BoldInfo = styled.b`
     }
 `
 
+const ListItemLink = styled(Link)`
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1em 2em;
+    width: 100%;
+    gap: 0.5em;
+    border-bottom: 2px solid #E5E5E5;
+    text-decoration: none;
+    color: inherit;
+
+    h3 {
+        text-transform: uppercase;
+        text-align: center;
+        width: 50%;
+    }
+
+    p { 
+        font-weight: bold;
+        margin: 0.5em 0;
+    }
+
+    & div {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        width: 100%;
+    }
+    
+    &:last-child {
+        border-bottom: none;
+    }
+    
+    &:hover {
+        background-color: #E5E5E5;
+        transition-duration: 0.2s;
+        cursor: pointer;
+    }
+    
+    &:active {
+        background-color: #D9D9D9;
+    }
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        text-align: center;
+        padding: 1rem;
+    }
+`
+
 // Componente que renderiza uma lista de processos seletivos e exibe informações básicas
 // sobre cada processo
 export default function ProcessesList({ selectionProcesses }) {
     // Mapeamento dos processos seletivos recebidos como props e renderização de um item de lista para cada processo
     const processesElements = selectionProcesses.map((process) => {
         return (
-            <Link 
-                to={`/processes/${process.id}`}
+            <ListItem 
                 key={process.id}
-                aria-label={`Processo seletivo ${process.name}`}
+                role="listitem"
             >
-                <ListItem 
+                <ListItemLink 
+                    to={`/processes/${process.id}`}
                     key={process.id}
-                    role="listitem"
+                    aria-label={`Processo seletivo ${process.name}`}
                 >
                     <h3>{process.name}</h3>
                     <div>
@@ -96,8 +148,8 @@ export default function ProcessesList({ selectionProcesses }) {
                         <p><BoldInfo>Início das inscrições:</BoldInfo> {formatFirestoreDate(process.startDate)}</p>
                         <p><BoldInfo>Fim das inscrições:</BoldInfo> {formatFirestoreDate(process.endDate)}</p> 
                     </div>
-                </ListItem>
-            </Link>
+                </ListItemLink>
+            </ListItem>
         )
     })
 

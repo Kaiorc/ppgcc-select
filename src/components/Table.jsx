@@ -5,27 +5,30 @@ import Button from './Button'
 const StyledTable = styled.table`
   border-collapse: collapse;
   width: 100%;
-`;
+`
 
 const TableHead = styled.thead`
   background-color: #f2f2f2;
-`;
+`
 
 const TableHeader = styled.th`
   border: 1px solid #ddd;
   padding: 8px;
   text-align: center;
-`;
+  color: white;
+  background-color: #008442;
+`
 
 const TableRow = styled.tr`
 
-`;
+`
 
 const TableCell = styled.td`
   border: 1px solid #ddd;
   padding: 8px;
   text-align: center;
-`;
+  font-weight: bold;
+`
 
 const ButtonCell = styled(TableCell)`
   display: flex;
