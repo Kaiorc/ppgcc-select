@@ -77,40 +77,39 @@ export async function authLogInWithEmail(email, password, setIsLoggedIn) {
     }
 }
 
-// Função para logar com o Google
-export async function authSignInWithGoogle() {
-    // Função para detectar mobile (simples, pode ser melhorada)
-    function isMobile() {
-        return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
-    }
-    try {
-    if (isMobile()) {
-        await signInWithRedirect(auth, provider)
-        // O fluxo de redirect não retorna user imediatamente
-        // O usuário será redirecionado e, após o login, o onAuthStateChanged será chamado
-        return null
-    } else {
-        const result = await signInWithPopup(auth, provider)
-        // Retorna o resultado ou o usuário logado
-        return result.user
-    }
-    } catch (error) {
-        console.error("Erro ao fazer login com o Google:", error)
-        throw error
-    }
-}
-
-// // Função para logar com o Google
 // export async function authSignInWithGoogle() {
+//     // Função para detectar mobile (simples, pode ser melhorada)
+//     function isMobile() {
+//         return /Android|iPhone|iPad|iPod|Opera Mini|IEMobile|WPDesktop/i.test(navigator.userAgent)
+//     }
 //     try {
-//         const result = await signInWithPopup(auth, provider)
-//         // Retorna o resultado ou o usuário logado
-//         return result.user
+//         if (isMobile()) {
+//             await signInWithRedirect(auth, provider)
+//             // O fluxo de redirect não retorna user imediatamente
+//             // O usuário será redirecionado e, após o login, o onAuthStateChanged será chamado
+//             return null
+//         } else {
+//             const result = await signInWithPopup(auth, provider)
+//             // Retorna o resultado ou o usuário logado
+//             return result.user
+//         }
 //     } catch (error) {
 //         console.error("Erro ao fazer login com o Google:", error)
 //         throw error
 //     }
 // }
+
+// Função para logar com o Google
+export async function authSignInWithGoogle() {
+    try {
+        const result = await signInWithPopup(auth, provider)
+        // Retorna o resultado ou o usuário logado
+        return result.user
+    } catch (error) {
+        console.error("Erro ao fazer login com o Google:", error)
+        throw error
+    }
+}
 
 // Função para deslogar o usuário
 export async function authLogOut(setIsLoggedIn) {
