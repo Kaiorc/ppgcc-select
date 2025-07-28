@@ -18,13 +18,12 @@ const ListItem = styled.li`
         margin: 0.5em 0;
     }
 
-    h3 {
+    h2 {
         margin: 0;
         font-size: 1.2rem;
         text-transform: uppercase;
         text-align: center;
         width: 60%;
-
     }
 
     & div {
@@ -78,32 +77,40 @@ const BoldInfo = styled.b`
     }
 `
 
+const ListItemLink = styled(Link)`
+    width: 100%; 
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+`
+
 // Componente que renderiza a lista de avisos do processo
 export default function ProcessNewsList({ news }) {
     // Mapeamento dos avisos recebidos como props e renderização de um item de lista para cada aviso
     const newsElements = news.map((processNews) => {
         // Extrai o título e o corpo da notícia da prop processNews
         const body = processNews.body
-        // Limita o preview do corpo da notícia a 250 caracteres e adiciona "..."
+        // Limita o preview do corpo do aviso a 250 caracteres e adiciona "..."
         // no final para indicar que o texto foi truncado
         const preview = body.substring(0, 250) + "..."
 
         return (
-            <Link 
-                to={`./${processNews.id}`}
+            <ListItem 
                 key={processNews.id}
-                aria-label={`Notícia do processo ${processNews.title}`}
+                role="listitem"
             >
-                <ListItem 
-                    key={processNews.id}
-                    role="listitem"
+                <ListItemLink 
+                    to={`./${processNews.id}`}
+                    aria-label={`Aviso do processo ${processNews.title}`}
                 >
-                    <h3>{processNews.title}</h3>
+                    <h2>{processNews.title}</h2>
                     <div>
                         <BoldInfo>{preview}</BoldInfo>
                     </div>
-                </ListItem>
-            </Link>
+                </ListItemLink>
+            </ListItem>
         )
     })
 
