@@ -165,124 +165,100 @@ export default function Applications() {
         navigate(`evaluate/${uid}`)
     }
 
-    // Função para exportar a lista das inscrições deferidas em PDF
+    // Função para exportar a lista das inscrições analisadas em PDF
     function handleExportResult() {
         if (!selectionProcess) return
-      
+
         const doc = new jsPDF()
         const pageWidth = doc.internal.pageSize.getWidth()
-      
-        doc.setFillColor(0, 132, 66) // verde (#008442)
-        doc.rect(0, 0, pageWidth, 65, "F") // altura 65
-        
-        // Largura e altura das imagens
+
+        // Cabeçalho verde
+        doc.setFillColor(0, 132, 66)
+        doc.rect(0, 0, pageWidth, 65, "F")
+
+        // Logos (mesma lógica sua)
         const ppgccWidth = 70, ppgccHeight = 22
         const ppgccSelectWidth = 70, ppgccSelectHeight = 38
         const ueceWidth = 65, ueceHeight = 22
-      
-        // Espaço entre as imagens
-        const spacingBetweenImages = 0.1
-      
-        // Soma total das larguras das três imagens + espaços
-        const totalImagesWidth =
-          ppgccWidth + ppgccSelectWidth + ueceWidth +
-          spacingBetweenImages * 2
-      
-        // Posição X inicial para que as imagens fiquem centralizadas
+        const spacing = 0.1
+        const totalImagesWidth = ppgccWidth + ppgccSelectWidth + ueceWidth + spacing * 2
         const startX = (pageWidth - totalImagesWidth) / 2
-        // Posição Y onde as imagens ficarão
         const yPos = 2
-      
-        // Adiciona as imagens individualmente, usando as larguras e alturas definidas
+
         doc.addImage(UeceLogo, "PNG", startX, yPos, ueceWidth, ueceHeight)
-        doc.addImage(
-          PpgccSelectLogoTop,
-          "PNG",
-          startX + ueceWidth + spacingBetweenImages,
-          yPos,
-          ppgccSelectWidth,
-          ppgccSelectHeight
-        )
-        doc.addImage(
-          PpgccLogo,
-          "PNG",
-          startX + ueceWidth + ppgccSelectWidth + spacingBetweenImages * 2,
-          yPos,
-          ppgccWidth,
-          ppgccHeight
-        )
-      
-        // Define texto em branco e em negrito
+        doc.addImage(PpgccSelectLogoTop, "PNG", startX + ueceWidth + spacing, yPos, ppgccSelectWidth, ppgccSelectHeight)
+        doc.addImage(PpgccLogo, "PNG", startX + ueceWidth + ppgccSelectWidth + spacing * 2, yPos, ppgccWidth, ppgccHeight)
+
+        // Títulos
         doc.setTextColor(255, 255, 255)
         doc.setFont(undefined, "bold")
-      
-        // Aumenta o tamanho da fonte para dar mais destaque ao nome do processo
         doc.setFontSize(24)
-        // Posição Y do título (um pouco abaixo das imagens)
         const textY = 50
-        doc.text(selectionProcess.name.toUpperCase(), pageWidth / 2, textY, {
-          align: "center"
-        })
-      
-        // Texto secundário com fonte um pouco menor
+        doc.text(selectionProcess.name.toUpperCase(), pageWidth / 2, textY, { align: "center" })
         doc.setFontSize(20)
-        doc.text("CLASSIFICADOS PARA A PRÓXIMA FASE", pageWidth / 2, textY + 10, {
-          align: "center"
-        })
-      
-        // Reseta a cor do texto para preto
-        doc.setTextColor(0, 0, 0)
-      
-        // Ajusta o startY da tabela para ficar mais afastada do cabeçalho
-        let yPosition = textY + 20 // espaço extra entre texto e tabela
-      
-        // Filtra os candidatos deferidos
-        const deferredCandidates = applications.filter(app => app.status === "Deferida")
-        const tableColumns = ["NOME", "EMAIL"]
-        const tableRows = deferredCandidates.map(candidate => [candidate.name, candidate.userEmail])
-      
+        doc.text("RESULTADO DA PRIMEIRA FASE", pageWidth / 2, textY + 10, { align: "center" })
+
+        // Prepara dados da tabela (todos os candidatos)
+        let yPosition = textY + 20
+        const tableColumns = ["NOME", "EMAIL", "STATUS"]
+        const tableRows = applications.map(app => [
+            app.name,
+            app.userEmail,
+            app.status // espera "Deferida" ou "Indeferida"
+        ])
+
+        // Gera a tabela
         autoTable(doc, {
-          head: [tableColumns],
-          body: tableRows,
-          startY: yPosition,
-          theme: "grid",
-          tableLineColor: [240, 133, 46],
-          tableLineWidth: 0.5,
-          styles: {
+            head: [tableColumns],
+            body: tableRows,
+            startY: yPosition,
+            theme: "grid",
+            tableLineColor: [240, 133, 46],
+            tableLineWidth: 0.5,
+            styles: {
             fontSize: 12,
-            halign: "center"
-          },
-          headStyles: {
+            halign: "center",
+            },
+            headStyles: {
             fillColor: [0, 132, 66],
             textColor: 255,
-            halign: "center",
             fontStyle: "bold",
-            fontSize: 14
-          },
-          bodyStyles: {
-            fillColor: "#f5f5f5",
+            fontSize: 14,
+            },
+            bodyStyles: {
             halign: "center",
-            fontStyle: "bold"
-          },
-          didDrawCell: function (data) {
-            const { cell, column, row, table } = data
-            const doc = data.doc
-            // Customização de bordas em verde
-            if (row.index < table.body.length - 1) {
-              doc.setDrawColor(0, 132, 66)
-              doc.setLineWidth(0.5)
-              doc.line(cell.x, cell.y + cell.height, cell.x + cell.width, cell.y + cell.height)
+            fontStyle: "normal",
+            },
+            // Ajusta a cor de fundo da célula de STATUS antes de desenhar
+            didParseCell: function (data) {
+            // coluna 2 (0-based) é a STATUS
+            if (data.column.index === 2 && data.cell.section === 'body') {
+                const status = data.cell.raw
+                if (status.toLowerCase() === "indeferida") {
+                // vermelho
+                data.cell.styles.fillColor = [255, 0, 0]
+                data.cell.styles.textColor = 255
+                } else if (status.toLowerCase() === "deferida") {
+                // verde
+                data.cell.styles.fillColor = [0, 132, 66]
+                data.cell.styles.textColor = 255
+                }
             }
-            if (column.index < table.columns.length - 1) {
-              doc.setDrawColor(0, 132, 66)
-              doc.setLineWidth(0.5)
-              doc.line(cell.x + cell.width, cell.y, cell.x + cell.width, cell.y + cell.height)
+            },
+            // Mantém bordas laranjas em todas as células
+            didDrawCell: function (data) {
+            const { cell, column, row, table, doc } = data
+            // linhas horizontais
+            doc.setDrawColor(240, 133, 46)
+            doc.setLineWidth(0.5)
+            doc.line(cell.x, cell.y + cell.height, cell.x + cell.width, cell.y + cell.height)
+            // linhas verticais
+            doc.line(cell.x + cell.width, cell.y, cell.x + cell.width, cell.y + cell.height)
             }
-          }
         })
-      
+
         // Salva o PDF
-        doc.save(`Resultado - Classificados da Primeira Fase - ${selectionProcess.name}.pdf`)
+        doc.save(`Resultado - Primeira Fase - ${selectionProcess.name}.pdf`)
     }
 
     // Verifica se o processo seletivo requer agrupamento por área de pesquisa
